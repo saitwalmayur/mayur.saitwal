@@ -1,0 +1,29 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  /* Global premium background to keep pages looking identical and prevent flicker */
+  background: linear-gradient(135deg, #13131f 0%, #2a2a40 100%);
+  color: #ffffff;
+}
+
+.top-section {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+.main-content-wrapper {
+  height: 90%;
+  width: 100%;
+  position: relative;
+}

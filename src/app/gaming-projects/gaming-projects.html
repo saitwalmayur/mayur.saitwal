@@ -1,0 +1,61 @@
+<div class="page-content">
+  <div class="content-inner">
+    <div class="header">
+      <h1>Gaming Projects</h1>
+      <p>Explore some of the interactive games & experiences I've developed.</p>
+    </div>
+
+    <div class="tabs-container">
+      <button class="tab-btn" [class.active]="activeTab === 'office'" (click)="activeTab = 'office'">🏢 Developed in Office</button>
+      <button class="tab-btn" [class.active]="activeTab === 'personal'" (click)="activeTab = 'personal'">👨‍💻 Personal Developed</button>
+    </div>
+
+    <div class="timeline-container" *ngIf="currentExperiences.length > 0">
+      <div class="timeline-line"></div>
+      
+      <div class="experience-node" *ngFor="let exp of currentExperiences">
+        <div class="timeline-dot"></div>
+        
+        <div class="experience-card glass-panel">
+          <div class="exp-header">
+            <div class="title-group">
+              <h2>{{ exp.company }}</h2>
+              <span class="role">{{ exp.role }}</span>
+            </div>
+            <div class="meta-group">
+              <span class="duration">📅 {{ exp.duration }}</span>
+              <span class="location">📍 {{ exp.location }}</span>
+            </div>
+          </div>
+          
+          <ul class="bullets-list" *ngIf="exp.bullets && exp.bullets.length > 0">
+            <li *ngFor="let bullet of exp.bullets">
+              <span class="bullet-icon">➤</span>
+              <span class="bullet-text">{{ bullet }}</span>
+            </li>
+          </ul>
+
+          <div class="games-grid" *ngIf="exp.games && exp.games.length > 0">
+            <div class="game-card" *ngFor="let game of exp.games">
+              <div class="game-image-container" *ngIf="game.imageUrl">
+                <img [src]="game.imageUrl" [alt]="game.name" class="game-img" />
+              </div>
+              <div class="game-info">
+                <h3>{{ game.name }}</h3>
+                <div class="game-links">
+                  <a *ngFor="let link of game.links" [href]="link.url" target="_blank" class="game-link-btn" [ngClass]="link.type">
+                    {{ link.label }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="currentExperiences.length === 0">
+      <p>No projects added to this section yet.</p>
+    </div>
+  </div>
+</div>
