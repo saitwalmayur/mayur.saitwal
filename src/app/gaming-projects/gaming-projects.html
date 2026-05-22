@@ -2,11 +2,23 @@
   <div class="content-inner">
     <div class="header">
       <h1>Gaming Projects</h1>
-      <p>My project data has been moved to the <strong>Experience</strong> section.</p>
+      <p>Explore some of the personal interactive games I've developed.</p>
     </div>
 
-    <div class="empty-state">
-      <p>Navigate to the Experience tab to view my latest interactive work.</p>
+    <div class="games-grid">
+      <div class="game-card" *ngFor="let game of personalGames">
+        <div class="game-image-container" *ngIf="game.imageUrl">
+          <img [src]="game.imageUrl" [alt]="game.name" class="game-img" />
+        </div>
+        <div class="game-info">
+          <h3>{{ game.name }}</h3>
+          <div class="game-links">
+            <a *ngFor="let link of game.links" [href]="link.url" target="_blank" class="game-link-btn">
+              {{ link.label }}
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
