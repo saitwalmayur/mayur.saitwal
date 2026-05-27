@@ -1,7 +1,7 @@
 <div class="page-content">
   <div class="content-inner">
     <div class="header">
-      <h1>Gaming Projects</h1>
+      <h1>Projects</h1>
       <p>Explore some of the personal interactive games I've developed.</p>
     </div>
 
@@ -16,8 +16,24 @@
             <a *ngFor="let link of game.links" [href]="link.url" target="_blank" class="game-link-btn">
               {{ link.label }}
             </a>
+            <button class="game-link-btn info-btn" (click)="openInfo(game)">Info</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="popup-overlay" *ngIf="selectedGame" (click)="closeInfo()">
+      <div class="popup-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeInfo()">×</button>
+        <h3>{{ selectedGame.name }}</h3>
+        
+        <div class="tech-stack" *ngIf="selectedGame.techStack">
+          <span class="label">Tech Stack:</span>
+          <span class="value">{{ selectedGame.techStack }}</span>
+        </div>
+        
+        <p class="details" *ngIf="selectedGame.details">{{ selectedGame.details }}</p>
       </div>
     </div>
   </div>

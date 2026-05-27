@@ -11,6 +11,8 @@ export interface Game {
   name: string;
   imageUrl?: string;
   links: GameLink[];
+  techStack?: string;
+  details?: string;
 }
 
 export interface Experience {
@@ -29,6 +31,8 @@ export interface Experience {
   styleUrl: './experience-screen.scss',
 })
 export class ExperienceScreen {
+  selectedGame: Game | null = null;
+
   experiences: Experience[] = [
     {
       company: 'NetConnect Global',
@@ -61,14 +65,16 @@ export class ExperienceScreen {
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/applevision.png',
           links: [
             { label: 'Detail', url: 'https://www.linkedin.com/posts/tata-consultancy-services-north-america_tcsnycmarathon-runwithtcs-runwithtcsinnyc-ugcPost-7258484777668743169-vD4l/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAduOT4BroteUiiLGXBzeJpj6T4oXuEQ0VY', type: 'detail' }
-          ]
+          ],
+          techStack: 'Photoshop, Unity, C#, Blender, Xcode'
         },
         {
           name: 'CNC Machine',
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/applevision.png',
           links: [
             { label: 'Detail', url: 'https://www.linkedin.com/posts/thapasjoseph_augmentedreality-virtualreality-spatialcomputing-activity-7295082810858524673-hpVv?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAduOT4BroteUiiLGXBzeJpj6T4oXuEQ0VY', type: 'detail' }
-          ]
+          ],
+          techStack: 'Photoshop, Unity, C#, Blender, Xcode'
         }
       ]
     },
@@ -92,21 +98,24 @@ export class ExperienceScreen {
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/AYlogo.webp',
           links: [
             { label: 'Detail', url: 'https://avataryug.com/showcase', type: 'website' }
-          ]
+          ],
+          techStack: 'Photoshop, Unity, C#, Rest API, Unreal Engine,Angular,Scenekit,swift,Android studio,Python,Blender'
         },
         {
           name: 'Pool Royale',
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/poolroyale.png',
           links: [
             { label: 'Detail', url: 'https://pool-royale-5r7.en.softonic.com/android?ex=RAMP-3507.3&rex=true', type: 'store' }
-          ]
+          ],
+          techStack: 'Photoshop, Unity, C#, Playfab, Photon,'
         },
         {
           name: 'Billiards Pool Arena',
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/8ballarena.png',
           links: [
             { label: 'Detail', url: 'https://billiards-pool-arena.en.softonic.com/android?ex=RAMP-3507.3&rex=true', type: 'store' }
-          ]
+          ],
+          techStack: 'Photoshop, Unity, C#, Rest API, Photon,'
         }
       ]
     },
@@ -183,4 +192,12 @@ export class ExperienceScreen {
       ]
     }
   ];
+
+  openInfo(game: Game) {
+    this.selectedGame = game;
+  }
+
+  closeInfo() {
+    this.selectedGame = null;
+  }
 }

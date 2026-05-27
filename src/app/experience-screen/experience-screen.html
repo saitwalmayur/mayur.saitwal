@@ -46,6 +46,7 @@
                   <a *ngFor="let link of game.links" [href]="link.url" target="_blank" class="game-link-btn" [ngClass]="link.type">
                     {{ link.label }}
                   </a>
+                  <button class="game-link-btn info-btn" (click)="openInfo(game)">Info</button>
                 </div>
               </div>
             </div>
@@ -56,6 +57,21 @@
 
     <div class="empty-state" *ngIf="experiences.length === 0">
       <p>No experiences added to this section yet.</p>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="popup-overlay" *ngIf="selectedGame" (click)="closeInfo()">
+      <div class="popup-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeInfo()">×</button>
+        <h3>{{ selectedGame.name }}</h3>
+        
+        <div class="tech-stack" *ngIf="selectedGame.techStack">
+          <span class="label">Tech Stack:</span>
+          <span class="value">{{ selectedGame.techStack }}</span>
+        </div>
+        
+        <p class="details" *ngIf="selectedGame.details">{{ selectedGame.details }}</p>
+      </div>
     </div>
   </div>
 </div>
