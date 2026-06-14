@@ -20,7 +20,7 @@
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 3rem;
+  gap: 1.5rem; // Reduced gap so more items fit on one line
   margin: 0;
   padding: 0;
 
@@ -29,6 +29,7 @@
     align-items: center;
 
     a {
+      white-space: nowrap; // Prevent text from wrapping arbitrarily
       text-decoration: none;
       color: rgba(255, 255, 255, 0.7);
       font-size: 1.1rem;

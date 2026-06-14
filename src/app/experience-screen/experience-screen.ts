@@ -45,7 +45,15 @@ export class ExperienceScreen {
         'Optimized real-time 3D rendering and scene performance for large-scale store environments, ensuring smooth user experiences.',
         'Collaborated with business and technical teams to transform retail requirements into scalable visualization tools, helping reduce operational and merchandising costs.'
       ],
-      games: []
+      games: [
+        {
+          name: 'CatExpert',
+          links: [
+            { label: 'Detail', url: 'https://catexpert.ab-inbev.com/home', type: 'website' }
+          ],
+          techStack: 'Three.js, Angular'
+        }
+      ]
     },
     {
       company: 'Dreambridge',
@@ -136,7 +144,8 @@ export class ExperienceScreen {
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/stepapp.webp',
           links: [
             { label: 'Detail', url: 'https://play.google.com/store/apps/details?id=com.EduIsFun.EduIsFun&hl=en_IN', type: 'store' }
-          ]
+          ],
+          techStack: 'Unity, C#, Addressable, Aws, Rest api'
         }
       ]
     },
@@ -154,16 +163,22 @@ export class ExperienceScreen {
         'Collaborated with artists and designers to deliver polished gameplay experiences within tight deadlines.'
       ],
       games: [
-        { name: 'Snake Ballz 2', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Snake-Ballz-2/dp/B075D4YHJZ', type: 'store' }] },
-        { name: 'Thirsty Vampire', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Thirsty-Vampire/dp/B073WWYBBD', type: 'store' }] },
-        { name: 'Angry Shark Racing', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Angry-Shark-Racing/dp/B0751CJ8X8', type: 'store' }] },
-        { name: 'Klear', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Klear/dp/B0756WSSRX', type: 'store' }] },
-        { name: 'Flotus', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Flotus/dp/B074DWZGCQ', type: 'store' }] },
-        { name: 'Wave Racer', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Wave-Racer/dp/B07517JT9M', type: 'store' }] },
-        { name: 'Kung Fu Dancer', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Kung-Fu-Dancer/dp/B073SRW7W4', type: 'store' }] },
-        { name: 'Talking Santa Gifts', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Talking-Santa-Gifts/dp/B0752PCQ99', type: 'store' }] },
-        { name: 'Dragon Trials', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Dragon-Trials/dp/B072XQ6DXQ', type: 'store' }] },
-        { name: 'Stickman Apple Shooter', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Stickman-Apple-Shooter/dp/B0756VV9ZB', type: 'store' }] }
+        { name: 'Archery Blast', links: [{ label: 'Detail', url: 'https://apkpure.com/archery-blast/com.daydreamzstudio.archeryblast', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Trampo Up', links: [{ label: 'Detail', url: 'https://apkpure.com/trampo-up/com.Feels.TrampoUp', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Drop the ball', links: [{ label: 'Detail', url: 'https://apkpure.com/drop-the-ball/com.feels.troopyshot', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Feels', links: [{ label: 'Detail', url: 'https://apkpure.com/5eels-cut-rope-games/com.feels.feels', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Soul Flower', links: [{ label: 'Detail', url: 'https://apkpure.com/playdead-inside/com.feels.soulflower', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Fight Club', links: [], techStack: 'Unity, C#' },
+        { name: 'Snake Ballz 2', links: [{ label: 'Detail', url: 'https://apkpure.com/idle-snake-balls/com.daydreamzstudios.snakeballz2', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Thirsty Vampire', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Thirsty-Vampire/dp/B073WWYBBD', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Angry Shark Racing', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Angry-Shark-Racing/dp/B0751CJ8X8', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Klear', links: [{ label: 'Detail', url: 'https://apkpure.com/klear/com.daydreamzstudios.klear', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Flotus', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Flotus/dp/B074DWZGCQ', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Wave Racer', links: [{ label: 'Detail', url: 'https://apkpure.com/wave-racer/com.daydreamzstudios.waveracer', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Shadow Dancer', links: [{ label: 'Detail', url: 'https://apkpure.com/shadow-dancer/com.daydreamzstudio.amazinghitmanrun', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Talking Santa Gifts', links: [{ label: 'Detail', url: 'https://www.amazon.com/DayDreamz-Studio-Talking-Santa-Gifts/dp/B0752PCQ99', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Dragon Trials', links: [{ label: 'Detail', url: 'https://apkpure.com/dragon-trials/com.daydreamzstudios.dragontrials', type: 'store' }], techStack: 'Unity, C#' },
+        { name: 'Stickman Apple Shooter', links: [{ label: 'Detail', url: 'https://apkpure.com/stickman-apple-shooter/com.daydreamzstudios.stickmanappleshooter', type: 'store' }], techStack: 'Unity, C#' }
       ]
     },
     {
@@ -179,16 +194,16 @@ export class ExperienceScreen {
         'Supported debugging, optimization, and QA processes to improve game stability and performance.'
       ],
       games: [
-        { name: 'Nano Ninja Jump', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/nano-ninja-jump-67653', type: 'website' }] },
-        { name: 'Cycle Stunts', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/cycle-stunts-88274', type: 'website' }] },
-        { name: 'Bottle Shooter', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/bottle-shooter-89934', type: 'website' }] },
-        { name: 'Ace Bike Stunts', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/ace-bike-stunts-88565', type: 'website' }] },
-        { name: 'Ace Fighter', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/ace-fighter-88101', type: 'website' }] },
-        { name: 'Krishna Murari Run', links: [{ label: 'Detail', url: 'https://krishna-murari-run.en.softonic.com/android', type: 'store' }] },
-        { name: 'Strike A Can', links: [{ label: 'Detail', url: 'https://strike-a-can.en.softonic.com/android', type: 'store' }] },
-        { name: 'City Hot Wheels Racer', links: [{ label: 'Detail', url: 'https://city-hot-wheels-racer.en.softonic.com/android', type: 'store' }] },
-        { name: 'Jet Boat Rush', links: [{ label: 'Detail', url: 'https://jet-boat-rush.en.softonic.com/android', type: 'store' }] },
-        { name: 'Rocket Escape', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/rocket-escape-78174', type: 'website' }] }
+        { name: 'Bottle Shooter', imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/d4198f30-efc5-4b36-8bee-383f156f0c9e.webp', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/bottle-shooter-89934', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Ace Bike Stunts', imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/4d8f99e2-edf9-4a7b-9f39-3969e9474f11.webp', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/ace-bike-stunts-88565', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Ace Fighter', imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/25cec6cb-1d35-4500-b302-63421e7ebaee.webp', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/ace-fighter-88101', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Rocket Escape', imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/key-image/14f7b279-213f-43d9-9258-558d27907179.webp', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/rocket-escape-78174', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Nano Ninja Jump', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/nano-ninja-jump-67653', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Cycle Stunts', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/cycle-stunts-88274', type: 'website' }], techStack: 'Unity 3D, C#' },
+        { name: 'Krishna Murari Run', links: [{ label: 'Detail', url: 'https://krishna-murari-run.en.softonic.com/android', type: 'store' }], techStack: 'Unity 3D, C#' },
+        { name: 'Strike A Can', links: [{ label: 'Detail', url: 'https://strike-a-can.en.softonic.com/android', type: 'store' }], techStack: 'Unity 3D, C#' },
+        { name: 'City Hot Wheels Racer', links: [{ label: 'Detail', url: 'https://city-hot-wheels-racer.en.softonic.com/android', type: 'store' }], techStack: 'Unity 3D, C#' },
+        { name: 'Jet Boat Rush', links: [{ label: 'Detail', url: 'https://jet-boat-rush.en.softonic.com/android', type: 'store' }], techStack: 'Unity 3D, C#' }
       ]
     }
   ];
