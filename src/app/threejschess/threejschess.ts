@@ -13,6 +13,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CHESS_MODELS_GLB_BASE64 } from './chess-models.data';
 
 export type PieceType = 'p' | 'r' | 'n' | 'b' | 'q' | 'k';
 export type PieceColor = 'w' | 'b';
@@ -38,6 +40,7 @@ export interface Move {
 }
 
 export type AIDifficulty = 'easy' | 'medium' | 'hard';
+export type ChessTheme = 'normal' | 'glass' | 'neon';
 
 // Piece-Square evaluation heatmaps for AI positioning
 const PAWN_PST = [
@@ -154,21 +157,36 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   private controls!: OrbitControls;
   private raycaster = new THREE.Raycaster();
   private pointer = new THREE.Vector2();
+  // Theme state
+  currentTheme: ChessTheme = 'normal';
+
   private animationId: number | null = null;
   private isBrowser = false;
 
   // 3D Objects mapping
   private squareMeshes: THREE.Mesh[][] = [];
+  private frameMesh!: THREE.Mesh;
+  private rimMesh!: THREE.Mesh;
   private pieceObjects: Map<string, THREE.Group> = new Map(); // key: "x,y"
   private highlightGroup = new THREE.Group();
   private boardGroup = new THREE.Group();
   private piecesGroup = new THREE.Group();
+  private loadedPieceGeometries: Map<PieceType, THREE.BufferGeometry> = new Map();
+
+  // Lights
+  private hemiLight!: THREE.HemisphereLight;
+  private dirKeyLight!: THREE.DirectionalLight;
+  private dirFillLight!: THREE.DirectionalLight;
+  private dirRimLight!: THREE.DirectionalLight;
+  private centerPointLight!: THREE.PointLight;
 
   // Materials
   private whitePieceMaterial!: THREE.Material;
   private blackPieceMaterial!: THREE.Material;
   private lightSquareMaterial!: THREE.Material;
   private darkSquareMaterial!: THREE.Material;
+  private frameMaterial!: THREE.Material;
+  private rimMaterial!: THREE.Material;
   private selectedSquareMaterial!: THREE.Material;
   private targetSquareMaterial!: THREE.Material;
   private lastMoveMaterial!: THREE.Material;
@@ -201,6 +219,17 @@ export class Threejschess implements AfterViewInit, OnDestroy {
 
   setDifficulty(diff: AIDifficulty) {
     this.aiDifficulty = diff;
+    this.cdr.detectChanges();
+  }
+
+  setTheme(theme: ChessTheme) {
+    this.currentTheme = theme;
+    if (!this.scene) return;
+    this.applyThemeMaterials(theme);
+    this.updateLightingForTheme(theme);
+    this.updateBoardMaterials();
+    this.rebuildAllPieces3D();
+    this.updateHighlights();
     this.cdr.detectChanges();
   }
 
@@ -330,6 +359,8 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.15;
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true;
@@ -341,14 +372,99 @@ export class Threejschess implements AfterViewInit, OnDestroy {
 
     this.setupLighting();
     this.initMaterials();
+    this.updateLightingForTheme(this.currentTheme);
     this.buildBoard3D();
     this.rebuildAllPieces3D();
+    this.loadChessModels();
 
     this.scene.add(this.highlightGroup);
     this.scene.add(this.boardGroup);
     this.scene.add(this.piecesGroup);
 
     this.animate();
+  }
+
+  private loadChessModels() {
+    const loader = new GLTFLoader();
+
+    // 1. Immediately parse embedded models from base64 (instant, 100% reliable, zero HTTP delay or 404 risk)
+    try {
+      if (typeof atob === 'function' && CHESS_MODELS_GLB_BASE64) {
+        const binaryString = atob(CHESS_MODELS_GLB_BASE64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        loader.parse(
+          bytes.buffer,
+          '',
+          (gltf) => {
+            this.extractGeometriesFromScene(gltf.scene);
+            if (this.loadedPieceGeometries.size > 0) {
+              this.rebuildAllPieces3D();
+              this.cdr.detectChanges();
+            }
+          },
+          (err) => {
+            console.warn('Could not parse embedded base64 models', err);
+          }
+        );
+      }
+    } catch (e) {
+      console.warn('Error decoding base64 chess model data', e);
+    }
+
+    // 2. Also try loading from /ChessAssets/Bishop.glb as secondary source
+    const assetUrls = [
+      '/ChessAssets/Bishop.glb',
+      'ChessAssets/Bishop.glb',
+      typeof window !== 'undefined' ? `${window.location.origin}/ChessAssets/Bishop.glb` : '',
+    ].filter(Boolean);
+
+    const tryLoadBishop = (index: number) => {
+      if (index >= assetUrls.length) return;
+      loader.load(
+        assetUrls[index],
+        (gltf) => {
+          this.extractGeometriesFromScene(gltf.scene);
+          if (this.loadedPieceGeometries.size > 0) {
+            this.rebuildAllPieces3D();
+            this.cdr.detectChanges();
+          }
+        },
+        undefined,
+        () => {
+          tryLoadBishop(index + 1);
+        }
+      );
+    };
+
+    tryLoadBishop(0);
+  }
+
+  private extractGeometriesFromScene(scene: THREE.Object3D) {
+    scene.traverse((child: any) => {
+      if (child.isMesh && child.geometry) {
+        const name = (child.name || child.parent?.name || '').toLowerCase();
+        let type: PieceType | null = null;
+        if (name.includes('pawn')) type = 'p';
+        else if (name.includes('rook')) type = 'r';
+        else if (name.includes('knight')) type = 'n';
+        else if (name.includes('bishop')) type = 'b';
+        else if (name.includes('queen')) type = 'q';
+        else if (name.includes('king')) type = 'k';
+
+        if (type) {
+          const geo = child.geometry.clone();
+          geo.computeVertexNormals();
+          geo.computeBoundingBox();
+          geo.computeBoundingSphere();
+          this.loadedPieceGeometries.set(type, geo);
+        }
+      }
+    });
   }
 
   private setupLighting() {
@@ -396,12 +512,14 @@ export class Threejschess implements AfterViewInit, OnDestroy {
       color: 0xf8f9fa,
       roughness: 0.2,
       metalness: 0.15,
+      side: THREE.DoubleSide,
     });
 
     this.blackPieceMaterial = new THREE.MeshStandardMaterial({
       color: 0x18181b,
       roughness: 0.3,
       metalness: 0.4,
+      side: THREE.DoubleSide,
     });
 
     this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
@@ -500,6 +618,28 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   private createPiece3D(type: PieceType, color: PieceColor): THREE.Group {
     const group = new THREE.Group();
     const mat = color === 'w' ? this.whitePieceMaterial : this.blackPieceMaterial;
+
+    const glbGeo = this.loadedPieceGeometries.get(type);
+    if (glbGeo) {
+      const mesh = new THREE.Mesh(glbGeo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.frustumCulled = false;
+
+      // Proportional scale to fit comfortably on 1.0 unit squares
+      const scale = 0.44;
+      mesh.scale.set(scale, scale, scale);
+
+      // Orientation: White pieces face opponent (-Z), Black pieces face opponent (+Z)
+      if (color === 'w') {
+        mesh.rotation.y = Math.PI;
+      } else {
+        mesh.rotation.y = 0;
+      }
+
+      group.add(mesh);
+      return group;
+    }
 
     const baseGeo = new THREE.CylinderGeometry(0.34, 0.38, 0.12, 24);
     const base = new THREE.Mesh(baseGeo, mat);
@@ -676,12 +816,15 @@ export class Threejschess implements AfterViewInit, OnDestroy {
       for (let y = 0; y < 8; y++) {
         const p = this.board[x][y];
         if (p) {
-          const mesh = this.createPiece3D(p.type, p.color);
+          const group = this.createPiece3D(p.type, p.color);
           const worldPos = this.coordToWorld(x, y);
-          mesh.position.set(worldPos.x, 0.07, worldPos.z);
-          mesh.userData = { boardX: x, boardY: y, piece: p };
-          this.piecesGroup.add(mesh);
-          this.pieceObjects.set(`${x},${y}`, mesh);
+          group.position.set(worldPos.x, 0.08, worldPos.z);
+          group.userData = { boardX: x, boardY: y, piece: p };
+          group.traverse((c) => {
+            c.userData = { boardX: x, boardY: y, piece: p };
+          });
+          this.piecesGroup.add(group);
+          this.pieceObjects.set(`${x},${y}`, group);
         }
       }
     }
@@ -767,7 +910,25 @@ export class Threejschess implements AfterViewInit, OnDestroy {
 
     this.raycaster.setFromCamera(this.pointer, this.camera);
 
-    // Intersect board squares
+    // 1. Raycast direct 3D piece clicks first
+    const pieceIntersects = this.raycaster.intersectObjects(
+      this.piecesGroup.children,
+      true
+    );
+    if (pieceIntersects.length > 0) {
+      for (const hit of pieceIntersects) {
+        let obj: THREE.Object3D | null = hit.object;
+        while (obj && obj !== this.piecesGroup) {
+          if (obj.userData && obj.userData['boardX'] !== undefined) {
+            this.handleSquareClick(obj.userData['boardX'], obj.userData['boardY']);
+            return;
+          }
+          obj = obj.parent;
+        }
+      }
+    }
+
+    // 2. Intersect board squares
     const squareIntersects = this.raycaster.intersectObjects(
       this.boardGroup.children,
       true
