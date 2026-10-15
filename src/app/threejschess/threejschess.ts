@@ -41,7 +41,7 @@ export interface Move {
 }
 
 export type AIDifficulty = 'easy' | 'medium' | 'hard';
-export type ChessTheme = 'normal' | 'glass' | 'neon';
+export type ChessTheme = 'normal';
 
 // Piece-Square evaluation heatmaps for AI positioning
 const PAWN_PST = [
@@ -395,6 +395,10 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.loadChessModels();
     this.loadHdrEnvironment();
 
+    this.boardGroup.renderOrder = 0;
+    this.piecesGroup.renderOrder = 1;
+    this.highlightGroup.renderOrder = 2;
+
     this.scene.add(this.highlightGroup);
     this.scene.add(this.boardGroup);
     this.scene.add(this.piecesGroup);
@@ -559,316 +563,100 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.applyThemeMaterials(this.currentTheme);
   }
 
-  private applyThemeMaterials(theme: ChessTheme) {
-    if (theme === 'glass') {
-      // FROSTED CRYSTAL & SMOKED GLASS THEME
-      this.whitePieceMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xf0fbff,
-        transmission: 0.9,
-        opacity: 1,
-        transparent: true,
-        roughness: 0.08,
-        ior: 1.52,
-        thickness: 1.6,
-        specularIntensity: 1.0,
-        specularColor: new THREE.Color(0xdffff),
-        attenuationColor: new THREE.Color(0x38bdf8),
-        attenuationDistance: 2.2,
-        side: THREE.DoubleSide,
-      });
+  private applyThemeMaterials(theme: ChessTheme = 'normal') {
+    // NORMAL / CLASSIC TOURNAMENT STUDIO THEME
+    this.whitePieceMaterial = new THREE.MeshStandardMaterial({
+      color: 0xf5f3ee,
+      roughness: 0.16,
+      metalness: 0.08,
+      side: THREE.DoubleSide,
+    });
 
-      this.blackPieceMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x161826,
-        transmission: 0.82,
-        opacity: 1,
-        transparent: true,
-        roughness: 0.12,
-        ior: 1.6,
-        thickness: 1.8,
-        specularIntensity: 1.0,
-        specularColor: new THREE.Color(0xec4899),
-        attenuationColor: new THREE.Color(0x581c87),
-        attenuationDistance: 1.2,
-        side: THREE.DoubleSide,
-      });
+    this.blackPieceMaterial = new THREE.MeshStandardMaterial({
+      color: 0x1c1e26,
+      roughness: 0.22,
+      metalness: 0.25,
+      side: THREE.DoubleSide,
+    });
 
-      this.lightSquareMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x1e3a5f,
-        transmission: 0.7,
-        roughness: 0.16,
-        transparent: true,
-        opacity: 0.88,
-        ior: 1.48,
-        thickness: 1.0,
-      });
+    this.lightSquareMaterial = new THREE.MeshStandardMaterial({
+      color: 0xe8e2d5,
+      roughness: 0.32,
+      metalness: 0.06,
+    });
 
-      this.darkSquareMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0e1c,
-        transmission: 0.6,
-        roughness: 0.22,
-        transparent: true,
-        opacity: 0.92,
-        ior: 1.55,
-        thickness: 1.2,
-      });
+    this.darkSquareMaterial = new THREE.MeshStandardMaterial({
+      color: 0x242e3a,
+      roughness: 0.38,
+      metalness: 0.12,
+    });
 
-      this.frameMaterial = new THREE.MeshStandardMaterial({
-        color: 0x080b18,
-        roughness: 0.25,
-        metalness: 0.6,
-      });
+    this.frameMaterial = new THREE.MeshStandardMaterial({
+      color: 0x12151c,
+      roughness: 0.35,
+      metalness: 0.2,
+    });
 
-      this.rimMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 0.75,
-        metalness: 0.9,
-        roughness: 0.1,
-      });
+    this.rimMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      emissive: 0x443308,
+      emissiveIntensity: 0.3,
+      metalness: 0.85,
+      roughness: 0.2,
+    });
 
-      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 0.9,
-        transparent: true,
-        opacity: 0.8,
-      });
+    this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
+      color: 0x00f2fe,
+      emissive: 0x00f2fe,
+      emissiveIntensity: 0.6,
+      transparent: true,
+      opacity: 0.7,
+    });
 
-      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x34d399,
-        emissive: 0x34d399,
-        emissiveIntensity: 0.9,
-        transparent: true,
-        opacity: 0.75,
-      });
+    this.targetSquareMaterial = new THREE.MeshStandardMaterial({
+      color: 0x00ff88,
+      emissive: 0x00ff88,
+      emissiveIntensity: 0.75,
+      transparent: true,
+      opacity: 0.65,
+    });
 
-      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
-        color: 0xa855f7,
-        emissive: 0xa855f7,
-        emissiveIntensity: 0.65,
-        transparent: true,
-        opacity: 0.6,
-      });
-    } else if (theme === 'neon') {
-      // HOLOGRAPHIC CYBER NEON THEME
-      this.whitePieceMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x003b46,
-        emissiveIntensity: 0.45,
-        roughness: 0.12,
-        metalness: 0.85,
-        side: THREE.DoubleSide,
-      });
-
-      this.blackPieceMaterial = new THREE.MeshStandardMaterial({
-        color: 0x220538,
-        emissive: 0x7928ca,
-        emissiveIntensity: 0.55,
-        roughness: 0.18,
-        metalness: 0.9,
-        side: THREE.DoubleSide,
-      });
-
-      this.lightSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x0e2a47,
-        emissive: 0x005577,
-        emissiveIntensity: 0.25,
-        roughness: 0.25,
-        metalness: 0.7,
-      });
-
-      this.darkSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x160a26,
-        emissive: 0x2e0854,
-        emissiveIntensity: 0.3,
-        roughness: 0.3,
-        metalness: 0.75,
-      });
-
-      this.frameMaterial = new THREE.MeshStandardMaterial({
-        color: 0x05040a,
-        roughness: 0.2,
-        metalness: 0.8,
-      });
-
-      this.rimMaterial = new THREE.MeshStandardMaterial({
-        color: 0xff007f,
-        emissive: 0xff007f,
-        emissiveIntensity: 0.85,
-        metalness: 0.9,
-        roughness: 0.1,
-      });
-
-      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 1.0,
-        transparent: true,
-        opacity: 0.85,
-      });
-
-      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00ff88,
-        emissive: 0x00ff88,
-        emissiveIntensity: 1.0,
-        transparent: true,
-        opacity: 0.8,
-      });
-
-      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
-        color: 0xff007f,
-        emissive: 0xff007f,
-        emissiveIntensity: 0.8,
-        transparent: true,
-        opacity: 0.65,
-      });
-    } else {
-      // NORMAL / CLASSIC TOURNAMENT STUDIO THEME
-      this.whitePieceMaterial = new THREE.MeshStandardMaterial({
-        color: 0xf5f3ee,
-        roughness: 0.16,
-        metalness: 0.08,
-        side: THREE.DoubleSide,
-      });
-
-      this.blackPieceMaterial = new THREE.MeshStandardMaterial({
-        color: 0x1c1e26,
-        roughness: 0.22,
-        metalness: 0.25,
-        side: THREE.DoubleSide,
-      });
-
-      this.lightSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0xe8e2d5,
-        roughness: 0.32,
-        metalness: 0.06,
-      });
-
-      this.darkSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x242e3a,
-        roughness: 0.38,
-        metalness: 0.12,
-      });
-
-      this.frameMaterial = new THREE.MeshStandardMaterial({
-        color: 0x12151c,
-        roughness: 0.35,
-        metalness: 0.2,
-      });
-
-      this.rimMaterial = new THREE.MeshStandardMaterial({
-        color: 0xd4af37,
-        emissive: 0x443308,
-        emissiveIntensity: 0.3,
-        metalness: 0.85,
-        roughness: 0.2,
-      });
-
-      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 0.6,
-        transparent: true,
-        opacity: 0.7,
-      });
-
-      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00ff88,
-        emissive: 0x00ff88,
-        emissiveIntensity: 0.75,
-        transparent: true,
-        opacity: 0.65,
-      });
-
-      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffaa00,
-        emissive: 0xffaa00,
-        emissiveIntensity: 0.45,
-        transparent: true,
-        opacity: 0.5,
-      });
-    }
+    this.lastMoveMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffaa00,
+      emissive: 0xffaa00,
+      emissiveIntensity: 0.45,
+      transparent: true,
+      opacity: 0.5,
+    });
   }
 
-  private updateLightingForTheme(theme: ChessTheme) {
+  private updateLightingForTheme(theme: ChessTheme = 'normal') {
     if (!this.scene || !this.hemiLight) return;
 
-    if (theme === 'glass') {
-      this.scene.background = new THREE.Color(0x070913);
-      this.scene.fog = new THREE.FogExp2(0x070913, 0.03);
-      if (this.renderer) {
-        this.renderer.toneMappingExposure = 1.35;
-      }
-
-      this.hemiLight.color.setHex(0x67e8f9);
-      this.hemiLight.groundColor.setHex(0x1e1035);
-      this.hemiLight.intensity = 0.95;
-
-      this.dirKeyLight.color.setHex(0xffffff);
-      this.dirKeyLight.intensity = 2.2;
-      this.dirKeyLight.position.set(6, 14, 7);
-
-      this.dirFillLight.color.setHex(0x00e5ff);
-      this.dirFillLight.intensity = 1.2;
-      this.dirFillLight.position.set(-7, 8, -6);
-
-      this.dirRimLight.color.setHex(0xc084fc);
-      this.dirRimLight.intensity = 1.8;
-      this.dirRimLight.position.set(0, 10, -9);
-
-      this.centerPointLight.color.setHex(0xffffff);
-      this.centerPointLight.intensity = 1.3;
-    } else if (theme === 'neon') {
-      this.scene.background = new THREE.Color(0x060210);
-      this.scene.fog = new THREE.FogExp2(0x060210, 0.035);
-      if (this.renderer) {
-        this.renderer.toneMappingExposure = 1.25;
-      }
-
-      this.hemiLight.color.setHex(0x00f2fe);
-      this.hemiLight.groundColor.setHex(0x7928ca);
-      this.hemiLight.intensity = 0.8;
-
-      this.dirKeyLight.color.setHex(0x00f2fe);
-      this.dirKeyLight.intensity = 1.8;
-      this.dirKeyLight.position.set(6, 14, 7);
-
-      this.dirFillLight.color.setHex(0xff007f);
-      this.dirFillLight.intensity = 1.4;
-      this.dirFillLight.position.set(-7, 8, -6);
-
-      this.dirRimLight.color.setHex(0x7928ca);
-      this.dirRimLight.intensity = 1.6;
-      this.dirRimLight.position.set(0, 10, -9);
-
-      this.centerPointLight.color.setHex(0x00f2fe);
-      this.centerPointLight.intensity = 1.1;
-    } else {
-      this.scene.background = new THREE.Color(0x0e131b);
-      this.scene.fog = new THREE.FogExp2(0x0e131b, 0.032);
-      if (this.renderer) {
-        this.renderer.toneMappingExposure = 1.15;
-      }
-
-      this.hemiLight.color.setHex(0xf5f8ff);
-      this.hemiLight.groundColor.setHex(0x181e28);
-      this.hemiLight.intensity = 0.75;
-
-      this.dirKeyLight.color.setHex(0xfff8ee);
-      this.dirKeyLight.intensity = 1.6;
-      this.dirKeyLight.position.set(6, 14, 7);
-
-      this.dirFillLight.color.setHex(0x8aa8cf);
-      this.dirFillLight.intensity = 0.65;
-      this.dirFillLight.position.set(-7, 9, -6);
-
-      this.dirRimLight.color.setHex(0xffffff);
-      this.dirRimLight.intensity = 1.1;
-      this.dirRimLight.position.set(0, 11, -9);
-
-      this.centerPointLight.color.setHex(0xfff0dd);
-      this.centerPointLight.intensity = 0.75;
+    this.scene.background = new THREE.Color(0x0e131b);
+    this.scene.fog = new THREE.FogExp2(0x0e131b, 0.032);
+    if (this.renderer) {
+      this.renderer.toneMappingExposure = 1.15;
     }
+
+    this.hemiLight.color.setHex(0xf5f8ff);
+    this.hemiLight.groundColor.setHex(0x181e28);
+    this.hemiLight.intensity = 0.75;
+
+    this.dirKeyLight.color.setHex(0xfff8ee);
+    this.dirKeyLight.intensity = 1.6;
+    this.dirKeyLight.position.set(6, 14, 7);
+
+    this.dirFillLight.color.setHex(0x8aa8cf);
+    this.dirFillLight.intensity = 0.65;
+    this.dirFillLight.position.set(-7, 9, -6);
+
+    this.dirRimLight.color.setHex(0xffffff);
+    this.dirRimLight.intensity = 1.1;
+    this.dirRimLight.position.set(0, 11, -9);
+
+    this.centerPointLight.color.setHex(0xfff0dd);
+    this.centerPointLight.intensity = 0.75;
 
     if (this.showCloisterScene && this.hdrEnvironmentTexture) {
       this.scene.background = this.hdrEnvironmentTexture;
