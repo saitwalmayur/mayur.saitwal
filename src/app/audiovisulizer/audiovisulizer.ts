@@ -19,6 +19,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
   imports: [CommonModule, RouterLink],
   templateUrl: './audiovisulizer.html',
   styleUrl: './audiovisulizer.scss',
+  host: {
+    ngSkipHydration: 'true',
+  },
 })
 export class Audiovisulizer implements AfterViewInit, OnDestroy {
   @ViewChild('rendererCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;

@@ -41,6 +41,9 @@ export interface ColorThemeOption {
   imports: [CommonModule, RouterLink],
   templateUrl: './threejsparticleeffects.html',
   styleUrl: './threejsparticleeffects.scss',
+  host: {
+    ngSkipHydration: 'true',
+  },
 })
 export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
   @ViewChild('rendererCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;

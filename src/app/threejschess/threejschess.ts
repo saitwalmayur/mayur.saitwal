@@ -124,6 +124,9 @@ const PIECE_VALUES: Record<PieceType, number> = {
   imports: [CommonModule, RouterLink],
   templateUrl: './threejschess.html',
   styleUrl: './threejschess.scss',
+  host: {
+    ngSkipHydration: 'true',
+  },
 })
 export class Threejschess implements AfterViewInit, OnDestroy {
   @ViewChild('rendererCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -164,6 +167,7 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   private hdrEnvironmentTexture: THREE.DataTexture | null = null;
 
   private animationId: number | null = null;
+  private resizeObserver: ResizeObserver | null = null;
   private isBrowser = false;
 
   // 3D Objects mapping
@@ -378,6 +382,16 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
+
+    (window as any).__CHESS_RENDERER__ = this.renderer;
+    (window as any).__CHESS_CANVAS__ = canvas;
+
+    if (typeof ResizeObserver !== 'undefined' && container) {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.onResize();
+      });
+      this.resizeObserver.observe(container);
+    }
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true;
@@ -1694,8 +1708,53 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   /* ========================================================================
      ANIMATION LOOP & RESIZE
      ======================================================================== */
+  private rebindRendererCanvas(newCanvas: HTMLCanvasElement) {
+    if (this.controls) {
+      this.controls.dispose();
+    }
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
+
+    const container = this.containerRef?.nativeElement;
+    const width = container?.clientWidth || window.innerWidth;
+    const height = container?.clientHeight || window.innerHeight;
+
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: newCanvas,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.15;
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    this.controls = new OrbitControls(this.camera, newCanvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.maxPolarAngle = Math.PI / 2.05;
+    this.controls.minDistance = 4;
+    this.controls.maxDistance = 20;
+    this.controls.target.set(0, 0, 0);
+
+    (window as any).__CHESS_RENDERER__ = this.renderer;
+    (window as any).__CHESS_CANVAS__ = newCanvas;
+    console.log('[CHESS] Rebound renderer successfully to active DOM canvas:', { width, height });
+  }
+
   private animate = () => {
     this.animationId = requestAnimationFrame(this.animate);
+    if (this.canvasRef && this.renderer) {
+      if (this.canvasRef.nativeElement !== this.renderer.domElement) {
+        this.rebindRendererCanvas(this.canvasRef.nativeElement);
+      }
+    }
     if (this.controls) {
       this.controls.update();
     }
@@ -1718,6 +1777,10 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
     }

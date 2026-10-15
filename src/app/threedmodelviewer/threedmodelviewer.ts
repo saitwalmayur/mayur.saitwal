@@ -14,12 +14,17 @@ import { RouterLink } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 @Component({
   selector: 'app-threedmodelviewer',
   imports: [CommonModule, RouterLink],
   templateUrl: './threedmodelviewer.html',
   styleUrl: './threedmodelviewer.scss',
+  host: {
+    ngSkipHydration: 'true',
+  },
 })
 export class Threedmodelviewer implements AfterViewInit, OnDestroy {
   @ViewChild('rendererCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -34,17 +39,23 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
   modelStats = { triangles: 0, vertices: 0 };
   isLoadingCustomModel = false;
   isDockCollapsed = false;
+  errorMessage: string | null = null;
+  private errorTimeoutId: any = null;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private controls!: OrbitControls;
   private animationId: number | null = null;
+  private resizeObserver: ResizeObserver | null = null;
   private isBrowser = false;
 
   private starfield: THREE.Points | null = null;
   private modelGroup: THREE.Group | null = null;
   private gridHelper: THREE.GridHelper | null = null;
+  isDraggingFile = false;
+  private clock = new THREE.Clock();
+  private mixer: THREE.AnimationMixer | null = null;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -95,6 +106,13 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
     this.controls.autoRotate = this.autoRotate;
     this.controls.autoRotateSpeed = 1.0;
 
+    if (typeof ResizeObserver !== 'undefined' && container) {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.onResize();
+      });
+      this.resizeObserver.observe(container);
+    }
+
     this.setupLighting();
     this.buildStarfield();
     this.setupGrid();
@@ -132,8 +150,15 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
 
   loadBuiltInModel(type: 'drone' | 'helmet' | 'crystal' | 'custom') {
     if (type === 'custom') return;
+    this.dismissError();
     this.activeModelType = type;
     this.customFileName = '';
+
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      this.mixer.uncacheRoot(this.mixer.getRoot());
+      this.mixer = null;
+    }
 
     if (!this.modelGroup) return;
     this.disposeHierarchy(this.modelGroup);
@@ -296,65 +321,210 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
+    this.loadModelFile(input.files[0]);
+    input.value = '';
+  }
 
-    const file = input.files[0];
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.loadModelFile(files[0]);
+    }
+  }
+
+  loadModelFile(file: File) {
+    this.dismissError();
     const extension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['glb', 'gltf', 'fbx', 'obj'];
 
-    if (extension !== 'glb' && extension !== 'gltf') {
-      alert('Please upload a .glb or .gltf 3D file.');
+    if (!extension || !validExtensions.includes(extension)) {
+      this.showErrorMessage(
+        `Unsupported format ".${extension || 'unknown'}". Please upload a .glb, .gltf, .fbx, or .obj 3D model.`
+      );
       return;
     }
 
     this.isLoadingCustomModel = true;
     this.customFileName = file.name;
     this.activeModelType = 'custom';
+    this.cdr.detectChanges();
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const arrayBuffer = e.target?.result as ArrayBuffer;
-      const loader = new GLTFLoader();
+    try {
+      if (extension === 'glb' || extension === 'gltf') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const arrayBuffer = e.target?.result as ArrayBuffer;
+          const loader = new GLTFLoader();
+          loader.parse(
+            arrayBuffer,
+            '',
+            (gltf) => {
+              this.setupImportedModel(gltf.scene, gltf.animations);
+            },
+            (error) => {
+              console.error('Error parsing GLTF/GLB model:', error);
+              this.handleLoadError('GLB / GLTF', file.name);
+            }
+          );
+        };
+        reader.onerror = () => this.handleLoadError('GLB / GLTF', file.name);
+        reader.readAsArrayBuffer(file);
+      } else if (extension === 'fbx') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const arrayBuffer = e.target?.result as ArrayBuffer;
+            const loader = new FBXLoader();
+            const fbx = loader.parse(arrayBuffer, '');
+            this.setupImportedModel(fbx, fbx.animations || []);
+          } catch (error) {
+            console.error('Error parsing FBX model:', error);
+            this.handleLoadError('FBX', file.name);
+          }
+        };
+        reader.onerror = () => this.handleLoadError('FBX', file.name);
+        reader.readAsArrayBuffer(file);
+      } else if (extension === 'obj') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const text = e.target?.result as string;
+            const loader = new OBJLoader();
+            const obj = loader.parse(text);
+            this.setupImportedModel(obj, []);
+          } catch (error) {
+            console.error('Error parsing OBJ model:', error);
+            this.handleLoadError('OBJ', file.name);
+          }
+        };
+        reader.onerror = () => this.handleLoadError('OBJ', file.name);
+        reader.readAsText(file);
+      }
+    } catch (err) {
+      console.error('Failed to load 3D model:', err);
+      this.handleLoadError(extension.toUpperCase(), file.name);
+    }
+  }
 
-      loader.parse(
-        arrayBuffer,
-        '',
-        (gltf) => {
-          if (!this.modelGroup) return;
-          this.disposeHierarchy(this.modelGroup);
-          this.modelGroup.clear();
+  private setupImportedModel(loadedModel: THREE.Object3D, animations: THREE.AnimationClip[] = []) {
+    if (!this.modelGroup) return;
 
-          const loadedModel = gltf.scene;
+    let hasGeometry = false;
+    loadedModel.traverse((child: any) => {
+      if (child.isMesh && child.geometry) {
+        hasGeometry = true;
+      }
+    });
 
-          const box = new THREE.Box3().setFromObject(loadedModel);
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          const center = new THREE.Vector3();
-          box.getCenter(center);
-
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = maxDim > 0 ? 2.0 / maxDim : 1;
-          loadedModel.scale.setScalar(scale);
-
-          loadedModel.position.x = -center.x * scale;
-          loadedModel.position.y = -center.y * scale + 0.4;
-          loadedModel.position.z = -center.z * scale;
-
-          this.modelGroup.add(loadedModel);
-          this.updateModelStats(loadedModel);
-          this.applyWireframe();
-
-          this.isLoadingCustomModel = false;
-          this.cdr.detectChanges();
-        },
-        (error) => {
-          console.error('Error parsing 3D model:', error);
-          alert('Could not parse the 3D model. Please check the file format.');
-          this.isLoadingCustomModel = false;
-          this.cdr.detectChanges();
-        }
+    if (!hasGeometry) {
+      this.showErrorMessage(
+        `Failed to load "${this.customFileName}": No valid 3D meshes or visible geometry found in the file.`
       );
-    };
+      return;
+    }
 
-    reader.readAsArrayBuffer(file);
+    this.dismissError();
+    this.disposeHierarchy(this.modelGroup);
+    this.modelGroup.clear();
+
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      this.mixer.uncacheRoot(this.mixer.getRoot());
+      this.mixer = null;
+    }
+
+    if (animations && animations.length > 0) {
+      this.mixer = new THREE.AnimationMixer(loadedModel);
+      animations.forEach((clip) => {
+        this.mixer?.clipAction(clip).play();
+      });
+    }
+
+    loadedModel.traverse((child: any) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.frustumCulled = false;
+
+        if (child.geometry && !child.geometry.attributes.normal) {
+          child.geometry.computeVertexNormals();
+        }
+
+        if (!child.material) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: 0x00f2fe,
+            roughness: 0.35,
+            metalness: 0.45,
+            side: THREE.DoubleSide,
+          });
+        }
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(loadedModel);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scale = maxDim > 0 ? 2.2 / maxDim : 1;
+    loadedModel.scale.setScalar(scale);
+
+    loadedModel.position.x = -center.x * scale;
+    loadedModel.position.y = -center.y * scale + 0.4;
+    loadedModel.position.z = -center.z * scale;
+
+    this.modelGroup.add(loadedModel);
+    this.updateModelStats(loadedModel);
+    this.applyWireframe();
+
+    this.isLoadingCustomModel = false;
+    this.cdr.detectChanges();
+  }
+
+  private handleLoadError(format: string, fileName?: string) {
+    const fileText = fileName ? ` "${fileName}"` : '';
+    this.showErrorMessage(
+      `Failed to load${fileText}: Could not parse ${format} file data. Please verify the file is not corrupted or missing required texture assets.`
+    );
+  }
+
+  showErrorMessage(msg: string) {
+    this.errorMessage = msg;
+    this.isLoadingCustomModel = false;
+    this.cdr.detectChanges();
+
+    if (this.errorTimeoutId) {
+      clearTimeout(this.errorTimeoutId);
+    }
+    this.errorTimeoutId = setTimeout(() => {
+      this.dismissError();
+    }, 7000);
+  }
+
+  dismissError() {
+    this.errorMessage = null;
+    if (this.errorTimeoutId) {
+      clearTimeout(this.errorTimeoutId);
+      this.errorTimeoutId = null;
+    }
+    this.cdr.detectChanges();
   }
 
   toggleGrid() {
@@ -456,12 +626,56 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
     this.scene.add(this.starfield);
   }
 
+  private rebindRendererCanvas(newCanvas: HTMLCanvasElement) {
+    if (this.controls) {
+      this.controls.dispose();
+    }
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
+
+    const container = this.containerRef?.nativeElement;
+    const width = container?.clientWidth || window.innerWidth;
+    const height = container?.clientHeight || window.innerHeight;
+
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: newCanvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    this.controls = new OrbitControls(this.camera, newCanvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.maxDistance = 25;
+    this.controls.minDistance = 1;
+    this.controls.target.set(0, 0.4, 0);
+    this.controls.autoRotate = this.autoRotate;
+    this.controls.autoRotateSpeed = 1.0;
+  }
+
   private animate = () => {
     this.animationId = requestAnimationFrame(this.animate);
+    if (this.canvasRef && this.renderer) {
+      if (this.canvasRef.nativeElement !== this.renderer.domElement) {
+        this.rebindRendererCanvas(this.canvasRef.nativeElement);
+      }
+    }
     const time = Date.now() * 0.001;
 
     if (this.controls) {
       this.controls.update();
+    }
+
+    const delta = this.clock.getDelta();
+    if (this.mixer) {
+      this.mixer.update(delta);
     }
 
     if (this.starfield) {
@@ -500,8 +714,18 @@ export class Threedmodelviewer implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.dismissError();
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
+    }
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      this.mixer.uncacheRoot(this.mixer.getRoot());
+      this.mixer = null;
     }
     if (this.controls) {
       this.controls.dispose();

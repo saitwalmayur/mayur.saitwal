@@ -23,7 +23,11 @@ export class App {
         this.checkRoute(event.urlAfterRedirects || event.url);
       });
 
-    this.checkRoute(this.router.url);
+    if (isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
+      this.checkRoute(window.location.pathname);
+    } else {
+      this.checkRoute(this.router.url);
+    }
   }
 
   private checkRoute(url: string) {
