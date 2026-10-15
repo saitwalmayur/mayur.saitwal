@@ -70,5 +70,17 @@ export class Threejsexample {
       features: ['5,000+ GPU Points', 'Mouse Attraction Field', 'Color Wave Cycles', 'Turbulence Physics'],
       gradient: 'linear-gradient(135deg, rgba(121, 40, 202, 0.25), rgba(0, 242, 254, 0.05))',
     },
+    {
+      id: 'chess',
+      route: '/threejs/chess',
+      title: '3D Chess Arena vs AI',
+      tagline: 'Interactive 3D chess game with intelligent minimax AI engine',
+      description:
+        'Battle against an autonomous chess AI in an immersive 3D arena. Features raycasting piece selection, legal move guidance, smooth leap animations, move notation, and adjustable AI difficulty.',
+      tags: ['Game AI', 'Raycasting', 'Procedural 3D Pieces', 'Minimax'],
+      icon: '♟️',
+      features: ['Minimax AI Opponent', '3 Difficulty Levels', 'Move History Log', 'Multi-Angle Camera'],
+      gradient: 'linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 242, 254, 0.05))',
+    },
   ];
 }

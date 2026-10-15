@@ -14,11 +14,26 @@ import { RouterLink } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+export type ParticleEffectId =
+  | 'galaxy'
+  | 'supernova'
+  | 'dna'
+  | 'cyberRain'
+  | 'blackHole'
+  | 'torusWarp'
+  | 'fire';
+
 export interface ParticleEffectItem {
-  id: 'galaxy' | 'supernova' | 'dna' | 'cyberRain' | 'blackHole' | 'torusWarp';
+  id: ParticleEffectId;
   name: string;
   icon: string;
   description: string;
+}
+
+export interface ColorThemeOption {
+  id: 'cyber' | 'cosmic' | 'fire' | 'matrix' | 'ice';
+  name: string;
+  dotColor: string;
 }
 
 @Component({
@@ -37,6 +52,12 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
       name: 'Spiral Galaxy',
       icon: '🌀',
       description: '4-arm golden spiral galaxy with Keplerian orbital angular momentum',
+    },
+    {
+      id: 'fire',
+      name: 'Inferno Fire & Embers',
+      icon: '🔥',
+      description: 'Realistic burning flame pillar with flickering embers, rising thermal convection, and hot glowing core',
     },
     {
       id: 'supernova',
@@ -58,24 +79,35 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
     },
     {
       id: 'blackHole',
-      name: 'Black Hole Event Horizon',
+      name: 'Black Hole',
       icon: '🕳️',
-      description: 'Relativistic accretion disk with extreme core gravity and polar relativistic jets',
+      description: 'Relativistic accretion disk with core gravity and polar relativistic jets',
     },
     {
       id: 'torusWarp',
       name: 'Torus Quantum Flux',
       icon: '🪐',
-      description: 'Continuous dual-axis toroidal surface vortex with harmonic wave undulations',
+      description: 'Continuous dual-axis toroidal surface vortex with wave undulations',
     },
   ];
 
-  activeEffectId: 'galaxy' | 'supernova' | 'dna' | 'cyberRain' | 'blackHole' | 'torusWarp' = 'galaxy';
+  readonly colorThemes: ColorThemeOption[] = [
+    { id: 'cyber', name: 'Cyber', dotColor: '#00f2fe' },
+    { id: 'cosmic', name: 'Cosmic', dotColor: '#ff007f' },
+    { id: 'fire', name: 'Solar', dotColor: '#f12711' },
+    { id: 'matrix', name: 'Matrix', dotColor: '#00ff88' },
+    { id: 'ice', name: 'Arctic', dotColor: '#70e1ff' },
+  ];
+
+  activeEffectId: ParticleEffectId = 'galaxy';
   particleTheme: 'cyber' | 'cosmic' | 'fire' | 'matrix' | 'ice' = 'cyber';
   particleCount = 6000;
   simulationSpeed = 1.0;
   autoRotate = true;
-  isDockCollapsed = false;
+
+  // Panel Collapsible State
+  isLeftCollapsed = false;
+  isRightCollapsed = false;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -85,6 +117,7 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
   private isBrowser = false;
 
   private particleSystem: THREE.Points | null = null;
+  private fireTexture: THREE.Texture | null = null;
   private positions!: Float32Array;
   private originalData!: Float32Array; // extra per-particle data (radius, angle, speed, etc.)
   private mouse = new THREE.Vector2(0, 0);
@@ -106,18 +139,48 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
     }
   }
 
-  toggleDock() {
-    this.isDockCollapsed = !this.isDockCollapsed;
+  toggleLeft() {
+    this.isLeftCollapsed = !this.isLeftCollapsed;
     this.cdr.detectChanges();
   }
 
-  selectEffect(effectId: 'galaxy' | 'supernova' | 'dna' | 'cyberRain' | 'blackHole' | 'torusWarp') {
+  toggleRight() {
+    this.isRightCollapsed = !this.isRightCollapsed;
+    this.cdr.detectChanges();
+  }
+
+  selectEffect(effectId: ParticleEffectId) {
     if (this.activeEffectId === effectId) return;
     this.activeEffectId = effectId;
     if (this.scene) {
       this.rebuildParticles();
     }
     this.cdr.detectChanges();
+  }
+
+  private getFireSpriteTexture(): THREE.Texture {
+    if (this.fireTexture) return this.fireTexture;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d')!;
+
+    // Create a smooth radial gradient representing a burning flame/ember particle
+    const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');     // Superhot white core
+    gradient.addColorStop(0.18, 'rgba(255, 240, 140, 0.9)');  // Bright yellow
+    gradient.addColorStop(0.42, 'rgba(255, 110, 20, 0.7)');   // Fiery orange
+    gradient.addColorStop(0.72, 'rgba(220, 30, 10, 0.25)');   // Deep burning red
+    gradient.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');         // Transparent smoky edge
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 128, 128);
+
+    this.fireTexture = new THREE.CanvasTexture(canvas);
+    this.fireTexture.minFilter = THREE.LinearFilter;
+    this.fireTexture.magFilter = THREE.LinearFilter;
+    return this.fireTexture;
   }
 
   setTheme(theme: 'cyber' | 'cosmic' | 'fire' | 'matrix' | 'ice') {
@@ -185,7 +248,7 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
     const count = this.particleCount;
     const geometry = new THREE.BufferGeometry();
     this.positions = new Float32Array(count * 3);
-    this.originalData = new Float32Array(count * 4); // [r/data1, theta/data2, speed/data3, phase/data4]
+    this.originalData = new Float32Array(count * 4);
     const colors = new Float32Array(count * 3);
 
     const { colorA, colorB, colorCore } = this.getThemeColors(this.particleTheme);
@@ -197,16 +260,14 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
 
       switch (this.activeEffectId) {
         case 'supernova': {
-          // Spherical velocity burst
           const phi = Math.acos(2 * Math.random() - 1);
           const theta = Math.random() * Math.PI * 2;
           const speed = 0.8 + Math.random() * 2.5;
-          const phase = Math.random() * 5.0; // staggered spawn offset
 
-          d1 = Math.sin(phi) * Math.cos(theta); // normalized vx
-          d2 = Math.sin(phi) * Math.sin(theta); // normalized vy
-          d3 = Math.cos(phi);                  // normalized vz
-          d4 = speed;                          // velocity multiplier
+          d1 = Math.sin(phi) * Math.cos(theta);
+          d2 = Math.sin(phi) * Math.sin(theta);
+          d3 = Math.cos(phi);
+          d4 = speed;
 
           x = d1 * 0.1;
           y = d2 * 0.1;
@@ -216,8 +277,7 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
         }
 
         case 'dna': {
-          // Double Helix strands + connecting rungs
-          const t = (i / count) * 10 - 5; // y-span [-5, 5]
+          const t = (i / count) * 10 - 5;
           const strand = i % 3;
           const angle = t * 2.2;
           const radius = 1.6;
@@ -233,7 +293,6 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
             y = t;
             colorFactor = 0.9;
           } else {
-            // Horizontal ladder bridge rungs
             const lerpFactor = Math.random();
             const x1 = Math.cos(angle) * radius;
             const z1 = Math.sin(angle) * radius;
@@ -253,7 +312,6 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
         }
 
         case 'cyberRain': {
-          // Falling neon streaming columns
           x = (Math.random() - 0.5) * 10;
           z = (Math.random() - 0.5) * 10;
           y = (Math.random() - 0.5) * 8;
@@ -262,14 +320,13 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
           d1 = x;
           d2 = z;
           d3 = fallSpeed;
-          d4 = Math.random() * Math.PI * 2; // shimmer phase
+          d4 = Math.random() * Math.PI * 2;
           colorFactor = (y + 4) / 8;
           break;
         }
 
         case 'blackHole': {
-          // Rapid relativistic accretion disk + polar high-energy jets
-          const isJet = i < count * 0.12; // 12% in polar jets
+          const isJet = i < count * 0.12;
           if (isJet) {
             const dir = i % 2 === 0 ? 1 : -1;
             const jetDist = Math.random() * 5.0;
@@ -277,13 +334,12 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
             x = (Math.random() - 0.5) * jetSpread;
             z = (Math.random() - 0.5) * jetSpread;
             y = dir * (0.4 + jetDist);
-            d1 = 0; // mark as jet
+            d1 = 0;
             d2 = dir;
             d3 = 3.0 + Math.random() * 3.0;
             d4 = jetDist;
             colorFactor = 1.0;
           } else {
-            // Accretion disk
             const radius = 0.7 + Math.pow(Math.random(), 1.5) * 4.2;
             const theta = Math.random() * Math.PI * 2;
             x = Math.cos(theta) * radius;
@@ -291,7 +347,7 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
             y = (Math.random() - 0.5) * (0.12 + radius * 0.04);
             d1 = radius;
             d2 = theta;
-            d3 = 2.5 / Math.sqrt(radius); // Keplerian orbital speed
+            d3 = 2.5 / Math.sqrt(radius);
             d4 = y;
             colorFactor = (radius - 0.7) / 4.2;
           }
@@ -299,7 +355,6 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
         }
 
         case 'torusWarp': {
-          // Torus Surface Field
           const R = 2.4;
           const r = 0.95 + (Math.random() - 0.5) * 0.2;
           const u = Math.random() * Math.PI * 2;
@@ -316,9 +371,34 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
           break;
         }
 
+        case 'fire': {
+          const isEmber = i < count * 0.2; // 20% embers, 80% flame
+          const floorY = -2.4;
+          const maxFlameH = 4.2;
+          const yOffset = Math.random() * maxFlameH;
+          y = floorY + yOffset;
+
+          const baseRadius = isEmber ? Math.random() * 1.1 : Math.random() * 0.7;
+          const angle = Math.random() * Math.PI * 2;
+          const riseSpeed = (isEmber ? 2.5 : 2.0) + Math.random() * 2.2;
+
+          const heightNorm = yOffset / maxFlameH;
+          const rMult = isEmber ? 1.0 + heightNorm * 1.5 : Math.max(0.08, 1.0 - heightNorm * 0.85);
+          const currentR = baseRadius * rMult;
+
+          x = Math.cos(angle) * currentR;
+          z = Math.sin(angle) * currentR;
+
+          d1 = baseRadius;
+          d2 = angle;
+          d3 = riseSpeed;
+          d4 = isEmber ? 1 : 0;
+          colorFactor = heightNorm;
+          break;
+        }
+
         case 'galaxy':
         default: {
-          // 4-arm logarithmic spiral galaxy
           const arm = i % 4;
           const radius = Math.pow(Math.random(), 0.65) * 4.8;
           const spin = radius * 1.4;
@@ -330,7 +410,7 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
 
           d1 = radius;
           d2 = angle;
-          d3 = 0.8 / (0.8 + radius); // flat rotation curve
+          d3 = 0.8 / (0.8 + radius);
           d4 = y;
           colorFactor = radius / 4.8;
           break;
@@ -341,29 +421,72 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
       this.positions[i * 3 + 1] = y;
       this.positions[i * 3 + 2] = z;
 
-      // Color computation
-      const mixedColor = colorCore
-        ? colorCore.clone().lerp(colorA.clone().lerp(colorB, colorFactor), Math.min(1, colorFactor + 0.15))
-        : colorA.clone().lerp(colorB, colorFactor);
+      this.originalData[i * 4] = d1;
+      this.originalData[i * 4 + 1] = d2;
+      this.originalData[i * 4 + 2] = d3;
+      this.originalData[i * 4 + 3] = d4;
 
-      colors[i * 3] = mixedColor.r;
-      colors[i * 3 + 1] = mixedColor.g;
-      colors[i * 3 + 2] = mixedColor.b;
+      if (this.activeEffectId === 'fire') {
+        const isEmber = d4 === 1;
+        if (isEmber) {
+          colors[i * 3] = 1.0;
+          colors[i * 3 + 1] = 0.8;
+          colors[i * 3 + 2] = 0.2;
+        } else {
+          if (colorFactor < 0.25) {
+            colors[i * 3] = 1.0;
+            colors[i * 3 + 1] = 0.95;
+            colors[i * 3 + 2] = 0.6;
+          } else if (colorFactor < 0.65) {
+            colors[i * 3] = 1.0;
+            colors[i * 3 + 1] = 0.55;
+            colors[i * 3 + 2] = 0.05;
+          } else {
+            colors[i * 3] = 0.85;
+            colors[i * 3 + 1] = 0.15;
+            colors[i * 3 + 2] = 0.02;
+          }
+        }
+      } else {
+        const mixedColor = colorCore
+          ? colorCore.clone().lerp(colorA.clone().lerp(colorB, colorFactor), Math.min(1, colorFactor + 0.15))
+          : colorA.clone().lerp(colorB, colorFactor);
+
+        colors[i * 3] = mixedColor.r;
+        colors[i * 3 + 1] = mixedColor.g;
+        colors[i * 3 + 2] = mixedColor.b;
+      }
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    const pointSize = this.activeEffectId === 'supernova' ? 0.055 : 0.042;
-    const material = new THREE.PointsMaterial({
-      size: pointSize,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.88,
-      blending: THREE.AdditiveBlending,
-    });
+    const isFire = this.activeEffectId === 'fire';
+    let material: THREE.PointsMaterial;
+
+    if (isFire) {
+      material = new THREE.PointsMaterial({
+        size: 0.26,
+        map: this.getFireSpriteTexture(),
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.92,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+    } else {
+      const pointSize = this.activeEffectId === 'supernova' ? 0.055 : 0.042;
+      material = new THREE.PointsMaterial({
+        size: pointSize,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.88,
+        blending: THREE.AdditiveBlending,
+      });
+    }
 
     this.particleSystem = new THREE.Points(geometry, material);
+    this.particleSystem.frustumCulled = false;
     this.scene.add(this.particleSystem);
   }
 
@@ -476,7 +599,6 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
             );
 
             if (dist > maxDist) {
-              // Reset to core with slight jitter
               pos[i * 3] = vx * 0.05;
               pos[i * 3 + 1] = vy * 0.05;
               pos[i * 3 + 2] = vz * 0.05;
@@ -553,10 +675,10 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
               const origY = this.originalData[i * 4 + 3];
 
               theta += omega * dt * 0.7;
-              r -= 0.15 * dt; // slow pull towards singularity
+              r -= 0.15 * dt;
 
               if (r < 0.6) {
-                r = 4.2; // respawn at outer rim
+                r = 4.2;
               }
 
               this.originalData[i * 4] = r;
@@ -567,6 +689,67 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
               pos[i * 3 + 2] = Math.sin(theta) * r;
             }
           }
+          break;
+        }
+
+        case 'fire': {
+          const colorAttr = this.particleSystem.geometry.attributes['color'] as THREE.BufferAttribute;
+          const col = colorAttr.array as Float32Array;
+          const floorY = -2.4;
+          const flameCeiling = 1.8;
+          const emberCeiling = 4.2;
+
+          for (let i = 0; i < count; i++) {
+            const isEmber = this.originalData[i * 4 + 3] === 1;
+            const maxH = isEmber ? emberCeiling : flameCeiling;
+            const baseR = this.originalData[i * 4];
+            let angle = this.originalData[i * 4 + 1];
+            const riseSpeed = this.originalData[i * 4 + 2];
+
+            pos[i * 3 + 1] += riseSpeed * dt;
+
+            const heightNorm = THREE.MathUtils.clamp((pos[i * 3 + 1] - floorY) / (maxH - floorY), 0, 1);
+            const rMult = isEmber ? (1.0 + heightNorm * 1.5) : Math.max(0.08, 1.0 - heightNorm * 0.85);
+
+            angle += (isEmber ? 1.8 : 3.0) * dt;
+            this.originalData[i * 4 + 1] = angle;
+
+            const flicker = Math.sin(time * 8 + i) * 0.1 * heightNorm;
+            const currentR = baseR * rMult + flicker;
+
+            pos[i * 3] = Math.cos(angle) * currentR;
+            pos[i * 3 + 2] = Math.sin(angle) * currentR;
+
+            if (pos[i * 3 + 1] > maxH) {
+              pos[i * 3 + 1] = floorY + Math.random() * 0.2;
+              this.originalData[i * 4] = isEmber ? Math.random() * 1.1 : Math.random() * 0.7;
+              this.originalData[i * 4 + 1] = Math.random() * Math.PI * 2;
+            }
+
+            if (isEmber) {
+              col[i * 3] = 1.0;
+              col[i * 3 + 1] = 0.7 + Math.sin(time * 12 + i) * 0.25;
+              col[i * 3 + 2] = 0.2;
+            } else {
+              if (heightNorm < 0.25) {
+                const t = heightNorm / 0.25;
+                col[i * 3] = 1.0;
+                col[i * 3 + 1] = 1.0 - t * 0.2;
+                col[i * 3 + 2] = 0.9 - t * 0.7;
+              } else if (heightNorm < 0.65) {
+                const t = (heightNorm - 0.25) / 0.4;
+                col[i * 3] = 1.0;
+                col[i * 3 + 1] = 0.8 - t * 0.45;
+                col[i * 3 + 2] = 0.2 - t * 0.18;
+              } else {
+                const t = (heightNorm - 0.65) / 0.35;
+                col[i * 3] = 1.0 - t * 0.55;
+                col[i * 3 + 1] = 0.35 - t * 0.3;
+                col[i * 3 + 2] = 0.02;
+              }
+            }
+          }
+          colorAttr.needsUpdate = true;
           break;
         }
 
@@ -623,6 +806,10 @@ export class Threejsparticleeffects implements AfterViewInit, OnDestroy {
       this.scene?.remove(this.particleSystem);
       this.particleSystem.geometry.dispose();
       (this.particleSystem.material as THREE.Material).dispose();
+    }
+    if (this.fireTexture) {
+      this.fireTexture.dispose();
+      this.fireTexture = null;
     }
     if (this.renderer) {
       this.renderer.dispose();

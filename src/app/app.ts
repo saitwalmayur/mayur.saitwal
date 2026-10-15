@@ -33,7 +33,9 @@ export class App {
       url.includes('/threejsshader') ||
       url.includes('/threedmodelviewer') ||
       url.includes('/audiovisulizer') ||
-      url.includes('/threejsparticleeffects');
+      url.includes('/threejsparticleeffects') ||
+      url.includes('/threejschess') ||
+      url.includes('/chessgame');
 
     this.isThreeJs.set(isThree);
   }

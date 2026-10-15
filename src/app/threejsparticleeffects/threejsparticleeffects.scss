@@ -13,7 +13,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: radial-gradient(circle at center, #190c29 0%, #0a0a14 100%);
+  background: radial-gradient(circle at center, #180b26 0%, #090912 100%);
 }
 
 .webgl-canvas {
@@ -32,7 +32,7 @@
 }
 
 /* ==========================================================================
-   Top Floating Bar
+   Top Floating Navigation Bar
    ========================================================================== */
 .top-floating-bar {
   position: absolute;
@@ -50,14 +50,14 @@
     gap: 0.45rem;
     color: #7928ca;
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 0.5rem 1rem;
-    background: rgba(18, 18, 28, 0.8);
+    padding: 0.45rem 0.95rem;
+    background: rgba(18, 18, 28, 0.82);
     border: 1px solid rgba(121, 40, 202, 0.35);
     border-radius: 30px;
     backdrop-filter: blur(14px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 
     .arrow {
@@ -66,10 +66,10 @@
     }
 
     &:hover {
-      background: rgba(121, 40, 202, 0.18);
+      background: rgba(121, 40, 202, 0.2);
       border-color: #7928ca;
       transform: translateX(-3px);
-      box-shadow: 0 4px 25px rgba(121, 40, 202, 0.3);
+      box-shadow: 0 4px 20px rgba(121, 40, 202, 0.35);
 
       .arrow {
         transform: translateX(-2px);
@@ -78,319 +78,398 @@
   }
 
   .title-pill {
-    padding: 0.5rem 1.1rem;
+    padding: 0.45rem 1rem;
     border-radius: 30px;
     background: rgba(18, 18, 28, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #fff;
     backdrop-filter: blur(14px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .reset-pill-btn {
-    background: rgba(18, 18, 28, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.85);
-    padding: 0.5rem 0.95rem;
-    font-size: 0.82rem;
-    border-radius: 30px;
-    cursor: pointer;
-    backdrop-filter: blur(14px);
-    transition: all 0.2s ease;
-    white-space: nowrap;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-color: #00f2fe;
-    }
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
 }
 
 /* ==========================================================================
-   Floating Effect Description & Particle HUD
+   Shared Side Panel Styles
    ========================================================================== */
-.floating-effect-hud {
+.side-panel {
   position: absolute;
   top: 4.8rem;
-  left: 1.5rem;
-  z-index: 90;
-  background: rgba(14, 14, 24, 0.8);
+  z-index: 95;
+  background: rgba(14, 14, 24, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 0.85rem 1.1rem;
-  backdrop-filter: blur(16px);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  pointer-events: none;
-  max-width: 380px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(121, 40, 202, 0.15);
+  backdrop-filter: blur(20px);
+  padding: 0.85rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+  max-height: calc(100vh - 6.5rem);
+  overflow-y: auto;
+  box-sizing: border-box;
 
-  .hud-top {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(121, 40, 202, 0.4);
+    border-radius: 4px;
+  }
+
+  .panel-header {
     display: flex;
-    align-items: flex-start;
-    gap: 0.7rem;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.75rem;
 
-    .hud-icon {
-      font-size: 1.6rem;
-      line-height: 1;
-    }
-
-    .hud-info {
+    .panel-title-wrap {
       display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
+      align-items: center;
+      gap: 0.45rem;
 
-      .hud-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #fff;
+      .panel-icon {
+        font-size: 1rem;
       }
 
-      .hud-desc {
+      .panel-title {
         font-size: 0.78rem;
-        color: rgba(255, 255, 255, 0.65);
-        line-height: 1.35;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .collapse-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #7928ca;
+      font-size: 0.72rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      padding: 0;
+
+      &:hover {
+        background: rgba(121, 40, 202, 0.25);
+        color: #fff;
+        border-color: #7928ca;
       }
     }
   }
 
-  .hud-stats {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  &.collapsed {
+    width: auto !important;
+    padding: 0.6rem;
+    border-radius: 30px;
 
-    .stat-badge {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.74rem;
-      font-weight: 600;
-      color: #00f2fe;
-      font-family: monospace;
+    .panel-header {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
     }
   }
 }
 
 /* ==========================================================================
-   Bottom Floating Control Dock
+   LEFT SIDE: Particle Effects List Panel
    ========================================================================== */
-.bottom-floating-dock {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  width: min(960px, 94vw);
-  background: rgba(14, 14, 24, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 24px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(121, 40, 202, 0.2);
-  backdrop-filter: blur(20px);
-  padding: 1.1rem 1.5rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: auto;
+.left-panel {
+  left: 1.5rem;
+  width: 220px;
 
-  &.collapsed {
-    padding: 0.6rem 1.2rem;
-    width: auto;
-    border-radius: 30px;
+  .effects-vertical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
   }
 
-  .dock-header {
+  .effect-item-btn {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
 
-    .dock-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.6);
+    .effect-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
     }
 
-    .dock-toggle-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #7928ca;
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .effect-info {
+      flex: 1;
+      overflow: hidden;
 
-      &:hover {
-        background: rgba(121, 40, 202, 0.2);
+      .effect-name {
+        font-size: 0.84rem;
+        font-weight: 600;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+      }
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+      transform: translateX(3px);
+      border-color: rgba(121, 40, 202, 0.3);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, rgba(121, 40, 202, 0.35), rgba(255, 0, 128, 0.25));
+      border-color: #7928ca;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(121, 40, 202, 0.35);
+      transform: translateX(4px);
+
+      .effect-name {
         color: #fff;
+        text-shadow: 0 0 8px rgba(121, 40, 202, 0.6);
       }
     }
   }
+}
 
-  .dock-body {
-    margin-top: 0.9rem;
+/* ==========================================================================
+   RIGHT SIDE: Properties & Controls Panel
+   ========================================================================== */
+.right-panel {
+  right: 1.5rem;
+  width: 230px;
+
+  .panel-body {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
   }
 
-  .dock-group {
+  .prop-section {
     display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.4rem;
 
-    .dock-label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.5);
+    .prop-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      min-width: 65px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .prop-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .prop-val {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #00f2fe;
+        font-family: monospace;
+      }
     }
   }
 
-  .dock-btn-row {
+  /* Palettes Grid */
+  .palettes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+
+    .palette-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .color-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 0 6px currentColor;
+      }
+
+      .theme-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      &.active {
+        background: rgba(121, 40, 202, 0.3);
+        border-color: #7928ca;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(121, 40, 202, 0.3);
+      }
+    }
+  }
+
+  /* Range Slider */
+  .prop-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+    cursor: pointer;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #7928ca;
+      cursor: pointer;
+      box-shadow: 0 0 8px #7928ca;
+      transition: transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.25);
+      }
+    }
+  }
+
+  /* Pills Row */
+  .pills-row {
     display: flex;
+    gap: 0.4rem;
+
+    .pill-btn {
+      flex: 1;
+      padding: 0.35rem;
+      text-align: center;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      &.active {
+        background: rgba(0, 242, 254, 0.2);
+        border-color: #00f2fe;
+        color: #00f2fe;
+        box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+      }
+    }
+  }
+
+  /* Actions & Toggles */
+  .actions-section {
     gap: 0.45rem;
-    flex-wrap: wrap;
+    padding-top: 0.3rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
 
-    &.effects-list {
-      .effect-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.45rem 0.9rem;
-        font-weight: 600;
+    .action-btn {
+      width: 100%;
+      padding: 0.45rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
 
-        .btn-icon {
-          font-size: 1.05rem;
+      &.toggle-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
         }
 
         &.active {
-          background: linear-gradient(135deg, rgba(121, 40, 202, 0.4), rgba(255, 0, 128, 0.35));
-          border-color: #7928ca;
+          background: rgba(0, 242, 254, 0.18);
+          border-color: #00f2fe;
+          color: #00f2fe;
+          box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+        }
+      }
+
+      &.reset-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.7);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
           color: #fff;
-          box-shadow: 0 0 12px rgba(121, 40, 202, 0.4);
+          border-color: rgba(255, 255, 255, 0.2);
         }
       }
     }
   }
 
-  .dock-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.4rem 0.85rem;
-    font-size: 0.82rem;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
-      border-color: rgba(121, 40, 202, 0.4);
-    }
-
-    &.active {
-      background: linear-gradient(135deg, rgba(121, 40, 202, 0.35), rgba(255, 0, 128, 0.35));
-      border-color: #7928ca;
-      color: #fff;
-      box-shadow: 0 0 10px rgba(121, 40, 202, 0.3);
-    }
-
-    &.micro-btn {
-      padding: 0.35rem 0.75rem;
-      font-size: 0.78rem;
-    }
-
-    &.toggle-btn {
-      border-color: rgba(0, 242, 254, 0.3);
-
-      &.active {
-        border-color: #00f2fe;
-        background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
-        box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
-        color: #fff;
-      }
-    }
-  }
-
-  .dock-sliders-row {
+  /* Info Note */
+  .prop-info-box {
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    padding-top: 0.5rem;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.5rem 0.65rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
-    .slider-box {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      min-width: 150px;
-      flex: 1;
-
-      label {
-        font-size: 0.76rem;
-        color: rgba(255, 255, 255, 0.65);
-        font-weight: 500;
-      }
-
-      input[type='range'] {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 100%;
-        height: 5px;
-        border-radius: 3px;
-        background: rgba(255, 255, 255, 0.15);
-        outline: none;
-        cursor: pointer;
-
-        &::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          background: #7928ca;
-          cursor: pointer;
-          box-shadow: 0 0 8px #7928ca;
-          transition: transform 0.15s ease;
-
-          &:hover {
-            transform: scale(1.2);
-          }
-        }
-      }
+    .info-icon {
+      font-size: 0.95rem;
+      line-height: 1;
+      flex-shrink: 0;
     }
 
-    .count-selector-box {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-
-      .count-label {
-        font-size: 0.78rem;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 500;
-      }
-
-      .count-btn-row {
-        display: flex;
-        gap: 0.35rem;
-      }
+    .info-text {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.35;
     }
   }
 }
 
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 @media (max-width: 768px) {
   .top-floating-bar {
     top: 1rem;
@@ -401,22 +480,15 @@
     }
   }
 
-  .floating-effect-hud {
-    top: 4.2rem;
-    left: 1rem;
-    max-width: calc(100vw - 2rem);
+  .left-panel {
+    top: 4rem;
+    left: 0.8rem;
+    width: 180px;
   }
 
-  .bottom-floating-dock {
-    bottom: 1rem;
-    padding: 0.8rem;
-    max-height: 55vh;
-    overflow-y: auto;
-
-    .dock-sliders-row {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.8rem;
-    }
+  .right-panel {
+    top: 4rem;
+    right: 0.8rem;
+    width: 190px;
   }
 }

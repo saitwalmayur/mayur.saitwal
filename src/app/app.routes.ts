@@ -49,6 +49,18 @@ export const routes: Routes = [
     path: 'threejsparticleeffects',
     loadComponent: () => import('./threejsparticleeffects/threejsparticleeffects').then((m) => m.Threejsparticleeffects),
   },
+  {
+    path: 'threejs/chess',
+    loadComponent: () => import('./threejschess/threejschess').then((m) => m.Threejschess),
+  },
+  {
+    path: 'threejschess',
+    loadComponent: () => import('./threejschess/threejschess').then((m) => m.Threejschess),
+  },
+  {
+    path: 'chessgame',
+    loadComponent: () => import('./threejschess/threejschess').then((m) => m.Threejschess),
+  },
   { path: 'showcase', component: Showcase },
   { path: 'contact', component: ContactScreen },
 ];
