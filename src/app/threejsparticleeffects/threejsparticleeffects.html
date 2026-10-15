@@ -1,0 +1,151 @@
+<div class="fullscreen-scene-container" #viewportContainer (mousemove)="onMouseMove($event)">
+  <!-- Fullscreen WebGL Canvas -->
+  <canvas #rendererCanvas class="webgl-canvas"></canvas>
+
+  <!-- Top Floating Navigation Bar -->
+  <div class="top-floating-bar">
+    <a routerLink="/threejs" class="back-pill-btn">
+      <span class="arrow">←</span>
+      <span>Projects</span>
+    </a>
+    <div class="title-pill">{{ currentEffect.icon }} {{ currentEffect.name }}</div>
+    <button class="reset-pill-btn" (click)="resetCamera()" title="Reset Camera View">
+      ↺ Reset View
+    </button>
+  </div>
+
+  <!-- Effect Description & Particle HUD -->
+  <div class="floating-effect-hud">
+    <div class="hud-top">
+      <span class="hud-icon">{{ currentEffect.icon }}</span>
+      <div class="hud-info">
+        <span class="hud-title">{{ currentEffect.name }}</span>
+        <span class="hud-desc">{{ currentEffect.description }}</span>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <span class="stat-badge">✨ {{ particleCount | number }} Points</span>
+      <span class="stat-badge">⚡ {{ simulationSpeed | number: '1.1-1' }}x Speed</span>
+    </div>
+  </div>
+
+  <!-- Bottom Floating Control Dock -->
+  <div class="bottom-floating-dock" [class.collapsed]="isDockCollapsed">
+    <div class="dock-header">
+      <span class="dock-title">Particle Effect Suite</span>
+      <button class="dock-toggle-btn" (click)="toggleDock()" [title]="isDockCollapsed ? 'Expand Dock' : 'Collapse Dock'">
+        {{ isDockCollapsed ? '▲ Effects List' : '▼ Hide' }}
+      </button>
+    </div>
+
+    <div class="dock-body" *ngIf="!isDockCollapsed">
+      <!-- 1. Particle Effects Selector List -->
+      <div class="dock-group">
+        <span class="dock-label">Effects:</span>
+        <div class="dock-btn-row effects-list">
+          <button
+            *ngFor="let opt of effectOptions"
+            class="dock-btn effect-btn"
+            [class.active]="activeEffectId === opt.id"
+            (click)="selectEffect(opt.id)"
+          >
+            <span class="btn-icon">{{ opt.icon }}</span>
+            <span class="btn-name">{{ opt.name }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Color Palette Selector -->
+      <div class="dock-group">
+        <span class="dock-label">Palettes:</span>
+        <div class="dock-btn-row">
+          <button
+            class="dock-btn"
+            [class.active]="particleTheme === 'cyber'"
+            (click)="setTheme('cyber')"
+          >
+            Cyber Cyan
+          </button>
+          <button
+            class="dock-btn"
+            [class.active]="particleTheme === 'cosmic'"
+            (click)="setTheme('cosmic')"
+          >
+            Cosmic Violet
+          </button>
+          <button
+            class="dock-btn"
+            [class.active]="particleTheme === 'fire'"
+            (click)="setTheme('fire')"
+          >
+            Solar Fire
+          </button>
+          <button
+            class="dock-btn"
+            [class.active]="particleTheme === 'matrix'"
+            (click)="setTheme('matrix')"
+          >
+            Matrix Lime
+          </button>
+          <button
+            class="dock-btn"
+            [class.active]="particleTheme === 'ice'"
+            (click)="setTheme('ice')"
+          >
+            Arctic Ice
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Sliders & Counts Row -->
+      <div class="dock-sliders-row">
+        <div class="slider-box">
+          <label>Simulation Speed: {{ simulationSpeed | number: '1.1-2' }}x</label>
+          <input
+            type="range"
+            min="0.2"
+            max="2.5"
+            step="0.1"
+            [value]="simulationSpeed"
+            (input)="onSpeedChange($event)"
+          />
+        </div>
+
+        <div class="count-selector-box">
+          <span class="count-label">Particles:</span>
+          <div class="count-btn-row">
+            <button
+              class="dock-btn micro-btn"
+              [class.active]="particleCount === 3000"
+              (click)="setParticleCount(3000)"
+            >
+              3k
+            </button>
+            <button
+              class="dock-btn micro-btn"
+              [class.active]="particleCount === 6000"
+              (click)="setParticleCount(6000)"
+            >
+              6k
+            </button>
+            <button
+              class="dock-btn micro-btn"
+              [class.active]="particleCount === 10000"
+              (click)="setParticleCount(10000)"
+            >
+              10k
+            </button>
+          </div>
+        </div>
+
+        <button
+          class="dock-btn toggle-btn"
+          [class.active]="autoRotate"
+          (click)="toggleAutoRotate()"
+        >
+          {{ autoRotate ? 'Auto-Rotate: On' : 'Auto-Rotate: Off' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

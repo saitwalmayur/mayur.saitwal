@@ -1,0 +1,422 @@
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fullscreen-scene-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #190c29 0%, #0a0a14 100%);
+}
+
+.webgl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+/* ==========================================================================
+   Top Floating Bar
+   ========================================================================== */
+.top-floating-bar {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.5rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto;
+
+  .back-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #7928ca;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: rgba(18, 18, 28, 0.8);
+    border: 1px solid rgba(121, 40, 202, 0.35);
+    border-radius: 30px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .arrow {
+      font-size: 1.05rem;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      background: rgba(121, 40, 202, 0.18);
+      border-color: #7928ca;
+      transform: translateX(-3px);
+      box-shadow: 0 4px 25px rgba(121, 40, 202, 0.3);
+
+      .arrow {
+        transform: translateX(-2px);
+      }
+    }
+  }
+
+  .title-pill {
+    padding: 0.5rem 1.1rem;
+    border-radius: 30px;
+    background: rgba(18, 18, 28, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .reset-pill-btn {
+    background: rgba(18, 18, 28, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0.5rem 0.95rem;
+    font-size: 0.82rem;
+    border-radius: 30px;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-color: #00f2fe;
+    }
+  }
+}
+
+/* ==========================================================================
+   Floating Effect Description & Particle HUD
+   ========================================================================== */
+.floating-effect-hud {
+  position: absolute;
+  top: 4.8rem;
+  left: 1.5rem;
+  z-index: 90;
+  background: rgba(14, 14, 24, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 0.85rem 1.1rem;
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  pointer-events: none;
+  max-width: 380px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  .hud-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+
+    .hud-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .hud-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      .hud-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .hud-desc {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.35;
+      }
+    }
+  }
+
+  .hud-stats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .stat-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #00f2fe;
+      font-family: monospace;
+    }
+  }
+}
+
+/* ==========================================================================
+   Bottom Floating Control Dock
+   ========================================================================== */
+.bottom-floating-dock {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(960px, 94vw);
+  background: rgba(14, 14, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(121, 40, 202, 0.2);
+  backdrop-filter: blur(20px);
+  padding: 1.1rem 1.5rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+
+  &.collapsed {
+    padding: 0.6rem 1.2rem;
+    width: auto;
+    border-radius: 30px;
+  }
+
+  .dock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .dock-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .dock-toggle-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #7928ca;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(121, 40, 202, 0.2);
+        color: #fff;
+      }
+    }
+  }
+
+  .dock-body {
+    margin-top: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .dock-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+
+    .dock-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 65px;
+    }
+  }
+
+  .dock-btn-row {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+
+    &.effects-list {
+      .effect-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.9rem;
+        font-weight: 600;
+
+        .btn-icon {
+          font-size: 1.05rem;
+        }
+
+        &.active {
+          background: linear-gradient(135deg, rgba(121, 40, 202, 0.4), rgba(255, 0, 128, 0.35));
+          border-color: #7928ca;
+          color: #fff;
+          box-shadow: 0 0 12px rgba(121, 40, 202, 0.4);
+        }
+      }
+    }
+  }
+
+  .dock-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      border-color: rgba(121, 40, 202, 0.4);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, rgba(121, 40, 202, 0.35), rgba(255, 0, 128, 0.35));
+      border-color: #7928ca;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(121, 40, 202, 0.3);
+    }
+
+    &.micro-btn {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+    }
+
+    &.toggle-btn {
+      border-color: rgba(0, 242, 254, 0.3);
+
+      &.active {
+        border-color: #00f2fe;
+        background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
+        box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        color: #fff;
+      }
+    }
+  }
+
+  .dock-sliders-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+
+    .slider-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-width: 150px;
+      flex: 1;
+
+      label {
+        font-size: 0.76rem;
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 500;
+      }
+
+      input[type='range'] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.15);
+        outline: none;
+        cursor: pointer;
+
+        &::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #7928ca;
+          cursor: pointer;
+          box-shadow: 0 0 8px #7928ca;
+          transition: transform 0.15s ease;
+
+          &:hover {
+            transform: scale(1.2);
+          }
+        }
+      }
+    }
+
+    .count-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+
+      .count-label {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+      }
+
+      .count-btn-row {
+        display: flex;
+        gap: 0.35rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .top-floating-bar {
+    top: 1rem;
+    left: 1rem;
+
+    .title-pill {
+      display: none;
+    }
+  }
+
+  .floating-effect-hud {
+    top: 4.2rem;
+    left: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .bottom-floating-dock {
+    bottom: 1rem;
+    padding: 0.8rem;
+    max-height: 55vh;
+    overflow-y: auto;
+
+    .dock-sliders-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.8rem;
+    }
+  }
+}

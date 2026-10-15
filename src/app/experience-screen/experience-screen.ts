@@ -24,6 +24,11 @@ export interface Experience {
   games: Game[];
 }
 
+export interface SkillCategory {
+  title: string;
+  skills: string[];
+}
+
 @Component({
   selector: 'app-experience-screen',
   imports: [CommonModule],
@@ -33,6 +38,37 @@ export interface Experience {
 export class ExperienceScreen {
   selectedGame: Game | null = null;
 
+  skillCategories: SkillCategory[] = [
+    {
+      title: 'Leadership & Management',
+      skills: ['Team Leadership', 'Mentorship', 'Cross-Functional Collaboration', 'Agile Delivery', 'Strategic Planning', 'Technical Architecture', 'Stakeholder Management']
+    },
+    {
+      title: 'Frontend & Web',
+      skills: ['Angular', 'React', 'React Native', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Three.js', 'Ionic', 'Capacitor']
+    },
+    {
+      title: 'Game Development & XR',
+      skills: ['Unity', 'Unreal Engine (C++, Blueprints)', 'Gameplay Ability System (GAS)', 'Epic Online Services (EOS)', 'C#', 'C++', 'OpenXR', 'AR/VR Development', 'Apple Vision Pro', 'Spatial Computing', 'Zenject', 'Unity DOTS/ECS', 'SceneKit', 'Filament']
+    },
+    {
+      title: 'Backend & Cloud',
+      skills: ['Node.js', 'REST APIs', 'Firebase', 'Azure', 'AWS', 'PlayFab', 'Nakama', 'Photon', 'Mirror Networking']
+    },
+    {
+      title: 'AI & Emerging Technologies',
+      skills: ['AI Integration', 'NLP Applications', 'Image Recognition', 'AI-Assisted Development', 'Real-Time AI Experiences']
+    },
+    {
+      title: 'Architecture & Optimization',
+      skills: ['System Design', 'Performance Optimization', 'Scalability', 'Multiplayer Architecture', 'LiveOps', 'Unity Test Framework', 'Quality Assurance', 'CI/CD']
+    },
+    {
+      title: 'Tools',
+      skills: ['Git', 'GitHub', 'Azure DevOps', 'Jira', 'Postman', 'Xcode', 'Android Studio']
+    }
+  ];
+
   experiences: Experience[] = [
     {
       company: 'NetConnect Global',
@@ -40,10 +76,11 @@ export class ExperienceScreen {
       location: 'Mumbai',
       duration: '01/2026 – Present',
       bullets: [
-        'Enhanced interactive 3D planogram solutions for retail visualization for AB InBev, improving merchandising planning efficiency and reducing manual store setup efforts.',
-        'Expanded configurable fixture creation and product positioning systems enabling accurate real-world retail layout simulations.',
-        'Optimized real-time 3D rendering and scene performance for large-scale store environments, ensuring smooth user experiences.',
-        'Collaborated with business and technical teams to transform retail requirements into scalable visualization tools, helping reduce operational and merchandising costs.'
+        'Built and enhanced browser-based interactive 3D planogram solutions using Angular and Three.js for AB InBev retail visualization.',
+        'Developed configurable 3D fixture creation and product-positioning systems supporting accurate real-world retail layout simulation.',
+        'Optimized real-time 3D scenes, draw calls, and rendering performance for large-scale store environments, delivering smooth 60fps user experiences.',
+        'Designed interactive 3D visualization workflows that improved merchandising planning efficiency and reduced manual store setup effort.',
+        'Worked across 3D scene architecture, object placement, visualization logic, and browser-based rendering workflows.'
       ],
       games: [
         {
@@ -61,11 +98,15 @@ export class ExperienceScreen {
       location: 'Mumbai',
       duration: '04/2024 – 01/2026',
       bullets: [
-        'Led the development of an Apple Vision Pro application for TCS, focusing on spatial computing. The project was recognized with two Gold awards at the NY Digital Awards.',
-        'Led and mentored cross-functional teams in the design and deployment of enterprise AR/VR platforms, ensuring scalability, security, and performance across multiple devices.',
-        'Drove AI-powered innovations (real-time image recognition) that elevated product adoption and transformed customer engagement for museum App.',
-        'Delivered an event management system for Walmart with seamless UX and backend communication.',
-        'Developed with Angular and Three.js an interactive CNC machine 3D part visualization platform that allows users to inspect components, view machine details, purchase parts, and manage spare-part procurement'
+        'Led development of an award-winning Apple Vision Pro spatial computing application for TCS (awarded two Gold Awards at NY Digital Awards 2024); engineered an interactive digital twin platform in Unity enabling real-time 3D anatomical models and spatial healthcare analytics.',
+        'Implemented cross-platform XR hand-tracking, grab, gesture, and spatial interaction mechanics in Unity adhering to OpenXR standards.',
+        'Designed and developed enterprise-grade real-time 3D applications and interactive simulations using Unreal Engine, Unity, Three.js, Angular, and C++/C#.',
+        'Applied GPU rendering, custom shader programming, 3D mathematics, and scene optimization to deliver high-fidelity spatial experiences.',
+        'Developed a multiplayer Apple Vision Pro experience using Photon, enabling multiple concurrent users to interact in a shared spatial environment.',
+        'Integrated real-time cloud data and enterprise backend microservices hosted on AWS and Azure using WebSockets and REST APIs, validated and tested using Postman.',
+        'Developed an interactive 3D CNC machine part visualization platform for Apple Vision Pro, Angular, and Three.js, enabling component inspection and spare-part procurement.',
+        'Engineered an interactive AI-powered web application using Node.js, enabling real-time conversations with live AI characters through dynamic speech and NLP.',
+        'Developed a full-featured event management application for Walmart using Ionic, Capacitor, and SQLite, featuring encrypted offline data storage and REST API synchronization.'
       ],
       games: [
         {
@@ -92,13 +133,15 @@ export class ExperienceScreen {
       location: 'Mumbai',
       duration: '12/2019 – 04/2024',
       bullets: [
-        'Led the design and development of multiplayer games using Photon and Nakama, delivering scalable real-time gameplay experiences.',
-        'Incorporated PlayFab services for player profiles, inventory systems, and progression tracking, improving player retention and backend scalability.',
-        'Built cross-platform 3D applications using Unity, Unreal Engine, React Native, and Three.js for Android, iOS, WebGL, and desktop deployments.',
-        'Streamlined CI/CD pipelines and project delivery workflows using Azure DevOps and Git-based version control systems, improving collaboration and release efficiency.',
-        'Developed custom shaders and rendering systems across Unity, Unreal Engine, and SceneKit, enhancing visual quality and gameplay immersion.',
-        'Integrated RESTful APIs and third-party SDKs to enable dynamic content delivery, analytics, monetization, and live game features.',
-        'Created deployment packages for mobile platforms using Android Studio and Xcode, ensuring stable releases and platform compliance.'
+        'Directed strategic product development and architecture for multiplayer gaming platforms using Nakama, Photon, and Mirror Networking, implementing server-authoritative state synchronization.',
+        'Developed cross-platform gameplay systems in Unreal Engine (C++, Blueprints) for mobile (iOS/Android) and desktop titles, including gameplay mechanics, AI, Gameplay Ability System (GAS), Epic Online Services (EOS), UMG-based UI, and runtime performance optimization.',
+        'Developed immersive applications and real-time interactive visualization experiences using Unreal Engine for AR and cross-platform 3D simulations.',
+        'Architected scalable game systems in Unity utilizing Zenject for dependency injection, ensuring decoupled, testable, and maintainable production codebases.',
+        'Developed server-side game logic for multiplayer titles using Lua and JavaScript, ensuring synchronized gameplay and preventing unauthorized client tampering.',
+        'Built comprehensive LiveOps frameworks integrating PlayFab, Firebase, and AWS for remote configuration, seasonal events, rewards, promotions, and player analytics.',
+        'Created custom shaders and advanced rendering systems in Unreal Engine, Unity, SceneKit, and Filament, optimizing GPU performance across multiple shipped titles.',
+        'Extended engine functionalities with custom plugins and SDK integrations (Unreal Engine, Unity) and built native deployment packages (Swift/Xcode, Android Studio).',
+        'Led engineering teams across diverse tech stacks while enforcing high architectural standards, code reviews, and automated CI/CD pipelines.'
       ],
       games: [
         {
@@ -133,10 +176,10 @@ export class ExperienceScreen {
       location: 'Mumbai',
       duration: '05/2019 – 11/2019',
       bullets: [
-        'Designed and developed interactive educational games using Unity3D, improving student engagement and learning experiences.',
-        'Incorporated REST API integrations that enabled real-time data synchronization across mobile platforms, improving backend communication efficiency and reducing sync issues.',
-        'Coordinated sprint planning and project tracking using JIRA, achieving consistent on-time feature delivery and content updates.',
-        'Worked closely with design and backend teams to optimize application usability and performance.'
+        'Directed the creation of interactive educational gaming platforms in Unity, improving learning engagement and digital user experiences.',
+        'Implemented secure Unity Addressables to dynamically load grade-specific educational content with encrypted asset bundles, reducing initial app footprint and preventing asset tampering.',
+        'Integrated and validated secure REST APIs with external backend services using Postman for endpoint testing and contract verification.',
+        'Established automated unit testing practices using the Unity Test Framework, driving agile delivery via Jira and mentoring developers on coding standards.'
       ],
       games: [
         {
@@ -155,12 +198,13 @@ export class ExperienceScreen {
       location: 'Hyderabad',
       duration: '06/2017 – 04/2019',
       bullets: [
-        'Delivered 50+ hyper-casual Unity games, generating 100K+ organic downloads and expanding audience reach.',
-        'Implemented AI-driven NPC systems and gameplay mechanics, increasing player engagement and interaction.',
-        'Streamlined gameplay systems using Unity DOTS and performance-focused architecture, improving runtime efficiency on mobile devices.',
-        'Expanded monetization strategies through IAPs, analytics, OneSignal, and third-party SDK integrations, increasing ARPU across multiple titles.',
-        'Published reusable Unity tools and plugins on the Unity Asset Store, creating additional revenue opportunities for the studio.',
-        'Collaborated with artists and designers to deliver polished gameplay experiences within tight deadlines.'
+        'Delivered 50+ hyper-casual Unity games from concept to release, generating over 100,000 organic downloads across Android and iOS.',
+        'Leveraged Unity DOTS/ECS and performance profiling (CPU/GPU/memory) to boost runtime efficiency by up to 40% on mid-range mobile devices.',
+        'Built AI-driven NPC systems, responsive gameplay mechanics, and state machines, increasing player engagement and session duration.',
+        'Implemented custom Unity Editor-based Level Editors in C# with automated data serialization, cutting level design iteration time by over 50%.',
+        'Authored and published reusable Unity tools and plugins to the Unity Asset Store, establishing a dedicated passive revenue channel for the studio.',
+        'Implemented local game data protection mechanisms using encryption, secure local persistence, and memory tampering validation.',
+        'Expanded studio revenue through IAP receipt validation, Ad SDK monetization (AdMob, Chartboost), and OneSignal push notifications.'
       ],
       games: [
         { name: 'Archery Blast', links: [{ label: 'Detail', url: 'https://apkpure.com/archery-blast/com.daydreamzstudio.archeryblast', type: 'store' }], techStack: 'Unity, C#' },
@@ -187,11 +231,10 @@ export class ExperienceScreen {
       location: 'Hyderabad',
       duration: '06/2015 – 05/2017',
       bullets: [
-        'Built reusable Unity C# frameworks and modular gameplay systems, reducing feature development time by 50%.',
-        'Developed character controllers, UI systems, and gameplay mechanics, improving player experience and usability.',
-        'Integrated monetization SDKs including AdMob and Chartboost, enabling stable ad-based revenue generation.',
-        'Assisted in publishing games across Android, iOS, and Windows platforms while ensuring app store compliance and deployment readiness.',
-        'Supported debugging, optimization, and QA processes to improve game stability and performance.'
+        'Built reusable modular C# frameworks and UI systems for Unity3D, boosting team efficiency and project scalability.',
+        'Implemented secure in-app purchase (IAP) receipt verification and server-side validation for Android and iOS, preventing fraudulent transactions.',
+        'Managed monetization strategy with AdMob and Chartboost ad mediation alongside analytics integration, delivering consistent revenue gains.',
+        'Played a pivotal role in publishing and deploying games on Android, iOS, and Windows platforms.'
       ],
       games: [
         { name: 'Bottle Shooter', imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/d4198f30-efc5-4b36-8bee-383f156f0c9e.webp', links: [{ label: 'Detail', url: 'https://assetstore.unity.com/packages/templates/bottle-shooter-89934', type: 'website' }], techStack: 'Unity 3D, C#' },
