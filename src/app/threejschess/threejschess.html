@@ -9,6 +9,47 @@
       <span>Projects</span>
     </a>
     <div class="title-pill">♟️ 3D Chess Arena</div>
+
+    <!-- Quick Theme Switcher Pills -->
+    <div class="theme-switch-pill">
+      <span class="theme-switch-label">Theme:</span>
+      <button
+        class="theme-btn"
+        [class.active]="currentTheme === 'normal'"
+        (click)="setTheme('normal')"
+        title="Classic Tournament Style"
+      >
+        ♟️ Normal
+      </button>
+      <button
+        class="theme-btn"
+        [class.active]="currentTheme === 'glass'"
+        (click)="setTheme('glass')"
+        title="Refractive Frosted Crystal & Smoked Glass"
+      >
+        💎 Glass
+      </button>
+      <button
+        class="theme-btn"
+        [class.active]="currentTheme === 'neon'"
+        (click)="setTheme('neon')"
+        title="Holographic Cyber Neon Matrix"
+      >
+        ⚡ Neon
+      </button>
+    </div>
+
+    <!-- Historic Cloister 2K HDR Scene Toggle -->
+    <button
+      class="cloister-pill-btn"
+      [class.active]="showCloisterScene"
+      (click)="toggleCloisterScene()"
+      title="Toggle Historic Cloister 2K HDR 3D Scene Environment"
+    >
+      <span class="pill-icon">🏰</span>
+      <span>Cloister 2K: <strong>{{ showCloisterScene ? 'ON' : 'OFF' }}</strong></span>
+    </button>
+
     <div class="status-pill" [class.check]="isCheck" [class.thinking]="isThinking">
       <span class="status-dot"></span>
       <span class="status-text">{{ gameStatusText }}</span>
@@ -96,6 +137,69 @@
             Master
           </button>
         </div>
+      </div>
+
+      <!-- Theme Selector Section -->
+      <div class="prop-section theme-section">
+        <span class="prop-label">Chess Set Theme</span>
+        <div class="theme-options-grid">
+          <button
+            class="theme-card-btn"
+            [class.active]="currentTheme === 'normal'"
+            (click)="setTheme('normal')"
+            title="Classic Ivory & Obsidian Style"
+          >
+            <span class="theme-card-icon">♟️</span>
+            <div class="theme-card-info">
+              <span class="theme-card-name">Normal</span>
+              <span class="theme-card-desc">Ivory & Obsidian</span>
+            </div>
+          </button>
+          <button
+            class="theme-card-btn"
+            [class.active]="currentTheme === 'glass'"
+            (click)="setTheme('glass')"
+            title="Frosted Crystal & Smoked Glass"
+          >
+            <span class="theme-card-icon">💎</span>
+            <div class="theme-card-info">
+              <span class="theme-card-name">Glass</span>
+              <span class="theme-card-desc">Crystal Glass</span>
+            </div>
+          </button>
+          <button
+            class="theme-card-btn"
+            [class.active]="currentTheme === 'neon'"
+            (click)="setTheme('neon')"
+            title="Holographic Cyber Neon"
+          >
+            <span class="theme-card-icon">⚡</span>
+            <div class="theme-card-info">
+              <span class="theme-card-name">Neon</span>
+              <span class="theme-card-desc">Cyber Glow</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Environment Backdrop Card -->
+      <div class="prop-section env-section">
+        <span class="prop-label">Environment Backdrop</span>
+        <button
+          class="env-toggle-card"
+          [class.active]="showCloisterScene"
+          (click)="toggleCloisterScene()"
+          title="Toggle Historic Cloister Passage 2K HDR Panoramic Environment"
+        >
+          <div class="env-toggle-icon">🏰</div>
+          <div class="env-toggle-info">
+            <span class="env-toggle-title">Historic Cloister Passage</span>
+            <span class="env-toggle-desc">{{ showCloisterScene ? '2K HDR Scene Active' : 'Studio Backdrop Active' }}</span>
+          </div>
+          <span class="env-toggle-badge" [class.on]="showCloisterScene">
+            {{ showCloisterScene ? 'ACTIVE' : 'OFF' }}
+          </span>
+        </button>
       </div>
 
       <!-- Action Buttons -->

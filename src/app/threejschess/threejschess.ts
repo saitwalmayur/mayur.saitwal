@@ -14,6 +14,7 @@ import { RouterLink } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 import { CHESS_MODELS_GLB_BASE64 } from './chess-models.data';
 
 export type PieceType = 'p' | 'r' | 'n' | 'b' | 'q' | 'k';
@@ -157,8 +158,10 @@ export class Threejschess implements AfterViewInit, OnDestroy {
   private controls!: OrbitControls;
   private raycaster = new THREE.Raycaster();
   private pointer = new THREE.Vector2();
-  // Theme state
+  // Theme & Environment state
   currentTheme: ChessTheme = 'normal';
+  showCloisterScene = true;
+  private hdrEnvironmentTexture: THREE.DataTexture | null = null;
 
   private animationId: number | null = null;
   private isBrowser = false;
@@ -230,6 +233,20 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.updateBoardMaterials();
     this.rebuildAllPieces3D();
     this.updateHighlights();
+    this.cdr.detectChanges();
+  }
+
+  toggleCloisterScene() {
+    this.showCloisterScene = !this.showCloisterScene;
+    if (!this.scene) return;
+
+    if (this.showCloisterScene && this.hdrEnvironmentTexture) {
+      this.scene.background = this.hdrEnvironmentTexture;
+      this.scene.backgroundBlurriness = 0.03;
+      this.scene.fog = null;
+    } else {
+      this.updateLightingForTheme(this.currentTheme);
+    }
     this.cdr.detectChanges();
   }
 
@@ -376,6 +393,7 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     this.buildBoard3D();
     this.rebuildAllPieces3D();
     this.loadChessModels();
+    this.loadHdrEnvironment();
 
     this.scene.add(this.highlightGroup);
     this.scene.add(this.boardGroup);
@@ -467,84 +485,414 @@ export class Threejschess implements AfterViewInit, OnDestroy {
     });
   }
 
+  private loadHdrEnvironment() {
+    const hdrLoader = new HDRLoader();
+    const hdrUrls = [
+      '/ChessAssets/historic_cloister_passage_2k.hdr',
+      'ChessAssets/historic_cloister_passage_2k.hdr',
+      typeof window !== 'undefined' ? `${window.location.origin}/ChessAssets/historic_cloister_passage_2k.hdr` : '',
+    ].filter(Boolean);
+
+    const tryLoad = (idx: number) => {
+      if (idx >= hdrUrls.length) return;
+      hdrLoader.load(
+        hdrUrls[idx],
+        (texture) => {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          this.hdrEnvironmentTexture = texture;
+          this.scene.environment = texture;
+
+          if (this.showCloisterScene) {
+            this.scene.background = texture;
+            this.scene.backgroundBlurriness = 0.03;
+            this.scene.fog = null;
+          }
+          this.cdr.detectChanges();
+        },
+        undefined,
+        () => tryLoad(idx + 1)
+      );
+    };
+
+    tryLoad(0);
+  }
+
   private setupLighting() {
-    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
-    this.scene.add(ambient);
+    // 1. Balanced Sky/Ground Ambient Hemisphere Light
+    this.hemiLight = new THREE.HemisphereLight(0xf5f8ff, 0x181e28, 0.75);
+    this.scene.add(this.hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 1.4);
-    dirLight.position.set(6, 12, 6);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    dirLight.shadow.camera.near = 1;
-    dirLight.shadow.camera.far = 30;
-    const d = 6;
-    dirLight.shadow.camera.left = -d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = -d;
-    dirLight.shadow.bias = -0.0005;
-    this.scene.add(dirLight);
+    // 2. Main Key Directional Light with Soft Shadows
+    this.dirKeyLight = new THREE.DirectionalLight(0xfff8ee, 1.6);
+    this.dirKeyLight.position.set(6, 14, 7);
+    this.dirKeyLight.castShadow = true;
+    this.dirKeyLight.shadow.mapSize.width = 2048;
+    this.dirKeyLight.shadow.mapSize.height = 2048;
+    this.dirKeyLight.shadow.camera.near = 1;
+    this.dirKeyLight.shadow.camera.far = 35;
+    const d = 6.5;
+    this.dirKeyLight.shadow.camera.left = -d;
+    this.dirKeyLight.shadow.camera.right = d;
+    this.dirKeyLight.shadow.camera.top = d;
+    this.dirKeyLight.shadow.camera.bottom = -d;
+    this.dirKeyLight.shadow.bias = -0.0004;
+    this.dirKeyLight.shadow.radius = 2.0;
+    this.scene.add(this.dirKeyLight);
 
-    const blueFill = new THREE.DirectionalLight(0x00f2fe, 0.45);
-    blueFill.position.set(-8, 6, -8);
-    this.scene.add(blueFill);
+    // 3. Soft Complementary Fill Light
+    this.dirFillLight = new THREE.DirectionalLight(0x8aa8cf, 0.65);
+    this.dirFillLight.position.set(-7, 9, -6);
+    this.scene.add(this.dirFillLight);
 
-    const centerPoint = new THREE.PointLight(0xffffff, 0.5, 12);
-    centerPoint.position.set(0, 5, 0);
-    this.scene.add(centerPoint);
+    // 4. Back / Rim Light for crisp piece silhouettes
+    this.dirRimLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    this.dirRimLight.position.set(0, 11, -9);
+    this.scene.add(this.dirRimLight);
+
+    // 5. Center Specular Accent Point Light
+    this.centerPointLight = new THREE.PointLight(0xfff0dd, 0.75, 14, 2);
+    this.centerPointLight.position.set(0, 5.5, 0);
+    this.scene.add(this.centerPointLight);
   }
 
   private initMaterials() {
-    this.lightSquareMaterial = new THREE.MeshStandardMaterial({
-      color: 0xdedede,
-      roughness: 0.25,
-      metalness: 0.1,
-    });
+    this.applyThemeMaterials(this.currentTheme);
+  }
 
-    this.darkSquareMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1f2937,
-      roughness: 0.35,
-      metalness: 0.2,
-    });
+  private applyThemeMaterials(theme: ChessTheme) {
+    if (theme === 'glass') {
+      // FROSTED CRYSTAL & SMOKED GLASS THEME
+      this.whitePieceMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xf0fbff,
+        transmission: 0.9,
+        opacity: 1,
+        transparent: true,
+        roughness: 0.08,
+        ior: 1.52,
+        thickness: 1.6,
+        specularIntensity: 1.0,
+        specularColor: new THREE.Color(0xdffff),
+        attenuationColor: new THREE.Color(0x38bdf8),
+        attenuationDistance: 2.2,
+        side: THREE.DoubleSide,
+      });
 
-    this.whitePieceMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf8f9fa,
-      roughness: 0.2,
-      metalness: 0.15,
-      side: THREE.DoubleSide,
-    });
+      this.blackPieceMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x161826,
+        transmission: 0.82,
+        opacity: 1,
+        transparent: true,
+        roughness: 0.12,
+        ior: 1.6,
+        thickness: 1.8,
+        specularIntensity: 1.0,
+        specularColor: new THREE.Color(0xec4899),
+        attenuationColor: new THREE.Color(0x581c87),
+        attenuationDistance: 1.2,
+        side: THREE.DoubleSide,
+      });
 
-    this.blackPieceMaterial = new THREE.MeshStandardMaterial({
-      color: 0x18181b,
-      roughness: 0.3,
-      metalness: 0.4,
-      side: THREE.DoubleSide,
-    });
+      this.lightSquareMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x1e3a5f,
+        transmission: 0.7,
+        roughness: 0.16,
+        transparent: true,
+        opacity: 0.88,
+        ior: 1.48,
+        thickness: 1.0,
+      });
 
-    this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
-      color: 0x00f2fe,
-      emissive: 0x00f2fe,
-      emissiveIntensity: 0.6,
-      transparent: true,
-      opacity: 0.7,
-    });
+      this.darkSquareMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x0a0e1c,
+        transmission: 0.6,
+        roughness: 0.22,
+        transparent: true,
+        opacity: 0.92,
+        ior: 1.55,
+        thickness: 1.2,
+      });
 
-    this.targetSquareMaterial = new THREE.MeshStandardMaterial({
-      color: 0x00ff88,
-      emissive: 0x00ff88,
-      emissiveIntensity: 0.75,
-      transparent: true,
-      opacity: 0.65,
-    });
+      this.frameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x080b18,
+        roughness: 0.25,
+        metalness: 0.6,
+      });
 
-    this.lastMoveMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffaa00,
-      emissive: 0xffaa00,
-      emissiveIntensity: 0.4,
-      transparent: true,
-      opacity: 0.5,
-    });
+      this.rimMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00f2fe,
+        emissive: 0x00f2fe,
+        emissiveIntensity: 0.75,
+        metalness: 0.9,
+        roughness: 0.1,
+      });
+
+      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00f2fe,
+        emissive: 0x00f2fe,
+        emissiveIntensity: 0.9,
+        transparent: true,
+        opacity: 0.8,
+      });
+
+      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x34d399,
+        emissive: 0x34d399,
+        emissiveIntensity: 0.9,
+        transparent: true,
+        opacity: 0.75,
+      });
+
+      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
+        color: 0xa855f7,
+        emissive: 0xa855f7,
+        emissiveIntensity: 0.65,
+        transparent: true,
+        opacity: 0.6,
+      });
+    } else if (theme === 'neon') {
+      // HOLOGRAPHIC CYBER NEON THEME
+      this.whitePieceMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00f2fe,
+        emissive: 0x003b46,
+        emissiveIntensity: 0.45,
+        roughness: 0.12,
+        metalness: 0.85,
+        side: THREE.DoubleSide,
+      });
+
+      this.blackPieceMaterial = new THREE.MeshStandardMaterial({
+        color: 0x220538,
+        emissive: 0x7928ca,
+        emissiveIntensity: 0.55,
+        roughness: 0.18,
+        metalness: 0.9,
+        side: THREE.DoubleSide,
+      });
+
+      this.lightSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x0e2a47,
+        emissive: 0x005577,
+        emissiveIntensity: 0.25,
+        roughness: 0.25,
+        metalness: 0.7,
+      });
+
+      this.darkSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x160a26,
+        emissive: 0x2e0854,
+        emissiveIntensity: 0.3,
+        roughness: 0.3,
+        metalness: 0.75,
+      });
+
+      this.frameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x05040a,
+        roughness: 0.2,
+        metalness: 0.8,
+      });
+
+      this.rimMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff007f,
+        emissive: 0xff007f,
+        emissiveIntensity: 0.85,
+        metalness: 0.9,
+        roughness: 0.1,
+      });
+
+      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00f2fe,
+        emissive: 0x00f2fe,
+        emissiveIntensity: 1.0,
+        transparent: true,
+        opacity: 0.85,
+      });
+
+      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00ff88,
+        emissive: 0x00ff88,
+        emissiveIntensity: 1.0,
+        transparent: true,
+        opacity: 0.8,
+      });
+
+      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff007f,
+        emissive: 0xff007f,
+        emissiveIntensity: 0.8,
+        transparent: true,
+        opacity: 0.65,
+      });
+    } else {
+      // NORMAL / CLASSIC TOURNAMENT STUDIO THEME
+      this.whitePieceMaterial = new THREE.MeshStandardMaterial({
+        color: 0xf5f3ee,
+        roughness: 0.16,
+        metalness: 0.08,
+        side: THREE.DoubleSide,
+      });
+
+      this.blackPieceMaterial = new THREE.MeshStandardMaterial({
+        color: 0x1c1e26,
+        roughness: 0.22,
+        metalness: 0.25,
+        side: THREE.DoubleSide,
+      });
+
+      this.lightSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0xe8e2d5,
+        roughness: 0.32,
+        metalness: 0.06,
+      });
+
+      this.darkSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x242e3a,
+        roughness: 0.38,
+        metalness: 0.12,
+      });
+
+      this.frameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x12151c,
+        roughness: 0.35,
+        metalness: 0.2,
+      });
+
+      this.rimMaterial = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        emissive: 0x443308,
+        emissiveIntensity: 0.3,
+        metalness: 0.85,
+        roughness: 0.2,
+      });
+
+      this.selectedSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00f2fe,
+        emissive: 0x00f2fe,
+        emissiveIntensity: 0.6,
+        transparent: true,
+        opacity: 0.7,
+      });
+
+      this.targetSquareMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00ff88,
+        emissive: 0x00ff88,
+        emissiveIntensity: 0.75,
+        transparent: true,
+        opacity: 0.65,
+      });
+
+      this.lastMoveMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffaa00,
+        emissive: 0xffaa00,
+        emissiveIntensity: 0.45,
+        transparent: true,
+        opacity: 0.5,
+      });
+    }
+  }
+
+  private updateLightingForTheme(theme: ChessTheme) {
+    if (!this.scene || !this.hemiLight) return;
+
+    if (theme === 'glass') {
+      this.scene.background = new THREE.Color(0x070913);
+      this.scene.fog = new THREE.FogExp2(0x070913, 0.03);
+      if (this.renderer) {
+        this.renderer.toneMappingExposure = 1.35;
+      }
+
+      this.hemiLight.color.setHex(0x67e8f9);
+      this.hemiLight.groundColor.setHex(0x1e1035);
+      this.hemiLight.intensity = 0.95;
+
+      this.dirKeyLight.color.setHex(0xffffff);
+      this.dirKeyLight.intensity = 2.2;
+      this.dirKeyLight.position.set(6, 14, 7);
+
+      this.dirFillLight.color.setHex(0x00e5ff);
+      this.dirFillLight.intensity = 1.2;
+      this.dirFillLight.position.set(-7, 8, -6);
+
+      this.dirRimLight.color.setHex(0xc084fc);
+      this.dirRimLight.intensity = 1.8;
+      this.dirRimLight.position.set(0, 10, -9);
+
+      this.centerPointLight.color.setHex(0xffffff);
+      this.centerPointLight.intensity = 1.3;
+    } else if (theme === 'neon') {
+      this.scene.background = new THREE.Color(0x060210);
+      this.scene.fog = new THREE.FogExp2(0x060210, 0.035);
+      if (this.renderer) {
+        this.renderer.toneMappingExposure = 1.25;
+      }
+
+      this.hemiLight.color.setHex(0x00f2fe);
+      this.hemiLight.groundColor.setHex(0x7928ca);
+      this.hemiLight.intensity = 0.8;
+
+      this.dirKeyLight.color.setHex(0x00f2fe);
+      this.dirKeyLight.intensity = 1.8;
+      this.dirKeyLight.position.set(6, 14, 7);
+
+      this.dirFillLight.color.setHex(0xff007f);
+      this.dirFillLight.intensity = 1.4;
+      this.dirFillLight.position.set(-7, 8, -6);
+
+      this.dirRimLight.color.setHex(0x7928ca);
+      this.dirRimLight.intensity = 1.6;
+      this.dirRimLight.position.set(0, 10, -9);
+
+      this.centerPointLight.color.setHex(0x00f2fe);
+      this.centerPointLight.intensity = 1.1;
+    } else {
+      this.scene.background = new THREE.Color(0x0e131b);
+      this.scene.fog = new THREE.FogExp2(0x0e131b, 0.032);
+      if (this.renderer) {
+        this.renderer.toneMappingExposure = 1.15;
+      }
+
+      this.hemiLight.color.setHex(0xf5f8ff);
+      this.hemiLight.groundColor.setHex(0x181e28);
+      this.hemiLight.intensity = 0.75;
+
+      this.dirKeyLight.color.setHex(0xfff8ee);
+      this.dirKeyLight.intensity = 1.6;
+      this.dirKeyLight.position.set(6, 14, 7);
+
+      this.dirFillLight.color.setHex(0x8aa8cf);
+      this.dirFillLight.intensity = 0.65;
+      this.dirFillLight.position.set(-7, 9, -6);
+
+      this.dirRimLight.color.setHex(0xffffff);
+      this.dirRimLight.intensity = 1.1;
+      this.dirRimLight.position.set(0, 11, -9);
+
+      this.centerPointLight.color.setHex(0xfff0dd);
+      this.centerPointLight.intensity = 0.75;
+    }
+
+    if (this.showCloisterScene && this.hdrEnvironmentTexture) {
+      this.scene.background = this.hdrEnvironmentTexture;
+      this.scene.backgroundBlurriness = 0.03;
+      this.scene.fog = null;
+    }
+  }
+
+  private updateBoardMaterials() {
+    if (this.frameMesh) {
+      this.frameMesh.material = this.frameMaterial;
+    }
+    if (this.rimMesh) {
+      this.rimMesh.material = this.rimMaterial;
+    }
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        const isLight = (x + y) % 2 !== 0;
+        const sq = this.squareMeshes[x]?.[y];
+        if (sq) {
+          sq.material = isLight ? this.lightSquareMaterial : this.darkSquareMaterial;
+        }
+      }
+    }
   }
 
   private coordToWorld(x: number, y: number): THREE.Vector3 {
@@ -569,30 +917,18 @@ export class Threejschess implements AfterViewInit, OnDestroy {
       .fill(null)
       .map(() => Array(8).fill(null));
 
-    // Outer wooden / obsidian frame
+    // Outer frame
     const frameGeo = new THREE.BoxGeometry(9.2, 0.4, 9.2);
-    const frameMat = new THREE.MeshStandardMaterial({
-      color: 0x0f131a,
-      roughness: 0.4,
-      metalness: 0.3,
-    });
-    const frameMesh = new THREE.Mesh(frameGeo, frameMat);
-    frameMesh.position.y = -0.22;
-    frameMesh.receiveShadow = true;
-    this.boardGroup.add(frameMesh);
+    this.frameMesh = new THREE.Mesh(frameGeo, this.frameMaterial);
+    this.frameMesh.position.y = -0.22;
+    this.frameMesh.receiveShadow = true;
+    this.boardGroup.add(this.frameMesh);
 
-    // Bevel gold rim
+    // Bevel rim
     const rimGeo = new THREE.BoxGeometry(8.2, 0.05, 8.2);
-    const rimMat = new THREE.MeshStandardMaterial({
-      color: 0x7928ca,
-      emissive: 0x7928ca,
-      emissiveIntensity: 0.3,
-      metalness: 0.8,
-      roughness: 0.2,
-    });
-    const rimMesh = new THREE.Mesh(rimGeo, rimMat);
-    rimMesh.position.y = -0.01;
-    this.boardGroup.add(rimMesh);
+    this.rimMesh = new THREE.Mesh(rimGeo, this.rimMaterial);
+    this.rimMesh.position.y = -0.01;
+    this.boardGroup.add(this.rimMesh);
 
     // 64 Individual Squares
     const squareGeo = new THREE.BoxGeometry(0.98, 0.15, 0.98);
