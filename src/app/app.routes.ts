@@ -76,4 +76,14 @@ export const routes: Routes = [
     title: 'Chess Game | Mayur Saitwal',
     loadComponent: () => import('./threejschess/threejschess').then((m) => m.Threejschess),
   },
+  {
+    path: 'threejs/openworld',
+    title: 'Procedural Open World | Mayur Saitwal',
+    loadComponent: () => import('./openworld/openworld').then((m) => m.Openworld),
+  },
+  {
+    path: 'openworld',
+    title: 'Procedural Open World | Mayur Saitwal',
+    loadComponent: () => import('./openworld/openworld').then((m) => m.Openworld),
+  },
 ];

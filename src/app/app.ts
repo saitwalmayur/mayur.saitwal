@@ -41,7 +41,8 @@ export class App {
       url.includes('/audiovisulizer') ||
       url.includes('/threejsparticleeffects') ||
       url.includes('/threejschess') ||
-      url.includes('/chessgame');
+      url.includes('/chessgame') ||
+      url.includes('/openworld');
 
     this.isThreeJs.set(isThree);
   }
