@@ -3,6 +3,7 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { TopPanel } from './top-panel/top-panel';
+import { AnalyticsService } from './analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import { TopPanel } from './top-panel/top-panel';
 export class App {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private analytics = inject(AnalyticsService); // initializes Firebase & starts tracking
   protected readonly title = signal('mayursaitwal');
   protected readonly isThreeJs = signal(false);
 

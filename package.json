@@ -23,6 +23,7 @@
     "@netlify/angular-runtime": "^4.0.0",
     "@types/three": "^0.184.1",
     "express": "^5.1.0",
+    "firebase": "^13.0.0",
     "rxjs": "~7.8.0",
     "three": "^0.184.0",
     "tslib": "^2.3.0"
