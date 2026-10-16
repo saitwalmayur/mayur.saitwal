@@ -992,7 +992,7 @@ export class Openworld implements AfterViewInit, OnDestroy {
     this.lastPointerY = event.clientY;
 
     // Horizontal axis rotates freely with mouse movement (no click needed)
-    this.cameraYaw += dx * 0.0035;
+    this.cameraYaw -= dx * 0.0035;
 
     // Vertical pitch adjusts with mouse movement
     const pitchFactor = this.isPointerDown ? 0.0035 : 0.002;
