@@ -115,11 +115,26 @@ class SimpleNoise {
   }
 }
 
+interface FireflyCluster {
+  points: THREE.Points;
+  positions: Float32Array;
+  origins: Float32Array;
+  phases: Float32Array;
+  speeds: Float32Array;
+  radii: Float32Array;
+  colors: Float32Array;
+  light?: THREE.PointLight;
+  count: number;
+  centerX: number;
+  centerZ: number;
+}
+
 interface ChunkData {
   mesh: THREE.Mesh;
   propsGroup: THREE.Group;
   chunkX: number;
   chunkZ: number;
+  fireflyCluster?: FireflyCluster;
 }
 
 @Component({
@@ -228,6 +243,8 @@ export class Openworld implements AfterViewInit, OnDestroy {
   isHelpOpen = true;
   isControlsCollapsed = false;
   miniMapAngle = 0;
+  isNearFireflies = false;
+  private fireflyTexture: THREE.Texture | null = null;
 
   // Touch virtual controls state
   touchJoystick = {
@@ -939,19 +956,58 @@ export class Openworld implements AfterViewInit, OnDestroy {
   }
 
   onPointerMove(event: PointerEvent) {
-    if (!this.isPointerDown) return;
-    const dx = event.clientX - this.lastPointerX;
-    const dy = event.clientY - this.lastPointerY;
+    const isMouse = event.pointerType === 'mouse';
+
+    // Touch devices require finger touch down; mouse moves camera horizontally freely without clicking
+    if (!isMouse && !this.isPointerDown) {
+      return;
+    }
+
+    // Do not rotate camera when hovering or clicking HUD buttons/modals
+    const target = event.target as HTMLElement;
+    if (target && target.closest('.glass-panel, button, input, a, .dock-section, .modal-backdrop')) {
+      this.lastPointerX = event.clientX;
+      this.lastPointerY = event.clientY;
+      return;
+    }
+
+    if (this.lastPointerX === 0 && this.lastPointerY === 0) {
+      this.lastPointerX = event.clientX;
+      this.lastPointerY = event.clientY;
+      return;
+    }
+
+    // Calculate mouse delta
+    let dx = 0;
+    let dy = 0;
+    if (event.movementX !== undefined && Math.abs(event.movementX) < 100) {
+      dx = event.movementX;
+      dy = event.movementY;
+    } else {
+      dx = event.clientX - this.lastPointerX;
+      dy = event.clientY - this.lastPointerY;
+    }
+
     this.lastPointerX = event.clientX;
     this.lastPointerY = event.clientY;
 
-    this.cameraYaw -= dx * 0.005;
-    this.cameraPitch += dy * 0.005;
+    // Horizontal axis rotates freely with mouse movement (no click needed)
+    this.cameraYaw += dx * 0.0035;
+
+    // Vertical pitch adjusts with mouse movement
+    const pitchFactor = this.isPointerDown ? 0.0035 : 0.002;
+    this.cameraPitch += dy * pitchFactor;
     this.cameraPitch = THREE.MathUtils.clamp(this.cameraPitch, 0.05, 1.4);
   }
 
   onPointerUp() {
     this.isPointerDown = false;
+  }
+
+  onPointerLeave() {
+    this.isPointerDown = false;
+    this.lastPointerX = 0;
+    this.lastPointerY = 0;
   }
 
   onWheel(event: WheelEvent) {

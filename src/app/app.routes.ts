@@ -86,4 +86,14 @@ export const routes: Routes = [
     title: 'Procedural Open World | Mayur Saitwal',
     loadComponent: () => import('./openworld/openworld').then((m) => m.Openworld),
   },
+  {
+    path: 'unity',
+    title: 'Unity 3D | Mayur Saitwal',
+    loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
+  },
+  {
+    path: 'unityprojects',
+    title: 'Unity 3D | Mayur Saitwal',
+    loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
+  },
 ];
