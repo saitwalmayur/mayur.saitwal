@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as i}from"./chunk-EMVQD27E.mjs";import{a as s}from"./chunk-CXBSVJJ5.mjs";import{a as e}from"./chunk-JBXNSZOT.mjs";var o=class extends i{constructor(t){super(t),this.sound=this.registerDataInput("sound",s)}_execute(t,n){let r=this.sound.getValue(t);if(!r){this._reportError(t,"No sound provided"),this.out._activateSignal(t);return}r.stop(),this.out._activateSignal(t)}getClassName(){return"FlowGraphStopSoundBlock"}},u=!1;function d(){u||(u=!0,e("FlowGraphStopSoundBlock",o))}export{o as a,d as b};

@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{m as s}from"./chunk-CXBSVJJ5.mjs";import{e as o,h as u}from"./chunk-VX42TC3O.mjs";import{a as r}from"./chunk-JBXNSZOT.mjs";var e=class extends u{constructor(t){super(t),this.config=t,this.output=this.registerDataOutput("output",s(t.value))}_updateOutputs(t){this.output.setValue(this.config.value,t)}getClassName(){return"FlowGraphConstantBlock"}serialize(t={},a=o){super.serialize(t),a("value",this.config.value,t.config)}},i=!1;function h(){i||(i=!0,r("FlowGraphConstantBlock",e))}export{e as a,h as b};

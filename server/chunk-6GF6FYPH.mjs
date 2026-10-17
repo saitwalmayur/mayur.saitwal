@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a}from"./chunk-2FEJ6QW3.mjs";import{d as i}from"./chunk-CXBSVJJ5.mjs";import{a as o}from"./chunk-JBXNSZOT.mjs";var t=class extends a{constructor(e){super(e),this.type="KeyDown",this.isRepeat=this.registerDataOutput("isRepeat",i)}_executeEvent(e,r){let s=r.event.repeat??!1;return s&&this.config?.ignoreRepeat?!0:(this.isRepeat.setValue(s,e),super._executeEvent(e,r))}getClassName(){return"FlowGraphKeyDownEventBlock"}},n=!1;function h(){n||(n=!0,o("FlowGraphKeyDownEventBlock",t))}export{t as a,h as b};

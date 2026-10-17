@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as n}from"./chunk-UAB6P7XM.mjs";import{a as s,c as u}from"./chunk-CXBSVJJ5.mjs";import{a as o}from"./chunk-JBXNSZOT.mjs";var r=class extends n{constructor(e){super(u,e),this.sound=this.registerDataInput("sound",s)}_doOperation(e){let t=this.sound.getValue(e);if(t)return t.volume}getClassName(){return"FlowGraphGetSoundVolumeBlock"}},i=!1;function c(){i||(i=!0,o("FlowGraphGetSoundVolumeBlock",r))}export{r as a,c as b};

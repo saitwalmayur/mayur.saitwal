@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as e}from"./chunk-CXBSVJJ5.mjs";import{h as u}from"./chunk-VX42TC3O.mjs";var i=class extends u{constructor(t){super(t),this.config=t,this.executionFunction=this.registerDataInput("function",e),this.value=this.registerDataInput("value",e),this.result=this.registerDataOutput("result",e)}_updateOutputs(t){let s=this.executionFunction.getValue(t),r=this.value.getValue(t);s&&this.result.setValue(s(r,t),t)}getClassName(){return"FlowGraphCodeExecutionBlock"}};export{i as a};

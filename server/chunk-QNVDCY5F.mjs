@@ -1,0 +1,3 @@
+import './polyfills.server.mjs';
+import{a as o}from"./chunk-NW7RVBCE.mjs";import"./chunk-EOKHPW4D.mjs";var r="oitFinalSimpleBlendPixelShader",e=`precision highp float;uniform sampler2D uFrontColor;void main() {ivec2 fragCoord=ivec2(gl_FragCoord.xy);vec4 frontColor=texelFetch(uFrontColor,fragCoord,0);glFragColor=frontColor;}
+`;o.ShadersStore[r]||(o.ShadersStore[r]=e);var l={name:r,shader:e};export{l as oitFinalSimpleBlendPixelShader};

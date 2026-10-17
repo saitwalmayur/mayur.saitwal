@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a}from"./chunk-UAB6P7XM.mjs";import{a as s,d as n}from"./chunk-CXBSVJJ5.mjs";import{a as o}from"./chunk-JBXNSZOT.mjs";var r=class extends a{constructor(e){super(n,e),this.sound=this.registerDataInput("sound",s)}_doOperation(e){let t=this.sound.getValue(e);if(t)return t.state===3||t.state===2}getClassName(){return"FlowGraphIsSoundPlayingBlock"}},i=!1;function c(){i||(i=!0,o("FlowGraphIsSoundPlayingBlock",r))}export{r as a,c as b};

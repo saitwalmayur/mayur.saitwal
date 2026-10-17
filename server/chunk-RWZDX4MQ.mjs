@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{b as r}from"./chunk-FBTHKWQV.mjs";import{d as o}from"./chunk-CXBSVJJ5.mjs";import{a as i}from"./chunk-JBXNSZOT.mjs";var t=class extends r{constructor(e){super(e),this.condition=this.registerDataInput("condition",o),this.onTrue=this._registerSignalOutput("onTrue"),this.onFalse=this._registerSignalOutput("onFalse")}_execute(e){this.condition.getValue(e)?this.onTrue._activateSignal(e):this.onFalse._activateSignal(e)}getClassName(){return"FlowGraphBranchBlock"}},s=!1;function c(){s||(s=!0,i("FlowGraphBranchBlock",t))}export{t as a,c as b};

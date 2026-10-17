@@ -1,0 +1,4 @@
+import './polyfills.server.mjs';
+import{a as e}from"./chunk-NW7RVBCE.mjs";var a="areaLightTextureProcessingPixelShader",r=`uniform sampler2D textureSampler;uniform vec2 scalingRange;varying vec2 vUV;void main(void)
+{float x=(vUV.x-scalingRange.x)/(scalingRange.y-scalingRange.x);float y=(vUV.y-scalingRange.x)/(scalingRange.y-scalingRange.x);vec2 scaledUV=vec2(x,y);gl_FragColor=texture2D(textureSampler,scaledUV);}
+`;e.ShadersStore[a]||(e.ShadersStore[a]=r);var g={name:a,shader:r};export{g as a};

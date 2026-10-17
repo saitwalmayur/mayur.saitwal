@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as l}from"./chunk-CXBSVJJ5.mjs";import{h as t}from"./chunk-VX42TC3O.mjs";import{a as i}from"./chunk-JBXNSZOT.mjs";var a=class extends t{constructor(e){super(e),this.config=e,this.value=this.registerDataOutput("value",l,e.initialValue)}_updateOutputs(e){let r=this.config.variable;e.hasVariable(r)&&this.value.setValue(e.getVariable(r),e)}serialize(e){super.serialize(e),e.config.variable=this.config.variable}getClassName(){return"FlowGraphGetVariableBlock"}},s=!1;function f(){s||(s=!0,i("FlowGraphGetVariableBlock",a))}export{a,f as b};
