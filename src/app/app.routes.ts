@@ -87,6 +87,16 @@ export const routes: Routes = [
     loadComponent: () => import('./openworld/openworld').then((m) => m.Openworld),
   },
   {
+    path: 'threejs/lowpolyopenworld',
+    title: 'Low-Poly Open World | Mayur Saitwal',
+    loadComponent: () => import('./lowpolyopenworld/lowpolyopenworld').then((m) => m.Lowpolyopenworld),
+  },
+  {
+    path: 'lowpolyopenworld',
+    title: 'Low-Poly Open World | Mayur Saitwal',
+    loadComponent: () => import('./lowpolyopenworld/lowpolyopenworld').then((m) => m.Lowpolyopenworld),
+  },
+  {
     path: 'unity',
     title: 'Unity 3D | Mayur Saitwal',
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
@@ -95,5 +105,40 @@ export const routes: Routes = [
     path: 'unityprojects',
     title: 'Unity 3D | Mayur Saitwal',
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
+  },
+  {
+    path: 'threejs/ludo',
+    title: '3D Ludo Game | Mayur Saitwal',
+    loadComponent: () => import('./ludogame/ludogame').then((m) => m.Ludogame),
+  },
+  {
+    path: 'ludo',
+    title: '3D Ludo Game | Mayur Saitwal',
+    loadComponent: () => import('./ludogame/ludogame').then((m) => m.Ludogame),
+  },
+  {
+    path: 'ludogame',
+    title: '3D Ludo Game | Mayur Saitwal',
+    loadComponent: () => import('./ludogame/ludogame').then((m) => m.Ludogame),
+  },
+  {
+    path: 'threejs/tictactoe',
+    title: '3D Tic-Tac-Toe | Mayur Saitwal',
+    loadComponent: () => import('./tictactoe/tictactoe').then((m) => m.Tictactoe),
+  },
+  {
+    path: 'tictactoe',
+    title: '3D Tic-Tac-Toe | Mayur Saitwal',
+    loadComponent: () => import('./tictactoe/tictactoe').then((m) => m.Tictactoe),
+  },
+  {
+    path: 'babylonjs',
+    title: 'Babylon.js 3D Showcase | Mayur Saitwal',
+    loadComponent: () => import('./babylonjsexample/babylonjsexample').then((m) => m.Babylonjsexample),
+  },
+  {
+    path: 'babylonjsexample',
+    title: 'Babylon.js 3D Showcase | Mayur Saitwal',
+    loadComponent: () => import('./babylonjsexample/babylonjsexample').then((m) => m.Babylonjsexample),
   },
 ];

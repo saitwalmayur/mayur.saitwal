@@ -42,7 +42,13 @@ export class App {
       url.includes('/threejsparticleeffects') ||
       url.includes('/threejschess') ||
       url.includes('/chessgame') ||
-      url.includes('/openworld');
+      url.includes('/openworld') ||
+      url.includes('/lowpolyopenworld') ||
+      url.includes('/ludo') ||
+      url.includes('/ludogame') ||
+      url.includes('/tictactoe') ||
+      url.includes('/babylonjs') ||
+      url.includes('/babylonjsexample');
 
     this.isThreeJs.set(isThree);
   }
