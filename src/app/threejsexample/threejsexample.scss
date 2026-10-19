@@ -43,7 +43,7 @@
 
 .content-inner {
   z-index: 1;
-  max-width: 1100px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -87,14 +87,14 @@
 /* Projects Grid / List */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.1rem;
 }
 
 .project-card {
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 1.8rem;
+  border-radius: 16px;
+  padding: 1.1rem;
   cursor: pointer;
   text-decoration: none;
   color: #fff;
@@ -143,7 +143,7 @@
   }
 
   .card-icon {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     line-height: 1;
     filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
   }
@@ -160,41 +160,45 @@
   }
 
   .card-header h3 {
-    font-size: 1.45rem;
-    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    margin: 0 0 0.35rem 0;
     color: #fff;
     font-weight: 700;
     transition: color 0.3s ease;
   }
 
   .card-tagline {
-    font-size: 0.95rem;
+    font-size: 0.78rem;
     font-weight: 500;
     color: #00f2fe;
-    margin: 0 0 0.75rem 0;
-    line-height: 1.4;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.35;
   }
 
   .card-desc {
-    font-size: 0.92rem;
+    font-size: 0.78rem;
     color: rgba(255, 255, 255, 0.7);
-    margin: 0 0 1.2rem 0;
-    line-height: 1.55;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.45;
     flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .features-list {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1.4rem;
-    padding: 0.8rem 1rem;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.7rem;
     background: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
 
     .feature-bullet {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       color: rgba(255, 255, 255, 0.85);
       font-weight: 500;
     }
@@ -241,6 +245,12 @@
   }
 }
 
+@media (max-width: 1200px) {
+  .projects-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .page-content {
     padding: 2rem 1rem;
@@ -250,6 +260,12 @@
     font-size: 2.3rem;
   }
 
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
   .projects-grid {
     grid-template-columns: 1fr;
   }

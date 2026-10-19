@@ -132,6 +132,21 @@ export const routes: Routes = [
     loadComponent: () => import('./tictactoe/tictactoe').then((m) => m.Tictactoe),
   },
   {
+    path: 'threejs/tetris',
+    title: '3D Tetris Game | Mayur Saitwal',
+    loadComponent: () => import('./threejstetris/threejstetris').then((m) => m.Threejstetris),
+  },
+  {
+    path: 'tetris',
+    title: '3D Tetris Game | Mayur Saitwal',
+    loadComponent: () => import('./threejstetris/threejstetris').then((m) => m.Threejstetris),
+  },
+  {
+    path: 'threejstetris',
+    title: '3D Tetris Game | Mayur Saitwal',
+    loadComponent: () => import('./threejstetris/threejstetris').then((m) => m.Threejstetris),
+  },
+  {
     path: 'babylonjs',
     title: 'Babylon.js 3D Showcase | Mayur Saitwal',
     loadComponent: () => import('./babylonjsexample/babylonjsexample').then((m) => m.Babylonjsexample),
@@ -140,5 +155,10 @@ export const routes: Routes = [
     path: 'babylonjsexample',
     title: 'Babylon.js 3D Showcase | Mayur Saitwal',
     loadComponent: () => import('./babylonjsexample/babylonjsexample').then((m) => m.Babylonjsexample),
+  },
+  {
+    path: 'babylonjs/element-table',
+    title: '3D Periodic Table | Mayur Saitwal',
+    loadComponent: () => import('./babylon/elementtable/elementtable').then((m) => m.Elementtable),
   },
 ];

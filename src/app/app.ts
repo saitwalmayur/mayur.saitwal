@@ -47,6 +47,8 @@ export class App {
       url.includes('/ludo') ||
       url.includes('/ludogame') ||
       url.includes('/tictactoe') ||
+      url.includes('/tetris') ||
+      url.includes('/threejstetris') ||
       url.includes('/babylonjs') ||
       url.includes('/babylonjsexample');
 

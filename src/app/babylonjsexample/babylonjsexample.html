@@ -1,157 +1,46 @@
-<div class="babylon-container">
-  <!-- Fullscreen WebGL Babylon Canvas -->
-  <canvas #babylonCanvas class="render-canvas"></canvas>
-
-  <!-- Top Floating Header HUD -->
-  <header class="hud-top-bar">
-    <div class="brand-group">
-      <div class="engine-badge">
-        <span class="pulse-dot"></span>
-        <span class="engine-name">Babylon.js 7</span>
-      </div>
-      <div class="title-wrap">
-        <h1 class="hud-title">Quantum Core Reactor</h1>
-        <p class="hud-subtitle">Real-time 3D PBR Materials & Orbital Dynamics</p>
-      </div>
+﻿<div class="page-content">
+  <div class="content-inner">
+    <!-- Header Section -->
+    <div class="header">
+      <div class="badge-pill">Interactive Experiments</div>
+      <h1>Babylon.js Projects</h1>
+      <p>
+        Real-time 3D scenes, PBR materials, physics simulations, and immersive WebGL experiences built with Babylon.js 7. Select any experiment below to launch it.
+      </p>
     </div>
 
-    <div class="hud-metrics">
-      <div class="metric-chip">
-        <span class="metric-label">FPS</span>
-        <span class="metric-val" [class.fps-green]="fps >= 50" [class.fps-warn]="fps < 50">{{ fps }}</span>
-      </div>
-      <div class="metric-chip">
-        <span class="metric-label">Meshes</span>
-        <span class="metric-val">{{ activeMeshCount || 11 }}</span>
-      </div>
-      <div class="quick-nav">
-        <a routerLink="/threejs" class="nav-chip" title="Switch to Three.js experiments">
-          ✨ Three.js
-        </a>
-        <a routerLink="/" class="nav-chip" title="Back to Home">
-          🏠 Home
-        </a>
-      </div>
+    <!-- Project List Grid -->
+    <div class="projects-grid">
+      <a
+        *ngFor="let proj of projects"
+        class="project-card"
+        [routerLink]="proj.route"
+        [style.background]="proj.gradient"
+      >
+        <div class="card-top">
+          <div class="card-icon">{{ proj.icon }}</div>
+          <span class="launch-pill">Launch Demo ↗</span>
+        </div>
+
+        <div class="card-header">
+          <h3>{{ proj.title }}</h3>
+        </div>
+
+        <p class="card-tagline">{{ proj.tagline }}</p>
+        <p class="card-desc">{{ proj.description }}</p>
+
+        <div class="features-list">
+          <span class="feature-bullet" *ngFor="let feat of proj.features">
+            ✓ {{ feat }}
+          </span>
+        </div>
+
+        <div class="card-footer">
+          <div class="tags-row">
+            <span class="tag" *ngFor="let tag of proj.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </a>
     </div>
-  </header>
-
-  <!-- Bottom Floating Control Panel -->
-  <aside class="hud-control-dock">
-    <!-- Theme Palette Selector -->
-    <div class="dock-section">
-      <span class="section-label">Energy Core State</span>
-      <div class="theme-buttons">
-        <button
-          type="button"
-          class="theme-btn theme-cyan"
-          [class.active]="currentTheme === 'cyan'"
-          (click)="setTheme('cyan')"
-          title="Cyber Cyan Ionization"
-        >
-          <span class="color-dot cyan-dot"></span>
-          <span class="btn-label">Cyan</span>
-        </button>
-
-        <button
-          type="button"
-          class="theme-btn theme-gold"
-          [class.active]="currentTheme === 'gold'"
-          (click)="setTheme('gold')"
-          title="Solar Gold Fusion"
-        >
-          <span class="color-dot gold-dot"></span>
-          <span class="btn-label">Gold</span>
-        </button>
-
-        <button
-          type="button"
-          class="theme-btn theme-magenta"
-          [class.active]="currentTheme === 'magenta'"
-          (click)="setTheme('magenta')"
-          title="Dark Matter Plasma"
-        >
-          <span class="color-dot magenta-dot"></span>
-          <span class="btn-label">Magenta</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Simulation Actions -->
-    <div class="dock-section">
-      <span class="section-label">Simulation Dynamics</span>
-      <div class="actions-group">
-        <button
-          type="button"
-          class="action-btn"
-          [class.active]="isAutoRotating"
-          (click)="toggleAutoRotate()"
-          title="Toggle Core & Ring Rotation"
-        >
-          <span class="action-icon">{{ isAutoRotating ? '⏸' : '▶' }}</span>
-          <span>{{ isAutoRotating ? 'Pause' : 'Rotate' }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="action-btn"
-          [class.active]="isWireframe"
-          (click)="toggleWireframe()"
-          title="Toggle Wireframe Mesh Topology"
-        >
-          <span class="action-icon">🕸️</span>
-          <span>Wireframe</span>
-        </button>
-
-        <button
-          type="button"
-          class="action-btn"
-          (click)="resetCamera()"
-          title="Reset Camera View Angle"
-        >
-          <span class="action-icon">🎯</span>
-          <span>Reset Cam</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Speed Adjustment -->
-    <div class="dock-section">
-      <span class="section-label">Core Frequency</span>
-      <div class="speed-group">
-        <button
-          type="button"
-          class="speed-btn"
-          [class.active]="animationSpeed === 0.5"
-          (click)="setSpeed(0.5)"
-        >
-          0.5x
-        </button>
-        <button
-          type="button"
-          class="speed-btn"
-          [class.active]="animationSpeed === 1.0"
-          (click)="setSpeed(1.0)"
-        >
-          1.0x
-        </button>
-        <button
-          type="button"
-          class="speed-btn"
-          [class.active]="animationSpeed === 2.0"
-          (click)="setSpeed(2.0)"
-        >
-          2.0x
-        </button>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Interaction Hint Footer -->
-  <footer class="interaction-hint">
-    <span>🖱️ Left-Click + Drag: Orbit Camera</span>
-    <span class="separator">•</span>
-    <span>📜 Scroll: Zoom</span>
-    <span class="separator">•</span>
-    <span>⚡ Right-Click + Drag: Pan</span>
-  </footer>
+  </div>
 </div>
