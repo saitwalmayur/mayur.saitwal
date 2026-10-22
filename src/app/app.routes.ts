@@ -107,6 +107,16 @@ export const routes: Routes = [
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
   },
   {
+    path: 'unreal',
+    title: 'Unreal Engine | Mayur Saitwal',
+    loadComponent: () => import('./unrealprojects/unrealprojects').then((m) => m.Unrealprojects),
+  },
+  {
+    path: 'unrealprojects',
+    title: 'Unreal Engine | Mayur Saitwal',
+    loadComponent: () => import('./unrealprojects/unrealprojects').then((m) => m.Unrealprojects),
+  },
+  {
     path: 'threejs/ludo',
     title: '3D Ludo Game | Mayur Saitwal',
     loadComponent: () => import('./ludogame/ludogame').then((m) => m.Ludogame),
@@ -160,5 +170,25 @@ export const routes: Routes = [
     path: 'babylonjs/element-table',
     title: '3D Periodic Table | Mayur Saitwal',
     loadComponent: () => import('./babylon/elementtable/elementtable').then((m) => m.Elementtable),
+  },
+  {
+    path: 'babylonjs/room',
+    title: 'Isometric Cozy Room 3D | Mayur Saitwal',
+    loadComponent: () => import('./babylon/room/room').then((m) => m.Room),
+  },
+  {
+    path: 'room',
+    title: 'Isometric Cozy Room 3D | Mayur Saitwal',
+    loadComponent: () => import('./babylon/room/room').then((m) => m.Room),
+  },
+  {
+    path: 'babylonjs/openworld',
+    title: 'Babylon.js Procedural Open World | Mayur Saitwal',
+    loadComponent: () => import('./babylon/babylonopenworld/babylonopenworld').then((m) => m.Babylonopenworld),
+  },
+  {
+    path: 'babylonopenworld',
+    title: 'Babylon.js Procedural Open World | Mayur Saitwal',
+    loadComponent: () => import('./babylon/babylonopenworld/babylonopenworld').then((m) => m.Babylonopenworld),
   },
 ];

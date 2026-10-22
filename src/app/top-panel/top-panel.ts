@@ -11,6 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-top-panel',
+  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './top-panel.html',
   styleUrl: './top-panel.scss',
@@ -18,6 +19,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 export class TopPanel {
   isCompact = input<boolean>(false);
   menuOpen = signal(false);
+
   private elementRef = inject(ElementRef);
 
   toggleMenu(event: MouseEvent) {
@@ -36,3 +38,4 @@ export class TopPanel {
     }
   }
 }
+

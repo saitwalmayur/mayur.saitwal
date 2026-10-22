@@ -1,12 +1,39 @@
-.unity-page {
-  min-height: 100vh;
+:host {
+  display: block;
+  height: 100%;
   width: 100%;
+  overflow: hidden;
+}
+
+.unity-page {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.4) rgba(0, 0, 0, 0.2);
   background: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
               radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
               #070a13;
   color: #f1f5f9;
   padding: 3rem 1.5rem 6rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
+    &:hover {
+      background: rgba(56, 189, 248, 0.6);
+    }
+  }
 }
 
 .content-wrapper {
@@ -431,6 +458,9 @@
   border-radius: 18px;
   width: 100%;
   max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 
   .modal-header {
@@ -464,6 +494,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    overflow-y: auto;
 
     .modal-section {
       h4 {
