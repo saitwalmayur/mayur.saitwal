@@ -153,6 +153,13 @@ export class Projects {
       details: 'An addictive planet merging puzzle game.'
     },
     {
+      name: '2048 Merge',
+      imageUrl: 'https://img.gamepix.com/games/2048-merge/cover/2048-merge.png',
+      links: [{ label: 'Play Now', url: 'https://www.gamepix.com/play/2048-merge' }],
+      techStack: 'Unity, C#, Photoshop, Blender',
+      details: 'An addictive 2048 numerical block merging puzzle game.'
+    },
+    {
       name: 'Avoid',
       imageUrl: 'https://img.gamepix.com/games/avoid/cover/avoid.png',
       links: [{ label: 'Play Now', url: 'https://www.gamepix.com/play/avoid' }],

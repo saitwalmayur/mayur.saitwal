@@ -31,7 +31,7 @@
         <div class="stat-pill">
           <span class="stat-icon">📦</span>
           <div class="stat-meta">
-            <span class="stat-number">6+</span>
+            <span class="stat-number">15+</span>
             <span class="stat-text">Asset Store Templates</span>
           </div>
         </div>
@@ -106,6 +106,7 @@
             [alt]="proj.name"
             class="media-img"
             loading="lazy"
+            (error)="proj.imageUrl = undefined"
           />
           <div *ngIf="!proj.imageUrl" class="media-fallback">
             <span class="fallback-icon">{{ proj.icon }}</span>
@@ -223,20 +224,5 @@
       </div>
     </div>
 
-    <!-- Cross-Link to Three.js Experiments -->
-    <div class="threejs-banner">
-      <div class="banner-content">
-        <span class="banner-badge">Web 3D Experiments</span>
-        <h3>Looking for In-Browser WebGL & Three.js?</h3>
-        <p>
-          Explore procedural 3D open worlds, custom GLSL vertex shaders, interactive Web Audio visualizers,
-          and intelligent minimax 3D chess built directly with Angular and Three.js.
-        </p>
-      </div>
-      <a routerLink="/threejs" class="banner-btn">
-        <span>Launch Three.js Hub</span>
-        <span class="btn-arrow">→</span>
-      </a>
-    </div>
   </div>
 </div>

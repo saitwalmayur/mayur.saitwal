@@ -255,6 +255,296 @@ export class Unityprojects {
       ],
       metrics: 'Official Unity Asset Store Template',
     },
+    {
+      id: '3d-fill-template',
+      name: '3D Fill - Puzzle Template',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Spatial 3D voxel puzzle mechanics & level progression system',
+      description:
+        'Complete 3D spatial voxel filling puzzle template. Includes customizable grid dimensions, block snap physics, level editor, and mobile-ready touch input.',
+      icon: '🧊',
+      techStack: ['Unity', 'C#', 'Voxel Grid', 'Level Editor', 'Asset Store'],
+      features: [
+        'Grid-based spatial block positioning & snap math',
+        'Turnkey level editor with serialization',
+        'Clean modular C# architecture & sound manager',
+        'Optimized for mobile touch & WebGL',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/3d-fill-264484',
+          type: 'store',
+        },
+        {
+          label: 'Play WebGL Demo ↗',
+          url: 'https://www.gamepix.com/play/3d-fill',
+          type: 'play',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template • Commercial Release',
+    },
+    {
+      id: 'ball-destination',
+      name: 'Ball Destination',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Physics-driven ball navigation & path routing puzzle template',
+      description:
+        'Turnkey physics puzzle template featuring dynamic ball momentum, path guide mechanics, bounce pads, obstacle physics, and progressive level unlock system.',
+      icon: '⚽',
+      techStack: ['Unity', 'C#', 'PhysX', 'Trajectory Math', 'Asset Store'],
+      features: [
+        'Precision trajectory & momentum physics controllers',
+        'Interactive switches, bounce pads & directional portals',
+        'Dynamic camera follow & isometric view framing',
+        'Multi-stage level architecture with star rating',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/ball-destination-318217',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'fit-box',
+      name: 'Fit Box',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Geometric shape fitting & spatial logic game starter kit',
+      description:
+        'Minimalist 3D spatial reasoning puzzle template. Features dynamic shape rotation, socket validation, satisfying snap animations, and clean modular level progression.',
+      icon: '🔲',
+      techStack: ['Unity', 'C#', 'Geometric Math', 'Animation Curves', 'Asset Store'],
+      features: [
+        'Precise bounding-box fitting & alignment algorithms',
+        'Tactile haptic audio cues & juicy squash-stretch FX',
+        'Level generation matrix with scalable difficulty',
+        'Full mobile UI integration & pause/settings menu',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/fit-box-312788',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'step-box-template',
+      name: 'Step Box - Puzzle Template',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Isometric grid platformer mechanics with reactive tile systems',
+      description:
+        'Isometric grid-based puzzle platformer template. Features reactive falling tiles, timed hazards, multi-directional movement solvers, and complete level configuration pipeline.',
+      icon: '📦',
+      techStack: ['Unity', 'C#', 'Isometric Grid', 'Reactive Tiles', 'Asset Store'],
+      features: [
+        'Tile-based discrete movement controller',
+        'Disintegrating floors, pressure switches & elevators',
+        'Isometric camera rig with smooth tracking',
+        'Mobile virtual D-pad and swipe input handlers',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/step-box-311321',
+          type: 'store',
+        },
+        {
+          label: 'Play WebGL Demo ↗',
+          url: 'https://www.gamepix.com/play/step-box',
+          type: 'play',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template • Multi-Platform',
+    },
+    {
+      id: 'sequence',
+      name: 'Sequence',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Brain-training pattern memory & numerical sequence puzzle kit',
+      description:
+        'Comprehensive memory and cognitive sequence puzzle game template. Features procedural pattern generator, audio-visual feedback nodes, timer mechanics, and combo multiplier scoring.',
+      icon: '🔢',
+      techStack: ['Unity', 'C#', 'Pattern Algorithms', 'Audio Synthesis', 'Asset Store'],
+      features: [
+        'Adaptive procedural sequence generation algorithm',
+        'Harmonic audio cues paired with glowing tile nodes',
+        'Customizable grid sizes (3x3 to 6x6) and speed tiers',
+        'Persistent high score & player progress serializer',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/sequence-231381',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'color-fill',
+      name: 'Color Fill 3D',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Satisfying color maze painter & surface trail painting template',
+      description:
+        'Popular arcade painter mechanic where players slide a roller block across an unpainted 3D maze, dynamically splattering vibrant paint across floor tiles until the board is 100% covered.',
+      icon: '🎨',
+      techStack: ['Unity', 'C#', 'Mesh Coloring', 'Maze Solvers', 'Asset Store'],
+      features: [
+        'Dynamic runtime trail mesh & splat paint shader',
+        'Seamless tile-coverage percentage calculator',
+        'Over 30+ procedurally scalable maze layouts',
+        'Haptic vibration and juicy particle bursts',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/color-fill-314202',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'kick-out',
+      name: 'Kick Out',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Physics brawler & arena knock-out arcade battle template',
+      description:
+        'Physics-driven arena arcade template where players push, ram, and kick opposing ragdolls or balls off circular platforms into the void with elastic momentum physics.',
+      icon: '🥊',
+      techStack: ['Unity', 'C#', 'PhysX Brawler', 'Arena Mechanics', 'Asset Store'],
+      features: [
+        'Elastic bumper collision & force-vector deflection',
+        'Opponent AI with patrol and aggressive charge logic',
+        'Shrinking arena boundaries & falling platform edges',
+        'Ragdoll physics integration on knock-out impact',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/kick-out-313179',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: '2048-merge-template',
+      name: '2048 Merge - Template',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Production-ready 2048 sliding number merge game template',
+      description:
+        'Complete commercial source code for 2048 number merging puzzle. Includes smooth tile animations, undo moves system, grid matrix solvers, particle merge FX, and sound manager.',
+      icon: '🔢',
+      techStack: ['Unity', 'C#', 'Matrix Math', 'Particle Systems', 'Asset Store'],
+      features: [
+        'Optimized grid array mathematical merge logic',
+        'Undo system and state preservation stack',
+        'Elastic squash-and-stretch tween animations',
+        'Mobile touch swipe and keyboard arrow bindings',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/2048-merge-212641',
+          type: 'store',
+        },
+        {
+          label: 'Play WebGL Demo ↗',
+          url: 'https://www.gamepix.com/play/2048-merge',
+          type: 'play',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'jump-ball',
+      name: 'Jump Ball',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Endless bouncing platformer with rhythmic obstacle dodging',
+      description:
+        'Addictive arcade platform jumper template featuring one-touch bounce mechanics, rotating pillar platforms, color hazards, and procedural vertical stage streaming.',
+      icon: '🏀',
+      techStack: ['Unity', 'C#', 'Spring Physics', 'Procedural Spawner', 'Asset Store'],
+      features: [
+        'Calculated spring-impulse bounce physics',
+        'Rotating platform towers with hazard slice sections',
+        'Dynamic color palette transitions every stage',
+        'Endless procedural generation and score multiplier',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/jump-ball-311640',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'dot-dot',
+      name: 'Dot Dot',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Minimalist precision timing & orbital dot synchronization template',
+      description:
+        'Hyper-casual reflex game starter kit where players time orbital rotations to connect matching dots without colliding into rotating orbit barricades.',
+      icon: '⚪',
+      techStack: ['Unity', 'C#', 'Orbital Physics', 'Minimalist UI', 'Asset Store'],
+      features: [
+        'Smooth circular trajectory and orbital rotation math',
+        'One-tap precision timing input system',
+        'Minimalist sleek flat design & sound fx',
+        'Cross-platform iOS and Android support',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/dot-dot-176671',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
+    {
+      id: 'push',
+      name: 'Push',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Isometric button pusher & logic circuit puzzle template',
+      description:
+        'Clean spatial puzzle template where players calculate sequential button-push orders to retract pins, trigger pressure plates, and clear mechanical circuit boards.',
+      icon: '🔘',
+      techStack: ['Unity', 'C#', 'Spatial Logic', 'Circuit Math', 'Asset Store'],
+      features: [
+        'Tactile button depression animations & mechanical clicks',
+        'Non-intersecting path and reverse sequence logic',
+        'Modular level schema for rapid stage creation',
+        'Zen-like ambient aesthetic with zero time pressure',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/packs/push-179613',
+          type: 'store',
+        },
+      ],
+      metrics: 'Official Unity Asset Store Template',
+    },
 
     // Playable 3D Web Games
     {
@@ -391,6 +681,32 @@ export class Unityprojects {
         },
       ],
       metrics: 'Playable Online • Casual 3D',
+    },
+    {
+      id: '2048-merge',
+      name: '2048 Merge',
+      category: 'webgames',
+      categoryLabel: 'Playable Web Game',
+      tagline: 'Strategic number puzzle with cascading block merges & combo multipliers',
+      description:
+        'A dynamic 2048-style number puzzle built with Unity WebGL. Drop and slide matching numerical tiles to merge them into higher multiples, aiming for the 2048 tile and higher with chain reaction combos.',
+      imageUrl: 'https://img.gamepix.com/games/2048-merge/cover/2048-merge.png',
+      icon: '🔢',
+      techStack: ['Unity WebGL', 'C#', 'Tile Logic', 'Particle FX', 'GamePix'],
+      features: [
+        'Addictive 2048 merging mechanics with physics impact',
+        'Cascading combo streaks & score multiplier feedback',
+        'Responsive drag and drop controls for touch and mouse',
+        'Playable directly in-browser on GamePix with instant loading',
+      ],
+      links: [
+        {
+          label: 'Play on GamePix ↗',
+          url: 'https://www.gamepix.com/play/2048-merge',
+          type: 'play',
+        },
+      ],
+      metrics: 'Playable Online • Puzzle WebGL Release',
     },
   ];
 
