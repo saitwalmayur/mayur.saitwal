@@ -1,3 +1,27 @@
+[[headers]]
+  for = "/FindMySpot/Build/*.framework.js.br"
+  [headers.values]
+    Content-Type = "application/javascript"
+    Content-Encoding = "br"
+
+[[headers]]
+  for = "/FindMySpot/Build/*.wasm.br"
+  [headers.values]
+    Content-Type = "application/wasm"
+    Content-Encoding = "br"
+
+[[headers]]
+  for = "/FindMySpot/Build/*.data.br"
+  [headers.values]
+    Content-Type = "application/octet-stream"
+    Content-Encoding = "br"
+
+[[headers]]
+  for = "/FindMySpot/Build/*.symbols.json.br"
+  [headers.values]
+    Content-Type = "application/json"
+    Content-Encoding = "br"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

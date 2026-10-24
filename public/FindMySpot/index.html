@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+    <title>Find My Spot | Unity 3D Game</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #0f1015;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #unity-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      #unity-canvas {
+        background: #231F20;
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        max-width: calc(100vh * (720 / 1280));
+        aspect-ratio: 720 / 1280;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+        display: block;
+        outline: none;
+      }
+      #loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #1a1d2e 0%, #0c0e17 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+      }
+      #loading-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loader-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        margin-bottom: 20px;
+        animation: pulseLogo 2s ease-in-out infinite;
+      }
+      @keyframes pulseLogo {
+        0%, 100% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(1.06); filter: brightness(1.2); }
+      }
+      .loader-title {
+        color: #ffffff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .loader-subtitle {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+      }
+      .progress-bar-wrap {
+        width: 220px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-bar-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+        border-radius: 10px;
+        transition: width 0.15s ease-out;
+      }
+      .progress-text {
+        color: #818cf8;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 10px;
+        letter-spacing: 0.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width="720" height="1280" tabindex="-1"></canvas>
+      <div id="loading-overlay">
+        <div class="loader-logo">🎯</div>
+        <div class="loader-title">Find My Spot</div>
+        <div class="loader-subtitle">Streaming Unity WebGL Build...</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0%</div>
+      </div>
+    </div>
+
+    <script src="Build/New folder.loader.js"></script>
+    <script>
+      const canvas = document.querySelector("#unity-canvas");
+      const loadingOverlay = document.querySelector("#loading-overlay");
+      const progressFill = document.querySelector("#progress-fill");
+      const progressText = document.querySelector("#progress-text");
+
+      // Adaptive sizing based on device
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        canvas.style.maxWidth = "100vw";
+        canvas.style.maxHeight = "100vh";
+      }
+
+      createUnityInstance(canvas, {
+        arguments: [],
+        dataUrl: "Build/New folder.data",
+        frameworkUrl: "Build/New folder.framework.js",
+        codeUrl: "Build/New folder.wasm",
+        symbolsUrl: "Build/New folder.symbols.json",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Tech Juego",
+        productName: "Dot Dot",
+        productVersion: "0.1",
+      }, (progress) => {
+        const pct = Math.round(progress * 100);
+        progressFill.style.width = pct + "%";
+        progressText.textContent = pct + "%";
+      }).then((unityInstance) => {
+        window.unityInstance = unityInstance;
+        progressFill.style.width = "100%";
+        progressText.textContent = "100%";
+        setTimeout(() => {
+          loadingOverlay.classList.add("hidden");
+        }, 300);
+      }).catch((message) => {
+        console.error("Unity Instance Error:", message);
+        progressText.textContent = "Error loading build";
+        alert("Could not load Unity build: " + message);
+      });
+    </script>
+  </body>
+</html>

@@ -42,6 +42,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'findmyspotunity',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'findmyspot',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

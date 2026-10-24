@@ -48,66 +48,43 @@
     <!-- Filters & Search Toolbar -->
     <div class="filter-toolbar">
       <div class="category-tabs">
-        <button
-          class="tab-btn"
-          [class.active]="activeCategory === 'all'"
-          (click)="setCategory('all')"
-        >
+        <button class="tab-btn" [class.active]="activeCategory === 'all'" (click)="setCategory('all')">
           All ({{ projects.length }})
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeCategory === 'enterprise'"
-          (click)="setCategory('enterprise')"
-        >
-          🥽 Enterprise & VR
+        <button class="tab-btn" [class.active]="activeCategory === 'spatial'" (click)="setCategory('spatial')">
+          🥽 Spatial Computing / VR
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeCategory === 'assetstore'"
-          (click)="setCategory('assetstore')"
-        >
+        <button class="tab-btn" [class.active]="activeCategory === 'enterprise'" (click)="setCategory('enterprise')">
+          ☁️ Enterprise SaaS
+        </button>
+        <button class="tab-btn" [class.active]="activeCategory === 'multiplayer'" (click)="setCategory('multiplayer')">
+          🌐 Multiplayer
+        </button>
+        <button class="tab-btn" [class.active]="activeCategory === 'assetstore'" (click)="setCategory('assetstore')">
           📦 Asset Store Packages
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeCategory === 'webgames'"
-          (click)="setCategory('webgames')"
-        >
-          🕹️ Playable Web Games
+        <button class="tab-btn" [class.active]="activeCategory === 'webgames'" (click)="setCategory('webgames')">
+          🕹️ Playable Games
         </button>
       </div>
 
       <!-- Quick Search Input -->
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          placeholder="Filter by title or tech (e.g. visionOS, Photon, Physics)..."
-          class="search-input"
-        />
+        <input type="text" [(ngModel)]="searchQuery"
+          placeholder="Filter by title or tech (e.g. visionOS, Photon, Physics)..." class="search-input" />
         <button class="clear-search" *ngIf="searchQuery" (click)="searchQuery = ''">✕</button>
       </div>
     </div>
 
     <!-- Projects Grid -->
     <div class="projects-grid">
-      <div
-        class="unity-card"
-        *ngFor="let proj of filteredProjects"
-        [class]="'cat-' + proj.category"
-      >
+      <div class="unity-card" *ngFor="let proj of filteredProjects" [class]="'cat-' + proj.category">
         <!-- Card Thumbnail / Cover -->
-        <div class="card-media">
-          <img
-            *ngIf="proj.imageUrl"
-            [src]="proj.imageUrl"
-            [alt]="proj.name"
-            class="media-img"
-            loading="lazy"
-            (error)="proj.imageUrl = undefined"
-          />
+        <div class="card-media" [routerLink]="getProjectRouterLink(proj)"
+          [style.cursor]="getProjectRouterLink(proj) ? 'pointer' : 'default'">
+          <img *ngIf="proj.imageUrl" [src]="proj.imageUrl" [alt]="proj.name" class="media-img" loading="lazy"
+            (error)="proj.imageUrl = undefined" />
           <div *ngIf="!proj.imageUrl" class="media-fallback">
             <span class="fallback-icon">{{ proj.icon }}</span>
           </div>
@@ -119,7 +96,10 @@
           <div class="card-header">
             <div class="title-row">
               <span class="project-icon">{{ proj.icon }}</span>
-              <h3 class="project-name">{{ proj.name }}</h3>
+              <h3 class="project-name" [routerLink]="getProjectRouterLink(proj)"
+                [style.cursor]="getProjectRouterLink(proj) ? 'pointer' : 'default'">
+                {{ proj.name }}
+              </h3>
             </div>
             <p class="project-tagline">{{ proj.tagline }}</p>
           </div>
@@ -142,22 +122,17 @@
           <!-- Card Actions Footer -->
           <div class="card-footer">
             <div class="action-links">
-              <a
-                *ngFor="let link of proj.links"
-                [href]="link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="action-btn"
-                [class.play-btn]="link.type === 'play'"
-                [class.store-btn]="link.type === 'store'"
-              >
-                {{ link.label }}
-              </a>
-              <button
-                *ngIf="proj.architectureDetails"
-                class="action-btn specs-btn"
-                (click)="openSpecs(proj)"
-              >
+              <ng-container *ngFor="let link of proj.links">
+                <a *ngIf="link.url.startsWith('/')" [routerLink]="link.url" class="action-btn"
+                  [class.play-btn]="link.type === 'play'" [class.store-btn]="link.type === 'store'">
+                  {{ link.label }}
+                </a>
+                <a *ngIf="!link.url.startsWith('/')" [href]="link.url" target="_blank" rel="noopener noreferrer"
+                  class="action-btn" [class.play-btn]="link.type === 'play'" [class.store-btn]="link.type === 'store'">
+                  {{ link.label }}
+                </a>
+              </ng-container>
+              <button *ngIf="proj.architectureDetails" class="action-btn specs-btn" (click)="openSpecs(proj)">
                 Tech Specs
               </button>
             </div>
@@ -210,15 +185,16 @@
         </div>
 
         <div class="modal-footer">
-          <a
-            *ngFor="let link of selectedProject.links"
-            [href]="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="action-btn play-btn"
-          >
-            {{ link.label }}
-          </a>
+          <ng-container *ngFor="let link of selectedProject.links">
+            <a *ngIf="link.url.startsWith('/')" [routerLink]="link.url" (click)="closeSpecs()"
+              class="action-btn play-btn">
+              {{ link.label }}
+            </a>
+            <a *ngIf="!link.url.startsWith('/')" [href]="link.url" target="_blank" rel="noopener noreferrer"
+              class="action-btn play-btn">
+              {{ link.label }}
+            </a>
+          </ng-container>
           <button class="action-btn" (click)="closeSpecs()">Close</button>
         </div>
       </div>

@@ -1,0 +1,314 @@
+<div class="unity-spot-page">
+  <div class="content-wrapper">
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+      <a routerLink="/unityprojects" class="back-link">
+        <span class="arrow">←</span>
+        <span>Back to Unity 3D Projects</span>
+      </a>
+      <div class="nav-badges">
+        <span class="badge live-badge">
+          <span class="pulse-dot"></span>
+          Live WebGL 2.0 Build
+        </span>
+        <span class="badge engine-badge">Unity 3D Engine</span>
+      </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="game-header">
+      <div class="header-content">
+        <div class="title-group">
+          <div class="game-icon-wrap">
+            <span class="game-icon">🎯</span>
+          </div>
+          <div>
+            <h1 class="gradient-title">Find My Spot</h1>
+            <p class="tagline">
+              Reflex-driven precision timing & orbital synchronization arcade puzzle built in Unity 3D.
+            </p>
+          </div>
+        </div>
+
+        <div class="meta-pills">
+          <div class="meta-pill">
+            <span class="pill-label">PLATFORM</span>
+            <span class="pill-value">WebGL / WASM</span>
+          </div>
+          <div class="meta-pill">
+            <span class="pill-label">ENGINE</span>
+            <span class="pill-value">Unity 3D / C#</span>
+          </div>
+          <div class="meta-pill">
+            <span class="pill-label">ASPECT</span>
+            <span class="pill-value">9:16 Portrait</span>
+          </div>
+          <div class="meta-pill">
+            <span class="pill-label">FPS TARGET</span>
+            <span class="pill-value">60 FPS</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Section -->
+    <section class="game-showcase-section">
+      <!-- Toolbar Controls -->
+      <div class="game-toolbar">
+        <div class="toolbar-left">
+          <span class="status-indicator">
+            <span class="status-dot"></span>
+            Game Active
+          </span>
+          <span class="orientation-tip">💡 Optimized for Mobile Touch & Desktop Mouse Click</span>
+        </div>
+
+        <div class="toolbar-right">
+          <button class="tool-btn" (click)="restartGame()" title="Restart Game Build">
+            <span class="btn-icon">🔄</span>
+            <span>Restart</span>
+          </button>
+          <button
+            class="tool-btn"
+            (click)="toggleDeviceFrame()"
+            [class.active]="isDeviceFrame"
+            title="Toggle Phone Bezel / Fullstage"
+          >
+            <span class="btn-icon">{{ isDeviceFrame ? '📱' : '🖥️' }}</span>
+            <span>{{ isDeviceFrame ? 'Phone Frame' : 'Cinema View' }}</span>
+          </button>
+          <button class="tool-btn" (click)="toggleFullscreen()" title="Play Fullscreen">
+            <span class="btn-icon">⛶</span>
+            <span>Fullscreen</span>
+          </button>
+          <a
+            [href]="gameUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="tool-btn external-btn"
+            title="Open Unity Build Directly in New Tab"
+          >
+            <span class="btn-icon">↗</span>
+            <span>Direct Tab</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Game Stage Wrapper -->
+      <div
+        #gameContainer
+        class="game-stage-wrapper"
+        [class.phone-mode]="isDeviceFrame"
+        [class.cinema-mode]="!isDeviceFrame"
+        [class.is-fullscreen]="isFullscreen"
+      >
+        <!-- Ambient Glow FX Behind Device -->
+        <div class="stage-ambient-glow"></div>
+
+        <!-- Phone Device Hardware Frame -->
+        <div class="device-chassis" [class.no-chassis]="!isDeviceFrame">
+          <div class="phone-notch" *ngIf="isDeviceFrame">
+            <span class="speaker-grill"></span>
+            <span class="camera-lens"></span>
+          </div>
+
+          <!-- The Unity WebGL iFrame -->
+          <div class="iframe-container">
+            <div class="loading-scrim" *ngIf="isLoading">
+              <div class="scrim-spinner"></div>
+              <p class="scrim-text">Loading Unity WebGL 2.0 Engine...</p>
+              <span class="scrim-sub">Compiling WebAssembly modules</span>
+            </div>
+
+            <iframe
+              #gameIframe
+              [src]="currentIframeSrc"
+              class="unity-game-iframe"
+              (load)="onIframeLoad()"
+              title="Find My Spot Unity 3D Game"
+              allow="fullscreen; autoplay; gamepad"
+            ></iframe>
+          </div>
+
+          <div class="phone-home-indicator" *ngIf="isDeviceFrame"></div>
+        </div>
+      </div>
+
+      <!-- Quick How to Play Ribbon -->
+      <div class="quick-guide-ribbon">
+        <div class="guide-step">
+          <span class="step-num">1</span>
+          <div class="step-text">
+            <strong>Track the Orbit</strong>
+            <span>Observe the rotating dots and revolving obstacle barricades.</span>
+          </div>
+        </div>
+        <div class="guide-divider"></div>
+        <div class="guide-step">
+          <span class="step-num">2</span>
+          <div class="step-text">
+            <strong>Time Your Tap</strong>
+            <span>Click or tap anywhere on the screen at the precise split-second opening.</span>
+          </div>
+        </div>
+        <div class="guide-divider"></div>
+        <div class="guide-step">
+          <span class="step-num">3</span>
+          <div class="step-text">
+            <strong>Clear the Ring</strong>
+            <span>Fill every designated slot to trigger satisfying combos and advance stages.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep-Dive Specifications Tabs -->
+    <section class="details-section">
+      <div class="tabs-header">
+        <button
+          class="tab-trigger"
+          [class.active]="activeTab === 'guide'"
+          (click)="setTab('guide')"
+        >
+          🎮 Gameplay Mechanics
+        </button>
+        <button
+          class="tab-trigger"
+          [class.active]="activeTab === 'tech'"
+          (click)="setTab('tech')"
+        >
+          ⚙️ Engineering & Architecture
+        </button>
+        <button
+          class="tab-trigger"
+          [class.active]="activeTab === 'features'"
+          (click)="setTab('features')"
+        >
+          ✨ Key Features
+        </button>
+      </div>
+
+      <div class="tab-card">
+        <!-- Tab 1: Gameplay Mechanics -->
+        <div *ngIf="activeTab === 'guide'" class="tab-pane animate-fade">
+          <div class="pane-grid">
+            <div class="pane-card">
+              <span class="card-icon">⚡</span>
+              <h3>Precision One-Touch Controls</h3>
+              <p>
+                Engineered with ultra-responsive input binding that captures instantaneous screen taps
+                and mouse clicks without polling delay. The dot launches on pointer-down with calibrated
+                initial velocity.
+              </p>
+            </div>
+            <div class="pane-card">
+              <span class="card-icon">🔄</span>
+              <h3>Angular Trajectory Solvers</h3>
+              <p>
+                Employs custom trigonometric circular trajectory calculations. The projectile accounts for
+                instantaneous angular rotation of target rings for pixel-perfect collision checks.
+              </p>
+            </div>
+            <div class="pane-card">
+              <span class="card-icon">🛡️</span>
+              <h3>Dynamic Obstacle Matrices</h3>
+              <p>
+                Features escalating difficulty curves with counter-rotating barriers, variable angular
+                speeds, oscillating arcs, and multi-layered orbital shells as players progress.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Technical Architecture -->
+        <div *ngIf="activeTab === 'tech'" class="tab-pane animate-fade">
+          <div class="tech-spec-grid">
+            <div class="spec-row">
+              <span class="spec-label">Engine & Runtime:</span>
+              <span class="spec-value">Unity 3D Engine with WebGL 2.0 WebAssembly Pipeline</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Language / Architecture:</span>
+              <span class="spec-value">C# (.NET) with clean Object Pooling & Event-Driven Architecture</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Memory Footprint:</span>
+              <span class="spec-value">Fixed 32MB WASM Heap Allocation with zero runtime Garbage Collection spikes</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Collision Detection:</span>
+              <span class="spec-value">Sub-16ms deterministic raycast & distance-based radial intersection math</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Rendering & Shaders:</span>
+              <span class="spec-value">Vibrant flat-shaded mobile PBR materials optimized for 60+ FPS on low-power GPUs</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Compression Pipeline:</span>
+              <span class="spec-value">Brotli (.br) pre-compressed bundle with uncompressed fallback for universal browser hosting</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Key Features -->
+        <div *ngIf="activeTab === 'features'" class="tab-pane animate-fade">
+          <ul class="features-checklist">
+            <li>
+              <span class="check-badge">✓</span>
+              <div>
+                <strong>Zero Plugin Requirement:</strong> Runs natively in any modern browser (Chrome, Safari, Firefox, Edge) with WebGL 2.0.
+              </div>
+            </li>
+            <li>
+              <span class="check-badge">✓</span>
+              <div>
+                <strong>Adaptive Canvas Scaling:</strong> Automatically maintains 9:16 portrait ratio while adapting seamlessly to mobile screens and desktop monitors.
+              </div>
+            </li>
+            <li>
+              <span class="check-badge">✓</span>
+              <div>
+                <strong>Snappy Haptic Audio & Visuals:</strong> Satisfying bounce, snap animations, and auditory feedback synchronized with successful connections.
+              </div>
+            </li>
+            <li>
+              <span class="check-badge">✓</span>
+              <div>
+                <strong>Cross-Platform Compatibility:</strong> Seamlessly handles touch screen gestures, stylus inputs, and standard desktop mouse clicks.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- More Unity 3D Projects Showcase -->
+    <section class="related-section">
+      <div class="section-header">
+        <div>
+          <span class="sub-label">CONTINUE EXPLORING</span>
+          <h2 class="section-title">More Unity 3D & Engine Projects</h2>
+        </div>
+        <a routerLink="/unityprojects" class="view-all-btn">
+          View All Unity Projects →
+        </a>
+      </div>
+
+      <div class="related-grid">
+        <a
+          *ngFor="let proj of relatedProjects"
+          [routerLink]="proj.routerLink"
+          class="related-card"
+        >
+          <div class="related-icon">{{ proj.icon }}</div>
+          <div class="related-info">
+            <span class="related-category">{{ proj.category }}</span>
+            <h4 class="related-name">{{ proj.name }}</h4>
+            <p class="related-desc">{{ proj.description }}</p>
+          </div>
+          <span class="related-arrow">→</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</div>

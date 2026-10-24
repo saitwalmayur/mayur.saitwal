@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-export type UnityCategory = 'all' | 'enterprise' | 'assetstore' | 'webgames';
+export type UnityCategory = 'all' | 'spatial' | 'enterprise' | 'multiplayer' | 'assetstore' | 'webgames';
 
 export interface UnityProjectLink {
   label: string;
@@ -14,7 +14,7 @@ export interface UnityProjectLink {
 export interface UnityProjectItem {
   id: string;
   name: string;
-  category: 'enterprise' | 'assetstore' | 'webgames';
+  category: 'spatial' | 'enterprise' | 'multiplayer' | 'assetstore' | 'webgames';
   categoryLabel: string;
   tagline: string;
   description: string;
@@ -39,11 +39,11 @@ export class Unityprojects {
   selectedProject: UnityProjectItem | null = null;
 
   readonly projects: UnityProjectItem[] = [
-    // Enterprise & Spatial Computing
+    // Spatial Computing & visionOS / VR
     {
       id: 'apple-vision-pro',
       name: 'Digital Twin - Apple Vision Pro',
-      category: 'enterprise',
+      category: 'spatial',
       categoryLabel: 'Spatial Computing / visionOS',
       tagline: 'Enterprise spatial digital twin recognized with 2 Gold Awards at TCS',
       description:
@@ -68,18 +68,20 @@ export class Unityprojects {
         'Developed utilizing Unity Polyspatial and Swift bridging. Implemented custom spatial shaders and low-overhead geometry instancing to maintain rock-solid 90 FPS per eye without reprojection stutter.',
       metrics: '2 Gold Awards Winner • 90 FPS Spatial Fidelity',
     },
+    // Enterprise & Multiplayer Infrastructure (B2B SaaS)
     {
       id: 'avataryug',
       name: 'Avataryug',
       category: 'enterprise',
-      categoryLabel: 'Enterprise Gaming',
-      tagline: 'Cross-platform 3D avatar creation engine & scalable multiplayer infrastructure',
+      categoryLabel: 'B2B SaaS Platform',
+      tagline: 'Cross-platform 3D avatar creation engine & scalable multiplayer SaaS infrastructure',
       description:
-        'Engineered core 3D avatar mechanics, dynamic skeletal mesh deformation, accessory attachment systems, and scalable multiplayer synchronization pipelines for enterprise gaming ecosystems.',
+        'Engineered core 3D avatar mechanics, dynamic skeletal mesh deformation, accessory attachment systems, and scalable multiplayer synchronization pipelines for an enterprise B2B SaaS platform.',
       imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/AYlogo.webp',
       icon: '👤',
-      techStack: ['Unity', 'C#', 'REST API', 'Unreal Engine', 'Skinning & Rigging'],
+      techStack: ['Unity', 'C#', 'REST API', 'Unreal Engine', 'Skinning & Rigging', 'Cloud SaaS'],
       features: [
+        'B2B SaaS product for cross-platform avatar authoring & dynamic rigging',
         'Real-time skeletal mesh bone binding & blendshapes',
         'Cross-platform avatar export & synchronization',
         'Scalable REST API cloud backend integration',
@@ -93,13 +95,14 @@ export class Unityprojects {
         },
       ],
       architectureDetails:
-        'Combined custom SkinnedMeshRenderer combine utilities to merge multiple apparel draw calls into a single unified draw call, reducing batch overhead by 70%.',
-      metrics: 'Scalable Enterprise SDK • Multi-Platform',
+        'Combined custom SkinnedMeshRenderer combine utilities to merge multiple apparel draw calls into a single unified draw call, reducing batch overhead by 70%. Built cloud-connected pipeline for dynamic asset streaming in SaaS environments.',
+      metrics: 'Enterprise B2B SaaS • Multi-Platform SDK',
     },
+    // Real-Time Multiplayer Games
     {
       id: 'pool-royale',
       name: 'Pool Royale',
-      category: 'enterprise',
+      category: 'multiplayer',
       categoryLabel: 'Multiplayer Sports',
       tagline: 'Real-time competitive 8-ball pool with custom physics & server reconciliation',
       description:
@@ -513,6 +516,11 @@ export class Unityprojects {
       ],
       links: [
         {
+          label: 'Play WebGL Build 🎮',
+          url: '/findmyspotunity',
+          type: 'play',
+        },
+        {
           label: 'Asset Store Package ↗',
           url: 'https://assetstore.unity.com/packages/templates/packs/dot-dot-176671',
           type: 'store',
@@ -547,6 +555,34 @@ export class Unityprojects {
     },
 
     // Playable 3D Web Games
+    {
+      id: 'find-my-spot',
+      name: 'Find My Spot',
+      category: 'webgames',
+      categoryLabel: 'Playable WebGL Game',
+      tagline: 'High-speed orbital reflex puzzle & precision timing mechanics built with Unity WebGL',
+      description:
+        'A fast-paced, reflex-testing Unity 3D game. Players time orbital launch trajectories to accurately land the dot in designated spots while avoiding moving barricades and dynamic spatial hazards.',
+      imageUrl: '/FindMySpot/TemplateData/webmemd-icon.png',
+      icon: '🎯',
+      techStack: ['Unity 3D', 'WebGL 2.0', 'C#', 'WebAssembly', 'Orbital Physics', 'Mobile Responsive'],
+      features: [
+        'Playable directly in browser via Unity WebGL 2.0',
+        'Sub-16ms precision collision detection & hit registration',
+        'Dynamic rotating obstacle rings & scalable level difficulty',
+        'Smooth touch and click controls with haptic visual feedback',
+      ],
+      links: [
+        {
+          label: 'Play Game Now 🎮',
+          url: '/findmyspotunity',
+          type: 'play',
+        },
+      ],
+      architectureDetails:
+        'Built with Unity WebGL and C#. Utilizes custom fixed-timestep collision solver and minimal draw calls with GPU instancing. Packaged with Brotli compression and responsive canvas scaling for high-FPS browser execution.',
+      metrics: 'Playable Online • 60 FPS WebGL Build • In-Portfolio Game',
+    },
     {
       id: '3d-fill',
       name: '3D Fill',
@@ -735,5 +771,10 @@ export class Unityprojects {
 
   closeSpecs() {
     this.selectedProject = null;
+  }
+
+  getProjectRouterLink(proj: UnityProjectItem): string | null {
+    const internalLink = proj.links.find((l) => l.url.startsWith('/'));
+    return internalLink ? internalLink.url : null;
   }
 }

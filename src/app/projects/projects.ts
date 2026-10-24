@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 
 export interface ProjectLink {
   label: string;
@@ -15,26 +15,79 @@ export interface Project {
   details?: string;
 }
 
+export type ProjectCategory = 'unity' | 'threejs' | 'react-native' | 'react' | 'angular';
+
 @Component({
   selector: 'app-projects',
   imports: [CommonModule, RouterLink],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
 })
-export class Projects {
+export class Projects implements OnInit {
   selectedProject: Project | null = null;
   selectedPlayProject: Project | null = null;
-  activeCategory: string = 'unity';
+  activeCategory: ProjectCategory = 'unity';
 
-  selectCategory(category: string) {
-    this.activeCategory = category;
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.route.data.subscribe((data) => {
+      if (data['category']) {
+        this.activeCategory = data['category'] as ProjectCategory;
+      }
+    });
+    this.route.queryParams.subscribe((params) => {
+      if (params['category']) {
+        this.activeCategory = params['category'] as ProjectCategory;
+      }
+    });
+  }
+
+  selectCategory(category: ProjectCategory | string) {
+    this.activeCategory = category as ProjectCategory;
+  }
+
+  get isComingSoonCategory(): boolean {
+    return (
+      this.activeCategory === 'react-native' ||
+      this.activeCategory === 'react' ||
+      this.activeCategory === 'angular'
+    );
+  }
+
+  getCategoryTitle(): string {
+    switch (this.activeCategory) {
+      case 'react-native':
+        return 'React Native';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'threejs':
+        return 'Three.js';
+      default:
+        return 'Unity';
+    }
+  }
+
+  getCategoryIcon(): string {
+    switch (this.activeCategory) {
+      case 'react-native':
+        return '📱';
+      case 'react':
+        return '⚛️';
+      case 'angular':
+        return '🅰️';
+      case 'threejs':
+        return '✨';
+      default:
+        return '🎮';
+    }
   }
 
   get filteredProfessionalProjects(): Project[] {
-    if (this.activeCategory === 'react-native') {
-      return this.professionalProjects.filter(p =>
-        p.techStack?.toLowerCase().includes('react native')
-      );
+    if (this.isComingSoonCategory) {
+      return [];
     }
     let filterTerm = this.activeCategory === 'threejs' ? 'three.js' : this.activeCategory;
     return this.professionalProjects.filter(p =>
@@ -43,10 +96,8 @@ export class Projects {
   }
 
   get filteredIndieProjects(): Project[] {
-    if (this.activeCategory === 'react-native') {
-      return this.indieProjects.filter(p =>
-        p.techStack?.toLowerCase().includes('react native')
-      );
+    if (this.isComingSoonCategory) {
+      return [];
     }
     let filterTerm = this.activeCategory === 'threejs' ? 'three.js' : this.activeCategory;
     return this.indieProjects.filter(p =>
@@ -67,8 +118,8 @@ export class Projects {
       name: 'Avataryug',
       imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/AYlogo.webp',
       links: [{ label: 'Detail', url: 'https://avataryug.com/showcase' }],
-      techStack: 'Unity, C#, Rest API, Unreal Engine',
-      details: 'Developed core mechanics and scalable multiplayer systems used for enterprise gaming.'
+      techStack: 'Unity, C#, Rest API, Unreal Engine, Cloud SaaS',
+      details: 'Cross-platform 3D avatar creation engine and scalable multiplayer SaaS product for enterprise gaming.'
     },
     {
       name: 'Pool Royale',

@@ -9,6 +9,42 @@ export const routes: Routes = [
   { path: '', component: HomeScreen, title: 'Home | Mayur Saitwal' },
   { path: 'experience', component: ExperienceScreen, title: 'Experience | Mayur Saitwal' },
   { path: 'projects', component: Projects, title: 'Projects | Mayur Saitwal' },
+  {
+    path: 'react',
+    component: Projects,
+    title: 'React Projects | Mayur Saitwal',
+    data: { category: 'react' },
+  },
+  {
+    path: 'reactprojects',
+    component: Projects,
+    title: 'React Projects | Mayur Saitwal',
+    data: { category: 'react' },
+  },
+  {
+    path: 'react-native',
+    component: Projects,
+    title: 'React Native Projects | Mayur Saitwal',
+    data: { category: 'react-native' },
+  },
+  {
+    path: 'reactnative',
+    component: Projects,
+    title: 'React Native Projects | Mayur Saitwal',
+    data: { category: 'react-native' },
+  },
+  {
+    path: 'angular',
+    component: Projects,
+    title: 'Angular Projects | Mayur Saitwal',
+    data: { category: 'angular' },
+  },
+  {
+    path: 'angularprojects',
+    component: Projects,
+    title: 'Angular Projects | Mayur Saitwal',
+    data: { category: 'angular' },
+  },
   { path: 'showcase', component: Showcase, title: 'Showcase | Mayur Saitwal' },
   { path: 'contact', component: ContactScreen, title: 'Contact | Mayur Saitwal' },
   {
@@ -105,6 +141,21 @@ export const routes: Routes = [
     path: 'unityprojects',
     title: 'Unity 3D | Mayur Saitwal',
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),
+  },
+  {
+    path: 'findmyspotunity',
+    title: 'Find My Spot - Unity 3D Game | Mayur Saitwal',
+    loadComponent: () => import('./findmyspotunity/findmyspotunity').then((m) => m.Findmyspotunity),
+  },
+  {
+    path: 'findmyspot',
+    title: 'Find My Spot - Unity 3D Game | Mayur Saitwal',
+    loadComponent: () => import('./findmyspotunity/findmyspotunity').then((m) => m.Findmyspotunity),
+  },
+  {
+    path: 'unity/findmyspot',
+    title: 'Find My Spot - Unity 3D Game | Mayur Saitwal',
+    loadComponent: () => import('./findmyspotunity/findmyspotunity').then((m) => m.Findmyspotunity),
   },
   {
     path: 'unreal',
