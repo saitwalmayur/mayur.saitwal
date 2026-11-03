@@ -59,5 +59,17 @@ export class Babylonjsexample {
       features: ['Perlin Multi-Octave Heightmap & Biomes', 'Instanced Pine Trees & Low-Poly Boulders', 'Day / Sunset / Night / Dawn Cycles', 'Free Drone Flight & 360 Orbit Cameras'],
       gradient: 'linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.15))',
     },
+    {
+      id: 'third-person-character',
+      route: '/babylonjs/thirdpersoncharacter',
+      title: 'Paladin 3D Character & Drivable Car',
+      tagline: 'Paladin J Nordstrom with full keyboard & mouse controls, sword & shield combat animations, and drivable sports car',
+      description:
+        'Interactive third-person player controller featuring the Paladin J Nordstrom knight. Complete with third-person follow camera, mouse look orbit, combat animations (attack, slash, block, kick, power up, jump), and an interactive vehicle you can enter and drive around the 3D cyber-medieval arena.',
+      tags: ['Babylon.js FBX Loader', 'Third-Person Camera', 'Mixamo Animations', 'Combat Mechanics', 'Drivable Car Physics'],
+      icon: '⚔️',
+      features: ['Paladin J Nordstrom FBX Rig & Sword/Shield', 'Walk, Sprint, Attack, Block, Kick & Jump', 'Mouse Look Follow Camera & Orbit Zoom', 'Interactive Drivable Sports Car with Speedometer'],
+      gradient: 'linear-gradient(135deg, rgba(234, 88, 12, 0.28), rgba(217, 70, 239, 0.18))',
+    },
   ];
 }

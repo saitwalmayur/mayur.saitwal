@@ -242,4 +242,28 @@ export const routes: Routes = [
     title: 'Babylon.js Procedural Open World | Mayur Saitwal',
     loadComponent: () => import('./babylon/babylonopenworld/babylonopenworld').then((m) => m.Babylonopenworld),
   },
+  {
+    path: 'babylonjs/thirdpersoncharacter',
+    title: 'Paladin 3D Character & Car | Babylon.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./babylon/thirdpersoncharacter/thirdpersoncharacter').then(
+        (m) => m.Thirdpersoncharacter
+      ),
+  },
+  {
+    path: 'thirdpersoncharacter',
+    title: 'Paladin 3D Character & Car | Babylon.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./babylon/thirdpersoncharacter/thirdpersoncharacter').then(
+        (m) => m.Thirdpersoncharacter
+      ),
+  },
+  {
+    path: 'babylonjs/character',
+    title: 'Paladin 3D Character & Car | Babylon.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./babylon/thirdpersoncharacter/thirdpersoncharacter').then(
+        (m) => m.Thirdpersoncharacter
+      ),
+  },
 ];

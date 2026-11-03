@@ -100,6 +100,39 @@ export class Unityprojects {
     },
     // Real-Time Multiplayer Games
     {
+      id: 'billiards-pool-arena',
+      name: 'Billiards Pool Arena',
+      category: 'multiplayer',
+      categoryLabel: 'Multiplayer Sports',
+      tagline: 'Real-time 8-ball & 9-ball multiplayer pool with Photon networking & global tournaments',
+      description:
+        'Engineered real-time competitive multiplayer 8-ball and 9-ball pool game featuring live PvP matchmaking, custom ball trajectory & cue spin physics, and tournament room synchronization.',
+      imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/8ballarena.png',
+      icon: '🎱',
+      techStack: ['Unity', 'C#', 'Photon', 'REST API', 'Custom Physics', 'iOS / Android'],
+      features: [
+        'Real-time PvP multiplayer matchmaking with low-latency synchronization',
+        '8-ball and 9-ball competitive tournament modes with spectator view',
+        'Realistic cue-ball spin, English, bank shots, and deflection physics',
+        'REST API backend integration for player progression, cues & leaderboards',
+      ],
+      links: [
+        {
+          label: 'App Store ↗',
+          url: 'https://apps.apple.com/us/app/billiards-pool-arena/id1186911558',
+          type: 'store',
+        },
+        {
+          label: 'Android Info',
+          url: 'https://billiards-pool-arena.en.softonic.com/android?ex=RAMP-3507.3&rex=true',
+          type: 'play',
+        },
+      ],
+      architectureDetails:
+        'Architected real-time multiplayer synchronization using Photon engine, implementing authoritative client-prediction and custom deterministic ball physics simulation to avoid desynchronization across mobile devices.',
+      metrics: 'Live on iOS App Store • Real-Time PvP',
+    },
+    {
       id: 'pool-royale',
       name: 'Pool Royale',
       category: 'multiplayer',
@@ -118,7 +151,12 @@ export class Unityprojects {
       ],
       links: [
         {
-          label: 'Game Info',
+          label: 'App Store ↗',
+          url: 'https://apps.apple.com/us/app/pool-royale-3d-pool/id1531063871',
+          type: 'store',
+        },
+        {
+          label: 'Android Info',
           url: 'https://pool-royale-5r7.en.softonic.com/android?ex=RAMP-3507.3&rex=true',
           type: 'play',
         },
@@ -128,7 +166,35 @@ export class Unityprojects {
       metrics: 'Over 100k+ Matches Simulated',
     },
 
-    // Unity Asset Store Templates
+    // Unity Asset Store Templates & Systems
+    {
+      id: 'lives-system',
+      name: 'Lives System',
+      category: 'assetstore',
+      categoryLabel: 'Unity Asset Store',
+      tagline: 'Modular player lives, energy timer regeneration & game-over management system',
+      description:
+        'Complete plug-and-play lives and energy management system published on the official Unity Asset Store. Features automated timer-based life regeneration, persistent storage, infinite-life boosts, customizable UI counters, and event-driven architecture.',
+      imageUrl: 'https://assetstorev1-prd-cdn.unity3d.com/key-image/ab44262c-f17e-438c-82c9-abf8ff706101.png?v=1',
+      icon: '❤️',
+      techStack: ['Unity', 'C#', 'Time Regeneration', 'UI Toolkit / UGUI', 'Asset Store', 'Event System'],
+      features: [
+        'Automated countdown timer for periodic life recovery',
+        'Customizable max lives, refill intervals & infinite lives boosts',
+        'Event-driven architecture for clean UI & gameplay decoupling',
+        'Persistent state save/load with offline time tracking calculation',
+      ],
+      links: [
+        {
+          label: 'Asset Store Package ↗',
+          url: 'https://assetstore.unity.com/packages/templates/systems/lives-system-303962',
+          type: 'store',
+        },
+      ],
+      architectureDetails:
+        'Engineered with an observer pattern and timestamp-based delta calculations to ensure accurate life refills across application pauses and offline sessions. Fully inspector-configurable with zero hard dependencies.',
+      metrics: 'Official Unity Asset Store System',
+    },
     {
       id: 'bottle-shooter',
       name: 'Bottle Shooter 3D',

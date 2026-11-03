@@ -1,0 +1,179 @@
+<div class="character-viewport">
+  <!-- Top Panel Circular Menu -->
+  <app-top-panel></app-top-panel>
+
+  <!-- 3D Render Canvas -->
+  <canvas
+    #renderCanvas
+    class="render-canvas"
+    (mousedown)="onCanvasMouseDown($event)"
+    (mouseup)="onCanvasMouseUp($event)"
+    (contextmenu)="$event.preventDefault()"
+  ></canvas>
+
+  <!-- Loading Screen -->
+  <div class="loading-overlay" *ngIf="loading()">
+    <div class="loading-card">
+      <div class="paladin-emblem">⚔️</div>
+      <h2>Paladin J Nordstrom</h2>
+      <p class="loading-text">{{ loadingText() }}</p>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <span class="loading-sub">Loading Babylon.js FBX Engine & Sword/Shield Animations</span>
+    </div>
+  </div>
+
+  <!-- In-Game Heads Up Display (HUD) -->
+  <div class="hud-container" *ngIf="!loading()">
+    <!-- Top-Left Player Status -->
+    <div class="player-status-card" *ngIf="!isDriving()">
+      <div class="status-header">
+        <span class="character-icon">🛡️</span>
+        <div class="character-meta">
+          <span class="char-name">Paladin J Nordstrom</span>
+          <span class="stance-badge">{{ activeActionName() }}</span>
+        </div>
+      </div>
+
+      <!-- Health & Stamina Bars -->
+      <div class="stat-bar-group">
+        <div class="stat-row">
+          <span class="stat-label">HP</span>
+          <div class="bar-track">
+            <div class="bar-fill hp" [style.width.%]="health()"></div>
+          </div>
+          <span class="stat-value">{{ health() }}/100</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">STA</span>
+          <div class="bar-track">
+            <div class="bar-fill stamina" [style.width.%]="stamina()"></div>
+          </div>
+          <span class="stat-value">{{ stamina() }}/100</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Driving Speedometer Card (Shown when driving) -->
+    <div class="car-speedo-card" *ngIf="isDriving()">
+      <div class="speedo-header">
+        <span class="car-icon">🏎️</span>
+        <span class="car-title">Cyber Sport GTR</span>
+      </div>
+      <div class="speedo-dial">
+        <span class="speed-number">{{ carSpeedKmH() }}</span>
+        <span class="speed-unit">KM/H</span>
+      </div>
+      <div class="speed-gear">
+        <span>GEAR {{ carSpeedKmH() > 80 ? '4' : carSpeedKmH() > 40 ? '3' : carSpeedKmH() > 10 ? '2' : '1' }}</span>
+        <span class="exit-hint">Press <strong>[E]</strong> to Exit Car</span>
+      </div>
+    </div>
+
+    <!-- Interactive Prompt When Near Car -->
+    <div class="car-proximity-prompt" *ngIf="canEnterCar() && !isDriving()">
+      <button class="drive-btn" (click)="toggleCarDriving()">
+        <span class="prompt-key">E</span>
+        <span class="prompt-text">Enter & Drive Sports Car 🏎️</span>
+      </button>
+    </div>
+
+    <!-- Top-Right Toolbar (Lighting, Sound, Fullscreen) -->
+    <div class="top-toolbar">
+      <div class="tod-selector">
+        <button
+          class="tod-btn"
+          [class.active]="timeOfDay() === 'day'"
+          (click)="setTimeOfDay('day')"
+          title="Bright Daylight"
+        >
+          ☀️
+        </button>
+        <button
+          class="tod-btn"
+          [class.active]="timeOfDay() === 'sunset'"
+          (click)="setTimeOfDay('sunset')"
+          title="Sunset Amber"
+        >
+          🌇
+        </button>
+        <button
+          class="tod-btn"
+          [class.active]="timeOfDay() === 'night'"
+          (click)="setTimeOfDay('night')"
+          title="Cyber Neon Night"
+        >
+          🌙
+        </button>
+      </div>
+
+      <button class="tool-btn" (click)="toggleSound()" [title]="soundEnabled() ? 'Mute Audio' : 'Unmute Audio'">
+        {{ soundEnabled() ? '🔊' : '🔇' }}
+      </button>
+
+      <a routerLink="/babylonjs" class="tool-btn back-btn" title="Back to Babylon Hub">
+        ← Hub
+      </a>
+    </div>
+
+    <!-- Bottom Action Controls Bar -->
+    <div class="action-dock">
+      <button class="action-dock-btn" (click)="triggerAttack()" [disabled]="isDriving()" title="Sword Attack [Left Click / F]">
+        <span class="dock-icon">⚔️</span>
+        <span class="dock-label">Attack</span>
+        <span class="dock-key">F / L-Click</span>
+      </button>
+
+      <button class="action-dock-btn" (click)="triggerBlock(true)" (mouseup)="triggerBlock(false)" [disabled]="isDriving()" title="Shield Block [Right Click / Q]">
+        <span class="dock-icon">🛡️</span>
+        <span class="dock-label">Block</span>
+        <span class="dock-key">Q / R-Click</span>
+      </button>
+
+      <button class="action-dock-btn" (click)="triggerKick()" [disabled]="isDriving()" title="Kick Attack [K]">
+        <span class="dock-icon">🦶</span>
+        <span class="dock-label">Kick</span>
+        <span class="dock-key">K</span>
+      </button>
+
+      <button class="action-dock-btn" (click)="triggerPowerUp()" [disabled]="isDriving()" title="Power Up Aura [P]">
+        <span class="dock-icon">⚡</span>
+        <span class="dock-label">Power Up</span>
+        <span class="dock-key">P</span>
+      </button>
+
+      <button class="action-dock-btn" (click)="triggerJump()" [disabled]="isDriving()" title="Jump [Space]">
+        <span class="dock-icon">🦘</span>
+        <span class="dock-label">Jump</span>
+        <span class="dock-key">Space</span>
+      </button>
+
+      <button class="action-dock-btn car-toggle" (click)="toggleCarDriving()" title="Toggle Car [E]">
+        <span class="dock-icon">🏎️</span>
+        <span class="dock-label">{{ isDriving() ? 'Exit Car' : 'Drive Car' }}</span>
+        <span class="dock-key">E</span>
+      </button>
+    </div>
+
+    <!-- Bottom-Left Keybind Help Guide -->
+    <div class="controls-guide">
+      <div class="guide-row">
+        <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span>
+        <span class="guide-text">{{ isDriving() ? 'Steer & Accelerate' : 'Move Knight' }}</span>
+      </div>
+      <div class="guide-row" *ngIf="!isDriving()">
+        <span class="kbd">Shift</span>
+        <span class="guide-text">Sprint / Run</span>
+      </div>
+      <div class="guide-row">
+        <span class="kbd">Mouse</span>
+        <span class="guide-text">360° Orbit Follow Camera</span>
+      </div>
+      <div class="guide-row">
+        <span class="kbd">Scroll</span>
+        <span class="guide-text">Zoom Camera In / Out</span>
+      </div>
+    </div>
+  </div>
+</div>

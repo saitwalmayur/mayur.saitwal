@@ -156,6 +156,7 @@ export class ExperienceScreen {
           name: 'Pool Royale',
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/poolroyale.png',
           links: [
+            { label: 'App Store', url: 'https://apps.apple.com/us/app/pool-royale-3d-pool/id1531063871', type: 'store' },
             { label: 'Detail', url: 'https://pool-royale-5r7.en.softonic.com/android?ex=RAMP-3507.3&rex=true', type: 'store' }
           ],
           techStack: 'Photoshop, Unity, C#, Playfab, Photon,'
@@ -164,6 +165,7 @@ export class ExperienceScreen {
           name: 'Billiards Pool Arena',
           imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/8ballarena.png',
           links: [
+            { label: 'App Store', url: 'https://apps.apple.com/us/app/billiards-pool-arena/id1186911558', type: 'store' },
             { label: 'Detail', url: 'https://billiards-pool-arena.en.softonic.com/android?ex=RAMP-3507.3&rex=true', type: 'store' }
           ],
           techStack: 'Photoshop, Unity, C#, Rest API, Photon,'

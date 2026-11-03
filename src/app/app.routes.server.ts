@@ -50,6 +50,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'babylonjs/**',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'thirdpersoncharacter',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

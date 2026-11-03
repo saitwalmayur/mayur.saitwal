@@ -124,9 +124,22 @@ export class Projects implements OnInit {
     {
       name: 'Pool Royale',
       imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/poolroyale.png',
-      links: [{ label: 'Detail', url: 'https://pool-royale-5r7.en.softonic.com/android?ex=RAMP-3507.3&rex=true' }],
+      links: [
+        { label: 'App Store', url: 'https://apps.apple.com/us/app/pool-royale-3d-pool/id1531063871' },
+        { label: 'Detail', url: 'https://pool-royale-5r7.en.softonic.com/android?ex=RAMP-3507.3&rex=true' }
+      ],
       techStack: 'Unity, C#, Playfab, Photon',
       details: 'Built scalable real-time gameplay experiences and player progression features.'
+    },
+    {
+      name: 'Billiards Pool Arena',
+      imageUrl: 'https://raw.githubusercontent.com/saitwalmayur/saitwalmayur/main/icon/8ballarena.png',
+      links: [
+        { label: 'App Store', url: 'https://apps.apple.com/us/app/billiards-pool-arena/id1186911558' },
+        { label: 'Detail', url: 'https://billiards-pool-arena.en.softonic.com/android?ex=RAMP-3507.3&rex=true' }
+      ],
+      techStack: 'Unity, C#, Rest API, Photon',
+      details: 'Real-time multiplayer 8-ball and 9-ball pool game with Photon networking, tournaments, and custom physics.'
     },
     {
       name: 'Digital Twin - Apple Vision Pro',
