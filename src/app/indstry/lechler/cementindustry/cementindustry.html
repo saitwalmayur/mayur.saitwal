@@ -1,0 +1,329 @@
+<div class="cement-viz-root" #viewportContainer>
+  <!-- Fullscreen Three.js WebGL Canvas (Pure White Studio) -->
+  <canvas #rendererCanvas class="webgl-canvas"></canvas>
+
+  <!-- Top Floating Header Bar (Lechler Engineering Style) -->
+  <header class="top-header-bar">
+    <div class="brand-cluster">
+      <a routerLink="/threejs" class="back-pill-btn" title="Back to Three.js Gallery">
+        <span class="icon">←</span>
+        <span>Projects</span>
+      </a>
+      <div class="title-pill">
+        <span class="lechler-logo-badge">LECHLER</span>
+        <h1 class="main-title">Cement Industry Process Flow</h1>
+        <span class="sub-badge">Gas Conditioning & Spray Technology</span>
+      </div>
+    </div>
+
+    <!-- Camera Presets / Equipment Fast Navigation -->
+    <div class="camera-presets-bar">
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'overview'"
+        (click)="resetCamera()"
+        title="Complete Plant Isometric Overview"
+      >
+        <span class="btn-icon">🌐</span>
+        <span class="btn-label">Overview</span>
+      </button>
+      <button
+        *ngFor="let eq of equipmentList"
+        class="preset-btn"
+        [class.active]="activeCameraPreset === eq.id"
+        (click)="selectEquipment(eq)"
+        [title]="eq.name"
+      >
+        <span class="btn-icon">{{ eq.icon }}</span>
+        <span class="btn-label">{{ eq.tag }}</span>
+      </button>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="header-actions">
+      <button
+        class="action-pill-btn"
+        [class.active]="isLechlerGuideOpen"
+        (click)="toggleLechlerGuide()"
+        title="View Official Lechler Cement Brochure Engineering Guide"
+      >
+        <span>📖 Process Guide</span>
+      </button>
+      <button class="reset-cam-btn" (click)="resetCamera()" title="Reset to Isometric Overview">
+        <span>⟲ Reset View</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bottom Simulation Controls Toolbar -->
+  <footer class="bottom-control-dock">
+    <div class="controls-card">
+      <!-- Play / Pause -->
+      <button
+        class="dock-btn play-btn"
+        [class.active]="isPlaying"
+        (click)="togglePlayPause()"
+        [title]="isPlaying ? 'Pause Simulation' : 'Resume Simulation'"
+      >
+        <span class="btn-icon">{{ isPlaying ? '⏸' : '▶' }}</span>
+        <span class="btn-text">{{ isPlaying ? 'Running' : 'Paused' }}</span>
+      </button>
+
+      <div class="dock-divider"></div>
+
+      <!-- Water Spray Mist Toggle -->
+      <button
+        class="dock-toggle-btn spray-toggle"
+        [class.active]="showWaterSpray"
+        (click)="toggleWaterSpray()"
+        title="Toggle Animated Lechler Spray Mist Cones inside cutaway vessels"
+      >
+        <span class="dot-indicator spray-dot"></span>
+        <span class="btn-icon">💧</span>
+        <span class="btn-text">Spray Cones</span>
+      </button>
+
+      <!-- Thermal Gradient Cutaways Toggle -->
+      <button
+        class="dock-toggle-btn cutaway-toggle"
+        [class.active]="showThermalCutaways"
+        (click)="toggleThermalCutaways()"
+        title="Toggle Temperature Gradient Cutaways (Red Hot -> Atomized Mist -> Cooled Blue)"
+      >
+        <span class="dot-indicator cutaway-dot"></span>
+        <span class="btn-icon">🌡️</span>
+        <span class="btn-text">Thermal Cutaways</span>
+      </button>
+
+      <div class="dock-divider"></div>
+
+      <!-- Simulation Speed -->
+      <div class="speed-cluster">
+        <span class="speed-label">Speed:</span>
+        <button
+          class="speed-btn"
+          [class.active]="simulationSpeed === 0.5"
+          (click)="simulationSpeed = 0.5"
+        >
+          0.5x
+        </button>
+        <button
+          class="speed-btn"
+          [class.active]="simulationSpeed === 1.0"
+          (click)="simulationSpeed = 1.0"
+        >
+          1.0x
+        </button>
+        <button
+          class="speed-btn"
+          [class.active]="simulationSpeed === 2.0"
+          (click)="simulationSpeed = 2.0"
+        >
+          2.0x
+        </button>
+      </div>
+
+      <!-- Live FPS -->
+      <div class="fps-pill">
+        <span class="fps-dot"></span>
+        <span>{{ fps }} FPS</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Hover Tooltip -->
+  <div
+    class="hover-tooltip"
+    *ngIf="hoveredEquipment && !selectedEquipment"
+    [style.left.px]="tooltipPos.x"
+    [style.top.px]="tooltipPos.y"
+  >
+    <div class="tooltip-header">
+      <span class="tooltip-icon">{{ hoveredEquipment.icon }}</span>
+      <span class="tooltip-tag">{{ hoveredEquipment.tag }}</span>
+      <span class="tooltip-badge">{{ hoveredEquipment.badge }}</span>
+    </div>
+    <div class="tooltip-title">{{ hoveredEquipment.name }}</div>
+    <div class="tooltip-hint">Click to inspect Lechler nozzle engineering specs</div>
+  </div>
+
+  <!-- Right Slide-Over Technical Specification Drawer -->
+  <aside class="tech-drawer" [class.open]="isInfoDrawerOpen && selectedEquipment">
+    <div class="drawer-inner" *ngIf="selectedEquipment">
+      <!-- Drawer Header -->
+      <div class="drawer-header">
+        <div class="drawer-badge-row">
+          <span class="eq-icon">{{ selectedEquipment.icon }}</span>
+          <span class="eq-tag">{{ selectedEquipment.tag }}</span>
+          <span class="eq-badge">{{ selectedEquipment.badge }}</span>
+        </div>
+        <h2 class="drawer-title">{{ selectedEquipment.name }}</h2>
+        <p class="drawer-subtitle">{{ selectedEquipment.shortRole }}</p>
+        <button class="drawer-close-btn" (click)="closeInfoDrawer()" title="Close Technical Specs">
+          ✕
+        </button>
+      </div>
+
+      <!-- Drawer Body -->
+      <div class="drawer-body">
+        <!-- Live Operating Parameters Grid -->
+        <div class="section-card">
+          <h3 class="section-title">📊 Process Operating Parameters</h3>
+          <div class="params-grid">
+            <div class="param-box">
+              <span class="param-lbl">Inlet Temp</span>
+              <span class="param-val hot">{{ selectedEquipment.inletTemp }}</span>
+            </div>
+            <div class="param-box">
+              <span class="param-lbl">Outlet Temp</span>
+              <span class="param-val cool">{{ selectedEquipment.outletTemp }}</span>
+            </div>
+            <div class="param-box">
+              <span class="param-lbl">Gas Velocity</span>
+              <span class="param-val">{{ selectedEquipment.gasVelocity }}</span>
+            </div>
+            <div class="param-box">
+              <span class="param-lbl">Draft Pressure</span>
+              <span class="param-val">{{ selectedEquipment.pressure }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lechler Specialized Nozzle Application Card -->
+        <div class="section-card lechler-highlight-card">
+          <div class="lechler-header">
+            <div class="brand-tag">LECHLER SPRAY APPLICATION</div>
+            <h4 class="nozzle-title">{{ selectedEquipment.lechlerApplication.title }}</h4>
+          </div>
+
+          <div class="nozzle-specs-list">
+            <div class="spec-row">
+              <span class="spec-name">Nozzle Series:</span>
+              <span class="spec-value strong">{{ selectedEquipment.lechlerApplication.nozzleSeries }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-name">Spray Pattern:</span>
+              <span class="spec-value">{{ selectedEquipment.lechlerApplication.sprayType }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-name">Droplet Spectrum:</span>
+              <span class="spec-value highlight">{{ selectedEquipment.lechlerApplication.dropletSpectrum }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-name">Operating Pressure:</span>
+              <span class="spec-value">{{ selectedEquipment.lechlerApplication.operatingPressure }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-name">Flow Modulation:</span>
+              <span class="spec-value">{{ selectedEquipment.lechlerApplication.flowRate }}</span>
+            </div>
+          </div>
+
+          <p class="nozzle-desc">
+            {{ selectedEquipment.lechlerApplication.description }}
+          </p>
+        </div>
+
+        <!-- Process Purpose & Description -->
+        <div class="section-card">
+          <h3 class="section-title">⚙️ Equipment Function & Working Principle</h3>
+          <p class="body-p"><strong>Role:</strong> {{ selectedEquipment.purpose }}</p>
+          <p class="body-p"><strong>Principle:</strong> {{ selectedEquipment.workingPrinciple }}</p>
+        </div>
+
+        <!-- Key Engineering Specifications -->
+        <div class="section-card">
+          <h3 class="section-title">📋 Engineering Criteria</h3>
+          <div class="key-specs-grid">
+            <div class="key-spec-item" *ngFor="let spec of selectedEquipment.keySpecs">
+              <span class="k-label">{{ spec.label }}</span>
+              <span class="k-value">{{ spec.value }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="drawer-footer">
+        <button class="footer-btn focus-btn" (click)="resetCamera()">
+          🌐 Reset to Overview
+        </button>
+        <button class="footer-btn close-btn" (click)="closeInfoDrawer()">
+          Done
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Lechler Cement Brochure Engineering Reference Guide Modal -->
+  <div class="modal-backdrop" *ngIf="isLechlerGuideOpen" (click)="toggleLechlerGuide()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-cluster">
+          <span class="modal-badge">LECHLER CEMENT BROCHURE</span>
+          <h2>Cement Manufacturing Process Overview</h2>
+          <p class="modal-sub">
+            Reference diagram from pages 4–5 of the Lechler Cement Industry Application Brochure
+          </p>
+        </div>
+        <button class="modal-close-btn" (click)="toggleLechlerGuide()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="guide-grid">
+          <!-- 1. GCT -->
+          <div class="guide-item">
+            <div class="g-header">
+              <span class="g-icon">❄️</span>
+              <h4>Gas Conditioning Towers (GCT)</h4>
+            </div>
+            <p>
+              Complete 100% water droplet evaporation without wet bottoms. Drops flue gas temperature from ~450°C to 180°C to protect baghouse filter fabrics and stabilize electrical resistivity for electrostatic precipitators.
+            </p>
+            <span class="g-tag">Lechler Spillback & VarioJet® Lances</span>
+          </div>
+
+          <!-- 2. Clinker Cooler -->
+          <div class="guide-item">
+            <div class="g-header">
+              <span class="g-icon">🧊</span>
+              <h4>Grate Clinker Cooler Spray</h4>
+            </div>
+            <p>
+              Dual downward water spray lances inside the cooler exhaust hood reduce gas temperature from 350°C to 180°C, protecting the downstream cooler baghouse and reducing cooling fan power.
+            </p>
+            <span class="g-tag">High-Pressure VarioJet® Lances</span>
+          </div>
+
+          <!-- 3. Downcomer & Bypass Quench -->
+          <div class="guide-item">
+            <div class="g-header">
+              <span class="g-icon">🔻</span>
+              <h4>Downcomer Duct Quenching</h4>
+            </div>
+            <p>
+              Rapid in-duct water injection quenches high-velocity flue gas between cyclones and mill, shrinking gas volume without needing a separate tower.
+            </p>
+            <span class="g-tag">In-Duct Quench Arrays</span>
+          </div>
+
+          <!-- 4. SNCR DeNOx -->
+          <div class="guide-item">
+            <div class="g-header">
+              <span class="g-icon">🔥</span>
+              <h4>Calciner SNCR DeNOx Injection</h4>
+            </div>
+            <p>
+              Aqueous ammonia or urea injected into the calciner thermal window (850°C–1050°C), achieving up to 88% NOx reduction with under 5 ppm ammonia slip.
+            </p>
+            <span class="g-tag">Twin-Fluid VarioJet® Atomizers</span>
+          </div>
+        </div>
+
+        <div class="modal-notice">
+          ℹ️ Official Lechler Cement Industry Process Flow Illustration (Brochure Pages 4–5). Interactive 3D engineering infographic featuring realistic metallic vessels, signature temperature gradient cutaways, and animated atomized spray mist cones.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

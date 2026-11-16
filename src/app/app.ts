@@ -51,7 +51,14 @@ export class App {
       url.includes('/threejstetris') ||
       url.includes('/babylonjs') ||
       url.includes('/babylonjsexample') ||
-      url.includes('/room');
+      url.includes('/room') ||
+      url.includes('/environment1') ||
+      url.includes('/cementindustry') ||
+      url.includes('/indstry') ||
+      url.includes('/roboticsarm') ||
+      url.includes('/roboticarm') ||
+      url.includes('/gearboxes') ||
+      url.includes('/gearbox');
 
     this.isThreeJs.set(isThree);
   }

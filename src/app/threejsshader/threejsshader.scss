@@ -110,100 +110,144 @@
 }
 
 /* ==========================================================================
-   Bottom Floating Control Dock
+   Left Floating Control Panel
    ========================================================================== */
-.bottom-floating-dock {
+.left-floating-panel {
   position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 4.8rem;
+  left: 1.5rem;
   z-index: 100;
-  width: min(880px, 92vw);
-  background: rgba(14, 14, 24, 0.82);
+  width: 310px;
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100vh - 6.2rem);
+  overflow-y: auto;
+  box-sizing: border-box;
+  background: rgba(14, 14, 24, 0.84);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(0, 242, 254, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(0, 242, 254, 0.12);
   backdrop-filter: blur(20px);
-  padding: 1rem 1.4rem;
+  padding: 1rem 1.15rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
 
-  &.collapsed {
-    padding: 0.6rem 1.2rem;
-    width: auto;
-    border-radius: 30px;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 254, 0.3);
+    border-radius: 4px;
   }
 
-  .dock-header {
+  &.collapsed {
+    width: auto;
+    max-width: none;
+    padding: 0.55rem 0.9rem;
+    border-radius: 30px;
+
+    .panel-header {
+      padding-bottom: 0;
+      border-bottom: none;
+      margin-bottom: 0;
+      gap: 0.5rem;
+    }
+  }
+
+  .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.85rem;
 
-    .dock-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.6);
+    .panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+
+      .panel-icon {
+        font-size: 0.95rem;
+      }
+
+      .panel-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
     }
 
-    .dock-toggle-btn {
+    .panel-toggle-btn {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
       color: #00f2fe;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 0.25rem 0.75rem;
+      padding: 0.28rem 0.75rem;
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
 
       &:hover {
         background: rgba(0, 242, 254, 0.2);
         color: #fff;
+        border-color: #00f2fe;
       }
     }
   }
 
-  .dock-body {
-    margin-top: 0.9rem;
+  .panel-body {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
   }
 
-  .dock-group {
+  .control-group {
     display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.45rem;
 
-    .dock-label {
-      font-size: 0.82rem;
-      font-weight: 600;
+    .control-label {
+      font-size: 0.74rem;
+      font-weight: 700;
       color: rgba(255, 255, 255, 0.5);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      min-width: 75px;
+      letter-spacing: 0.8px;
     }
   }
 
-  .dock-btn-row {
-    display: flex;
-    gap: 0.45rem;
-    flex-wrap: wrap;
+  .control-btn-grid {
+    display: grid;
+    gap: 0.4rem;
+
+    &.cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
-  .dock-btn {
+  .control-btn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.4rem 0.85rem;
-    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.82);
+    padding: 0.45rem 0.6rem;
+    font-size: 0.78rem;
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
+    text-align: center;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
       background: rgba(255, 255, 255, 0.14);
@@ -212,10 +256,11 @@
     }
 
     &.active {
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.28), rgba(79, 172, 254, 0.28));
       border-color: #00f2fe;
       color: #fff;
       box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+      font-weight: 600;
     }
 
     &.toggle-btn {
@@ -230,10 +275,10 @@
     }
   }
 
-  .dock-sliders-row {
+  .sliders-list {
     display: flex;
-    gap: 1.2rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.65rem;
     padding-top: 0.4rem;
     border-top: 1px dashed rgba(255, 255, 255, 0.08);
 
@@ -241,13 +286,20 @@
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
-      min-width: 140px;
-      flex: 1;
 
-      label {
-        font-size: 0.76rem;
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.74rem;
         color: rgba(255, 255, 255, 0.65);
         font-weight: 500;
+
+        .slider-val {
+          color: #00f2fe;
+          font-family: monospace;
+          font-weight: 600;
+        }
       }
 
       input[type='range'] {
@@ -279,13 +331,18 @@
     }
   }
 
-  .dock-toggles-row {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  .toggles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
   }
 }
 
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
 @media (max-width: 768px) {
   .top-floating-bar {
     top: 1rem;
@@ -298,15 +355,11 @@
     }
   }
 
-  .bottom-floating-dock {
-    bottom: 1rem;
-    padding: 0.8rem;
-    max-height: 50vh;
-    overflow-y: auto;
-
-    .dock-sliders-row {
-      flex-direction: column;
-      gap: 0.6rem;
-    }
+  .left-floating-panel {
+    top: 4.2rem;
+    left: 1rem;
+    width: min(290px, calc(100vw - 2rem));
+    max-height: calc(100vh - 5.4rem);
+    padding: 0.85rem;
   }
 }

@@ -133,6 +133,74 @@ export const routes: Routes = [
     loadComponent: () => import('./lowpolyopenworld/lowpolyopenworld').then((m) => m.Lowpolyopenworld),
   },
   {
+    path: 'threejs/environment1',
+    title: 'Low-Poly Modular Environment (Env1) | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./environment1/environment1').then((m) => m.Environment1),
+  },
+  {
+    path: 'environment1',
+    title: 'Low-Poly Modular Environment (Env1) | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./environment1/environment1').then((m) => m.Environment1),
+  },
+  {
+    path: 'threejs/cementindustry',
+    title: 'Cement Process Flow 3D | Lechler Spray Technology | Mayur Saitwal',
+    loadComponent: () =>
+      import('./indstry/lechler/cementindustry/cementindustry').then((m) => m.Cementindustry),
+  },
+  {
+    path: 'cementindustry',
+    title: 'Cement Process Flow 3D | Lechler Spray Technology | Mayur Saitwal',
+    loadComponent: () =>
+      import('./indstry/lechler/cementindustry/cementindustry').then((m) => m.Cementindustry),
+  },
+  {
+    path: 'indstry/lechler/cementindustry',
+    title: 'Cement Process Flow 3D | Lechler Spray Technology | Mayur Saitwal',
+    loadComponent: () =>
+      import('./indstry/lechler/cementindustry/cementindustry').then((m) => m.Cementindustry),
+  },
+  {
+    path: 'threejs/roboticsarm',
+    title: '6-Axis Industrial Robotic Arm | Pick & Place | Mayur Saitwal',
+    loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),
+  },
+  {
+    path: 'roboticsarm',
+    title: '6-Axis Industrial Robotic Arm | Pick & Place | Mayur Saitwal',
+    loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),
+  },
+  {
+    path: 'threejs/roboticarm',
+    title: '6-Axis Industrial Robotic Arm | Pick & Place | Mayur Saitwal',
+    loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),
+  },
+  {
+    path: 'roboticarm',
+    title: '6-Axis Industrial Robotic Arm | Pick & Place | Mayur Saitwal',
+    loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),
+  },
+  {
+    path: 'threejs/gearboxes',
+    title: 'Interactive 3D Industrial Gearboxes | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
+  },
+  {
+    path: 'gearboxes',
+    title: 'Interactive 3D Industrial Gearboxes | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
+  },
+  {
+    path: 'threejs/gearbox',
+    title: 'Interactive 3D Industrial Gearboxes | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
+  },
+  {
+    path: 'gearbox',
+    title: 'Interactive 3D Industrial Gearboxes | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
+  },
+  {
     path: 'unity',
     title: 'Unity 3D | Mayur Saitwal',
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),

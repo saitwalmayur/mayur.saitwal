@@ -58,6 +58,34 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'environment1',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'cementindustry',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'roboticsarm',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'roboticarm',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'gearboxes',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'gearbox',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'indstry/**',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

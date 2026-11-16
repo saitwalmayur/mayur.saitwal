@@ -1,0 +1,359 @@
+<div class="fullscreen-scene-container" #viewportContainer (pointerup)="onCanvasPointerUp($event)">
+  <!-- Fullscreen WebGL Canvas -->
+  <canvas #rendererCanvas class="webgl-canvas"></canvas>
+
+  <!-- Loading Screen Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-card">
+      <div class="spinner-ring"></div>
+      <h2 class="loading-title">Assembling Low-Poly Exhibition</h2>
+      <p class="loading-desc">{{ loadingStatus }}</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <span class="progress-text">{{ loadingProgress }}%</span>
+    </div>
+  </div>
+
+  <!-- Top Floating Navigation Bar -->
+  <div class="top-floating-bar" *ngIf="!isLoading">
+    <a routerLink="/threejs" class="back-pill-btn">
+      <span class="arrow">←</span>
+      <span>Projects</span>
+    </a>
+
+    <div class="title-pill">
+      <span>🏔️ Low-Poly Modular Pack (732 Assets)</span>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="mode-tabs-pill">
+      <button
+        class="mode-btn"
+        [class.active]="viewMode === 'exhibition'"
+        (click)="setViewMode('exhibition')"
+        title="View full pack exhibition in categorized rows"
+      >
+        🏛️ Asset Exhibition
+      </button>
+      <button
+        class="mode-btn"
+        [class.active]="viewMode === 'game'"
+        (click)="setViewMode('game')"
+        title="Explore island world as 3rd-person adventurer"
+      >
+        🎮 Game World
+      </button>
+      <button
+        class="mode-btn"
+        [class.active]="viewMode === 'freecam'"
+        (click)="setViewMode('freecam')"
+        title="Free orbit 360 camera"
+      >
+        🛸 Free Orbit
+      </button>
+    </div>
+
+    <!-- Audio Synth Toggle -->
+    <button
+      class="audio-pill-btn"
+      [class.active]="isAudioEnabled"
+      (click)="toggleAudio()"
+      title="Toggle Ambient Audio Synth & FX"
+    >
+      {{ isAudioEnabled ? '🔊 Audio: On' : '🔇 Audio: Off' }}
+    </button>
+  </div>
+
+  <!-- Exhibition Row Focus Bar (Visible in Exhibition Mode) -->
+  <div class="exhibition-toolbar" *ngIf="viewMode === 'exhibition' && !isLoading">
+    <div class="row-tabs-scroll">
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'all'"
+        (click)="setExhibitionRow('all')"
+      >
+        🌐 Full Panorama (All Rows)
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'tiles'"
+        (click)="setExhibitionRow('tiles')"
+      >
+        🏔️ Terraced Plateau ({{ categoryCounts.tiles }})
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'rivers'"
+        (click)="setExhibitionRow('rivers')"
+      >
+        🌊 Rivers, Waterfalls & Canals
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'hex'"
+        (click)="setExhibitionRow('hex')"
+      >
+        🔷 Hexagonal Grid
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'trees'"
+        (click)="setExhibitionRow('trees')"
+      >
+        🌲 Trees & Trunks ({{ categoryCounts.trees }})
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'cacti'"
+        (click)="setExhibitionRow('cacti')"
+      >
+        🌵 Cacti & Blooms ({{ categoryCounts.cacti }})
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'rocks'"
+        (click)="setExhibitionRow('rocks')"
+      >
+        🪨 Rocks & Boulders ({{ categoryCounts.rocks }})
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'bones'"
+        (click)="setExhibitionRow('bones')"
+      >
+        🦴 Bones & Skulls ({{ categoryCounts.bones }})
+      </button>
+      <button
+        class="row-tab-btn"
+        [class.active]="exhibitionRowFocus === 'foliage'"
+        (click)="setExhibitionRow('foliage')"
+      >
+        🌿 Foliage & Shrooms ({{ categoryCounts.foliage }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Selected Model Inspector Card (When Clicking in 3D Exhibition) -->
+  <div class="selected-inspect-card" *ngIf="selectedExhibitionAsset && viewMode === 'exhibition' && !isLoading">
+    <div class="inspect-icon">{{ selectedExhibitionAsset.icon }}</div>
+    <div class="inspect-details">
+      <span class="inspect-title">{{ selectedExhibitionAsset.name }}</span>
+      <span class="inspect-file">{{ selectedExhibitionAsset.file }}</span>
+    </div>
+    <button
+      class="inspect-spawn-btn"
+      (click)="spawnAssetInWorld(selectedExhibitionAsset)"
+      title="Switch to game world and place this item"
+    >
+      ➕ Spawn in Game
+    </button>
+    <button class="inspect-close-btn" (click)="selectedExhibitionAsset = null">✕</button>
+  </div>
+
+  <!-- Game HUD (Visible in Game Mode) -->
+  <div class="game-hud" *ngIf="viewMode === 'game' && !isLoading">
+    <div class="hud-top-right">
+      <div class="hud-pill gem-pill">
+        <span class="icon">💎</span>
+        <span class="label">Gems:</span>
+        <span class="val">{{ gemsCollected }} / {{ totalGems }}</span>
+      </div>
+
+      <div class="hud-pill biome-pill">
+        <span class="icon">📍</span>
+        <span class="val">{{ activeBiome }}</span>
+      </div>
+
+      <div class="hud-pill stats-pill">
+        <span>{{ fps }} FPS</span>
+        <span class="sep">•</span>
+        <span>Pos: {{ playerPos.x }}, {{ playerPos.y }}, {{ playerPos.z }}</span>
+      </div>
+    </div>
+
+    <!-- Bottom Left: Controls Legend -->
+    <div class="controls-legend">
+      <div class="legend-badge">⌨️ WASD / Arrows to Move</div>
+      <div class="legend-badge">⚡ Shift to Sprint</div>
+      <div class="legend-badge">🖱️ Drag to Orbit Camera</div>
+    </div>
+  </div>
+
+  <!-- Environment Bottom Toolbar -->
+  <div class="bottom-toolbar" *ngIf="!isLoading">
+    <div class="time-tabs" *ngIf="viewMode !== 'exhibition'">
+      <button
+        class="time-btn"
+        [class.active]="timeOfDay === 'noon'"
+        (click)="setTimeOfDay('noon')"
+        title="Sunny Noon"
+      >
+        ☀️ Noon
+      </button>
+      <button
+        class="time-btn"
+        [class.active]="timeOfDay === 'sunset'"
+        (click)="setTimeOfDay('sunset')"
+        title="Golden Sunset"
+      >
+        🌅 Sunset
+      </button>
+      <button
+        class="time-btn"
+        [class.active]="timeOfDay === 'night'"
+        (click)="setTimeOfDay('night')"
+        title="Midnight Moon"
+      >
+        🌙 Night
+      </button>
+      <button
+        class="time-btn"
+        [class.active]="timeOfDay === 'dawn'"
+        (click)="setTimeOfDay('dawn')"
+        title="Misty Dawn"
+      >
+        🌫️ Dawn
+      </button>
+    </div>
+
+    <!-- 732 Asset Catalog Drawer Toggle -->
+    <button
+      class="catalog-toggle-btn"
+      [class.active]="isCatalogOpen"
+      (click)="isCatalogOpen = !isCatalogOpen"
+    >
+      <span>📦</span>
+      <span>Browse All 732 Assets</span>
+    </button>
+  </div>
+
+  <!-- Asset Catalog Modal / Drawer -->
+  <div class="catalog-drawer" *ngIf="isCatalogOpen && !isLoading">
+    <div class="drawer-header">
+      <div class="header-title-row">
+        <span class="drawer-icon">📦</span>
+        <h3>732 Low-Poly Assets (Env1)</h3>
+      </div>
+      <span class="drawer-badge">{{ totalFilteredCount }} items</span>
+      <button class="close-drawer-btn" (click)="isCatalogOpen = false">✕</button>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="catalog-filter-bar">
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'all'"
+        (click)="selectedCategory = 'all'"
+      >
+        All ({{ categoryCounts.all }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'tiles'"
+        (click)="selectedCategory = 'tiles'"
+      >
+        🟩 Tiles ({{ categoryCounts.tiles }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'trees'"
+        (click)="selectedCategory = 'trees'"
+      >
+        🌲 Trees & Logs ({{ categoryCounts.trees }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'cacti'"
+        (click)="selectedCategory = 'cacti'"
+      >
+        🌵 Cacti ({{ categoryCounts.cacti }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'rocks'"
+        (click)="selectedCategory = 'rocks'"
+      >
+        🪨 Rocks ({{ categoryCounts.rocks }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'bones'"
+        (click)="selectedCategory = 'bones'"
+      >
+        🦴 Bones & Skulls ({{ categoryCounts.bones }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'foliage'"
+        (click)="selectedCategory = 'foliage'"
+      >
+        🌿 Foliage & Shrooms ({{ categoryCounts.foliage }})
+      </button>
+      <button
+        class="cat-filter-btn"
+        [class.active]="selectedCategory === 'minerals'"
+        (click)="selectedCategory = 'minerals'"
+      >
+        💎 Crystals & Gems ({{ categoryCounts.minerals }})
+      </button>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Filter 732 assets by name or file (e.g. Saguaro, Oak, Ribs, River, Tile)..."
+        [(ngModel)]="searchQuery"
+        class="search-input"
+      />
+      <button class="clear-search" *ngIf="searchQuery" (click)="searchQuery = ''">✕</button>
+    </div>
+
+    <!-- Asset Cards Grid -->
+    <div class="catalog-grid">
+      <div class="asset-card" *ngFor="let item of filteredCatalog">
+        <div class="card-icon-wrap">
+          <span class="card-icon">{{ item.icon }}</span>
+        </div>
+        <div class="card-meta">
+          <span class="asset-name">{{ item.name }}</span>
+          <span class="asset-file">{{ item.file }}</span>
+        </div>
+        <button
+          class="spawn-btn"
+          (click)="spawnAssetInWorld(item)"
+          title="Place this asset into the game world"
+        >
+          ➕ Spawn
+        </button>
+      </div>
+
+      <!-- Load More Trigger -->
+      <div class="load-more-row" *ngIf="totalFilteredCount > filteredCatalog.length">
+        <button class="load-more-btn" (click)="loadMoreCatalog()">
+          Load More ({{ totalFilteredCount - filteredCatalog.length }} remaining)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Touch Virtual Joystick -->
+  <div
+    class="mobile-joystick-zone"
+    *ngIf="viewMode === 'game' && !isLoading"
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()"
+  >
+    <div class="joystick-base">
+      <div
+        class="joystick-thumb"
+        [style.transform]="
+          'translate(' + joystickVector.x * 30 + 'px, ' + joystickVector.y * 30 + 'px)'
+        "
+      ></div>
+    </div>
+  </div>
+</div>

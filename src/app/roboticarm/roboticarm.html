@@ -1,0 +1,295 @@
+<div class="robotic-workcell-root" #viewportContainer>
+  <!-- Fullscreen WebGL Canvas -->
+  <canvas #rendererCanvas class="webgl-canvas"></canvas>
+
+  <!-- Loading Screen Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loader-content">
+      <div class="spinner-ring"></div>
+      <div class="loader-title">INITIALIZING ROBOTIC WORKCELL</div>
+      <div class="loader-sub">Loading 6-Axis Arm Model, PBR Textures & Conveyors...</div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <div class="progress-text">{{ loadingProgress }}%</div>
+    </div>
+  </div>
+
+  <!-- Top Floating Header Bar -->
+  <header class="top-header-bar">
+    <div class="brand-cluster">
+      <a routerLink="/threejs" class="back-pill-btn" title="Back to Three.js Gallery">
+        <span class="icon">←</span>
+        <span>Three.js</span>
+      </a>
+      <div class="title-pill">
+        <span class="robot-badge">IRB-6700</span>
+        <h1 class="main-title">Industrial Robotic Arm</h1>
+        <span class="sub-badge">Pick & Place Automation</span>
+      </div>
+    </div>
+
+    <!-- Camera Presets -->
+    <div class="camera-presets-bar">
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'overview'"
+        (click)="setCameraPreset('overview')"
+        title="Workcell Isometric View"
+      >
+        <span class="btn-icon">🌐</span>
+        <span class="btn-label">Overview</span>
+      </button>
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'gripper'"
+        (click)="setCameraPreset('gripper')"
+        title="End-Effector / Gripper Focus"
+      >
+        <span class="btn-icon">🦾</span>
+        <span class="btn-label">Gripper</span>
+      </button>
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'pick'"
+        (click)="setCameraPreset('pick')"
+        title="Infeed Station A (Pick)"
+      >
+        <span class="btn-icon">📥</span>
+        <span class="btn-label">Pick Stn</span>
+      </button>
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'place'"
+        (click)="setCameraPreset('place')"
+        title="Outfeed Station B (Place)"
+      >
+        <span class="btn-icon">📤</span>
+        <span class="btn-label">Place Stn</span>
+      </button>
+      <button
+        class="preset-btn"
+        [class.active]="activeCameraPreset === 'top'"
+        (click)="setCameraPreset('top')"
+        title="Top-Down Blueprint Ortho View"
+      >
+        <span class="btn-icon">📐</span>
+        <span class="btn-label">Top-Down</span>
+      </button>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <button
+        class="action-pill-btn"
+        (click)="toggleAudio()"
+        [title]="isMuted ? 'Unmute Audio' : 'Mute Audio'"
+      >
+        <span>{{ isMuted ? '🔇 Audio Off' : '🔊 Audio On' }}</span>
+      </button>
+      <button
+        class="action-pill-btn reset-btn"
+        (click)="resetCycle()"
+        title="Reset Workcell Cycle"
+      >
+        <span>⟲ Reset</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Top-Right Real-Time Engineering HUD -->
+  <aside class="telemetry-hud-card">
+    <div class="hud-header">
+      <div class="hud-title-cluster">
+        <span class="hud-dot"></span>
+        <span class="hud-title">WORKCELL TELEMETRY</span>
+      </div>
+      <span class="fps-pill">{{ fps }} FPS</span>
+    </div>
+
+    <!-- State Indicator -->
+    <div class="state-banner" [attr.data-state]="currentState">
+      <span class="state-label">STATUS</span>
+      <span class="state-val">{{ currentState.replace('_', ' ') }}</span>
+    </div>
+
+    <!-- Production Counter & Cycle Progress -->
+    <div class="metrics-grid">
+      <div class="metric-cell">
+        <span class="metric-label">PARTS SORTED</span>
+        <span class="metric-number">{{ partsProcessed }}</span>
+      </div>
+      <div class="metric-cell">
+        <span class="metric-label">CYCLE TIME</span>
+        <span class="metric-number">{{ cycleTimer.toFixed(1) }}s / {{ cycleDuration.toFixed(1) }}s</span>
+      </div>
+    </div>
+
+    <div class="cycle-progress-track">
+      <div
+        class="cycle-progress-fill"
+        [style.width.%]="(cycleTimer / cycleDuration) * 100"
+      ></div>
+    </div>
+
+    <!-- Joint Angles -->
+    <div class="joint-telemetry-section">
+      <div class="section-title">6-DOF JOINT ANGLES</div>
+      <div class="joints-matrix">
+        <div class="joint-row">
+          <span class="joint-id">J1 (Turntable)</span>
+          <span class="joint-deg">{{ telemetry.j1Angle }}°</span>
+        </div>
+        <div class="joint-row">
+          <span class="joint-id">J3 (Elbow)</span>
+          <span class="joint-deg">{{ telemetry.j3Angle }}°</span>
+        </div>
+        <div class="joint-row">
+          <span class="joint-id">J4 (Wrist)</span>
+          <span class="joint-deg">{{ telemetry.j4Angle }}°</span>
+        </div>
+        <div class="joint-row">
+          <span class="joint-id">Grip Force</span>
+          <span class="joint-deg highlight">{{ telemetry.gripForce }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- End Effector Position -->
+    <div class="coords-strip">
+      <span class="coord-label">EE XYZ:</span>
+      <span class="coord-val">X: {{ telemetry.eeX }}</span>
+      <span class="coord-val">Y: {{ telemetry.eeY }}</span>
+      <span class="coord-val">Z: {{ telemetry.eeZ }}</span>
+    </div>
+
+    <!-- System Safety & Health -->
+    <div class="health-footer">
+      <span class="health-label">SAFETY BUS:</span>
+      <span class="health-status">{{ telemetry.safetyStatus }}</span>
+    </div>
+  </aside>
+
+  <!-- Bottom Control Dock -->
+  <footer class="bottom-control-dock">
+    <div class="controls-card">
+      <!-- Mode Switcher -->
+      <div class="mode-switch-group">
+        <button
+          class="mode-btn"
+          [class.active]="isAutoMode"
+          (click)="toggleMode(true)"
+          title="Automated Continuous Pick & Place"
+        >
+          <span>🤖 Auto Workcell</span>
+        </button>
+        <button
+          class="mode-btn"
+          [class.active]="!isAutoMode"
+          (click)="toggleMode(false)"
+          title="Manual Direct Joint Control"
+        >
+          <span>🕹️ Manual Joints</span>
+        </button>
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- AUTO MODE CONTROLS -->
+      <ng-container *ngIf="isAutoMode">
+        <!-- Play / Pause -->
+        <button
+          class="dock-btn play-btn"
+          [class.active]="isPlaying"
+          (click)="togglePlayPause()"
+          [title]="isPlaying ? 'Pause Simulation' : 'Resume Simulation'"
+        >
+          <span class="btn-icon">{{ isPlaying ? '⏸' : '▶' }}</span>
+          <span class="btn-text">{{ isPlaying ? 'Running' : 'Paused' }}</span>
+        </button>
+
+        <!-- Speed Selector -->
+        <div class="speed-cluster">
+          <span class="speed-label">Speed:</span>
+          <div class="speed-buttons">
+            <button
+              *ngFor="let s of [0.5, 1.0, 1.5, 2.0]"
+              class="speed-btn"
+              [class.active]="cycleSpeed === s"
+              (click)="setSpeed(s)"
+            >
+              {{ s }}x
+            </button>
+          </div>
+        </div>
+
+        <div class="dock-divider"></div>
+
+        <!-- Part Type Selector -->
+        <div class="part-type-cluster">
+          <span class="part-type-label">Payload:</span>
+          <div class="part-type-chips">
+            <button
+              *ngFor="let type of partTypes"
+              class="part-chip"
+              [class.active]="selectedPartType.id === type.id"
+              (click)="selectPartType(type)"
+            >
+              <span class="chip-dot" [style.background-color]="type.glowColor"></span>
+              <span>{{ type.name }}</span>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- MANUAL MODE CONTROLS -->
+      <ng-container *ngIf="!isAutoMode">
+        <div class="manual-sliders-row">
+          <div class="slider-box">
+            <label>J1 Base: {{ manualJoints.j1Base }}°</label>
+            <input
+              type="range"
+              min="-180"
+              max="180"
+              [(ngModel)]="manualJoints.j1Base"
+            />
+          </div>
+          <div class="slider-box">
+            <label>J3 Elbow: {{ manualJoints.j3Elbow }}°</label>
+            <input
+              type="range"
+              min="-70"
+              max="70"
+              [(ngModel)]="manualJoints.j3Elbow"
+            />
+          </div>
+          <div class="slider-box">
+            <label>J4 Wrist: {{ manualJoints.j4Wrist }}°</label>
+            <input
+              type="range"
+              min="-85"
+              max="85"
+              [(ngModel)]="manualJoints.j4Wrist"
+            />
+          </div>
+          <div class="slider-box">
+            <label>J5 Clamp: {{ manualJoints.j5Gripper }}%</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              [(ngModel)]="manualJoints.j5Gripper"
+            />
+          </div>
+
+          <button
+            class="manual-action-btn"
+            (click)="triggerManualGripToggle()"
+          >
+            <span>{{ isHoldingPayload ? '🔓 Release' : '🔒 Clamp' }}</span>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </footer>
+</div>

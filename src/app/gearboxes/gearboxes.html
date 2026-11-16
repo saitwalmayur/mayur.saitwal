@@ -1,0 +1,331 @@
+<div class="gearboxes-container">
+  <!-- 3D Fullscreen WebGL Canvas -->
+  <canvas #canvasRef class="webgl-canvas"></canvas>
+
+  <!-- Top Floating Navigation Header -->
+  <header class="top-nav-bar">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-pill" title="Back to Three.js Directory">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Three.js Demos</span>
+      </a>
+
+      <div class="title-pill">
+        <span class="icon">{{ selectedGearbox.icon }}</span>
+        <div class="text-group">
+          <h1>{{ selectedGearbox.name }}</h1>
+          <span class="subtext">{{ selectedGearbox.subtitle }}</span>
+        </div>
+        <span class="badge">{{ selectedGearbox.badge }}</span>
+      </div>
+    </div>
+
+    <!-- Camera Presets & Utilities -->
+    <div class="nav-right">
+      <div class="camera-pill">
+        <span class="cam-label">CAM:</span>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'iso'"
+          (click)="setCameraPreset('iso')"
+          title="Isometric Technical View"
+        >
+          ISO
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'input'"
+          (click)="setCameraPreset('input')"
+          title="Input Drive Shaft Focus"
+        >
+          INPUT
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'mesh'"
+          (click)="setCameraPreset('mesh')"
+          title="Gear Teeth Mesh Zone Close-up"
+        >
+          MESH
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'output'"
+          (click)="setCameraPreset('output')"
+          title="Output Drive Shaft Focus"
+        >
+          OUTPUT
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'top'"
+          (click)="setCameraPreset('top')"
+          title="Top-Down Ortho View"
+        >
+          TOP
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="icon-btn"
+        [class.active]="!isMuted"
+        (click)="toggleAudio()"
+        [title]="isMuted ? 'Unmute Mechanical Gear Hum' : 'Mute Sound'"
+      >
+        <span>{{ isMuted ? '🔇' : '🔊' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Gearbox Selection Tabs (Top Sub-bar) -->
+  <nav class="gearbox-selector-dock" aria-label="Select Gearbox System">
+    <div class="dock-scroll-wrapper">
+      <button
+        *ngFor="let g of gearboxes"
+        type="button"
+        class="gearbox-tab"
+        [class.selected]="selectedGearbox.id === g.id"
+        (click)="selectGearbox(g)"
+      >
+        <span class="tab-icon">{{ g.icon }}</span>
+        <div class="tab-info">
+          <span class="tab-title">{{ g.name }}</span>
+          <span class="tab-ratio">{{ g.badge }}</span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Real-Time Mechanical Telemetry HUD (Upper-Right) -->
+  <aside class="telemetry-hud">
+    <div class="hud-header">
+      <div class="status-indicator">
+        <span class="pulse-dot" [class.paused]="!isPlaying"></span>
+        <span class="status-text">{{ isPlaying ? (isReversed ? 'REVERSE DRIVE' : 'FORWARD DRIVE') : 'DRIVE STOPPED' }}</span>
+      </div>
+      <span class="fps-tag">{{ fps }} FPS</span>
+    </div>
+
+    <div class="hud-body">
+      <!-- Ratio Metric -->
+      <div class="metric-hero">
+        <div class="metric-label">GEAR RATIO</div>
+        <div class="metric-huge">{{ telemetry.ratio }}</div>
+        <div class="metric-sub">Torque Multiplication: {{ telemetry.torqueMult }}</div>
+      </div>
+
+      <!-- RPM Dual Dial Comparison -->
+      <div class="rpm-comparison-grid">
+        <div class="rpm-card input">
+          <span class="label">INPUT MOTOR</span>
+          <span class="val">{{ telemetry.inputRpm }} <small>RPM</small></span>
+          <span class="omega">{{ telemetry.inputOmega }} rad/s</span>
+        </div>
+        <div class="rpm-arrow">➔</div>
+        <div class="rpm-card output">
+          <span class="label">OUTPUT SHAFT</span>
+          <span class="val">{{ telemetry.outputRpm }} <small>RPM</small></span>
+          <span class="omega">{{ telemetry.outputOmega }} rad/s</span>
+        </div>
+      </div>
+
+      <!-- Physics & Torque Rows -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Output Torque</span>
+          <span class="num text-amber">{{ telemetry.outputTorque }} Nm</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Mech Power</span>
+          <span class="num">{{ telemetry.mechanicalPower }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Efficiency</span>
+          <span class="num text-emerald">{{ selectedGearbox.efficiency }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Sump Temp</span>
+          <span class="num text-sky">{{ telemetry.temperature }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Control Deck -->
+  <section class="bottom-controls-deck">
+    <div class="deck-main-card">
+      <!-- Drive Controls Row -->
+      <div class="deck-row drive-row">
+        <!-- Play / Pause -->
+        <button
+          type="button"
+          class="ctrl-btn play-btn"
+          [class.playing]="isPlaying"
+          (click)="togglePlayPause()"
+        >
+          <span class="btn-icon">{{ isPlaying ? '⏸' : '▶' }}</span>
+          <span>{{ isPlaying ? 'Pause Drive' : 'Start Drive' }}</span>
+        </button>
+
+        <!-- Direction Reversal -->
+        <button
+          type="button"
+          class="ctrl-btn dir-btn"
+          [class.active]="isReversed"
+          (click)="toggleDirection()"
+          title="Toggle Rotation Direction"
+        >
+          <span class="btn-icon">⇄</span>
+          <span>{{ isReversed ? 'Reverse' : 'Forward' }}</span>
+        </button>
+
+        <!-- Motor Speed RPM Slider -->
+        <div class="rpm-slider-group">
+          <div class="slider-header">
+            <span class="slider-title">MOTOR INPUT SPEED:</span>
+            <span class="slider-val">{{ rpm }} RPM</span>
+          </div>
+          <div class="slider-control">
+            <input
+              type="range"
+              min="30"
+              max="3000"
+              step="30"
+              [(ngModel)]="rpm"
+              (ngModelChange)="setRpm($event)"
+              class="rpm-range-input"
+            />
+          </div>
+          <div class="rpm-quick-buttons">
+            <button type="button" (click)="setRpm(300)">300</button>
+            <button type="button" (click)="setRpm(900)">900</button>
+            <button type="button" (click)="setRpm(1500)">1500</button>
+            <button type="button" (click)="setRpm(2400)">2400</button>
+          </div>
+        </div>
+
+        <!-- Housing View Modes -->
+        <div class="housing-mode-group">
+          <span class="group-title">HOUSING:</span>
+          <div class="housing-buttons">
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'solid'"
+              (click)="setHousingMode('solid')"
+              title="Solid Opaque Industrial Housing"
+            >
+              🛡️ Solid
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'xray'"
+              (click)="setHousingMode('xray')"
+              title="X-Ray Semi-Transparent Casing"
+            >
+              👻 X-Ray
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'cutaway'"
+              (click)="setHousingMode('cutaway')"
+              title="Cutaway / Gears Only View"
+            >
+              ✂️ Cutaway
+            </button>
+          </div>
+        </div>
+
+        <!-- Metallic Material Finish Group -->
+        <div class="theme-mode-group">
+          <span class="group-title">METALLIC FINISH:</span>
+          <div class="theme-buttons">
+            <button
+              type="button"
+              class="mode-btn steel-btn"
+              [class.active]="metallicTheme === 'steel'"
+              (click)="setMetallicTheme('steel')"
+              title="Forged Alloy Steel & Polished Chrome"
+            >
+              ⚙️ Steel
+            </button>
+            <button
+              type="button"
+              class="mode-btn bronze-btn"
+              [class.active]="metallicTheme === 'bronze'"
+              (click)="setMetallicTheme('bronze')"
+              title="Phosphor Bronze & Titanium Graphite"
+            >
+              🪙 Bronze
+            </button>
+            <button
+              type="button"
+              class="mode-btn gold-btn"
+              [class.active]="metallicTheme === 'gold'"
+              (click)="setMetallicTheme('gold')"
+              title="Anodized Racing Gold & Billet Aluminum"
+            >
+              🏎️ Gold
+            </button>
+            <button
+              type="button"
+              class="mode-btn dark-btn"
+              [class.active]="metallicTheme === 'dark'"
+              (click)="setMetallicTheme('dark')"
+              title="Stealth Gunmetal Carbon & Mirror Chrome"
+            >
+              🖤 Gunmetal
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transmission Shifter Row (Visible Only For Manual Transmission) -->
+      <div *ngIf="selectedGearbox.id === 'transmission'" class="transmission-shifter-row">
+        <div class="shifter-label">
+          <span>🏎️ SELECT TRANSMISSION GEAR:</span>
+          <span class="active-gear-tag">Active: {{ selectedTransmissionGear.name }} ({{ selectedTransmissionGear.ratio }} : 1)</span>
+        </div>
+        <div class="shifter-gates">
+          <button
+            *ngFor="let gear of transmissionGears"
+            type="button"
+            class="gate-btn"
+            [class.active]="selectedTransmissionGear.id === gear.id"
+            [class.reverse]="gear.id === 'R'"
+            (click)="setTransmissionGear(gear)"
+          >
+            <span class="gear-num">{{ gear.id }}</span>
+            <span class="gear-name">{{ gear.name }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Model Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-scrim">
+    <div class="loader-box">
+      <div class="spinner-gear">⚙️</div>
+      <h3>Loading {{ selectedGearbox.name }}</h3>
+      <p>Synchronizing precision gear teeth kinematics...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <span class="progress-text">{{ loadingProgress }}%</span>
+    </div>
+  </div>
+</div>

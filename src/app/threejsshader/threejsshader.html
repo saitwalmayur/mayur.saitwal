@@ -8,42 +8,98 @@
       <span class="arrow">←</span>
       <span>Projects</span>
     </a>
-    <div class="title-pill">✨ Custom GLSL Shaders</div>
+    <div class="title-pill">{{ shaderMode === 'pan' ? '⚡ UV Pan Shader' : '🌊 Wave Plasma Shader' }}</div>
     <button class="reset-pill-btn" (click)="resetCamera()" title="Reset Camera View">
       ↺ Reset View
     </button>
   </div>
 
-  <!-- Bottom Floating Control Dock -->
-  <div class="bottom-floating-dock" [class.collapsed]="isDockCollapsed">
-    <div class="dock-header">
-      <span class="dock-title">Shader Controls</span>
-      <button class="dock-toggle-btn" (click)="toggleDock()" [title]="isDockCollapsed ? 'Expand Dock' : 'Collapse Dock'">
-        {{ isDockCollapsed ? '▲ Controls' : '▼ Hide' }}
+  <!-- Left Floating Control Panel -->
+  <div class="left-floating-panel" [class.collapsed]="isDockCollapsed">
+    <div class="panel-header">
+      <div class="panel-title-wrap">
+        <span class="panel-icon">⚙️</span>
+        <span class="panel-title" *ngIf="!isDockCollapsed">Shader Controls</span>
+      </div>
+      <button
+        class="panel-toggle-btn"
+        (click)="toggleDock()"
+        [title]="isDockCollapsed ? 'Expand Controls' : 'Collapse Controls'"
+      >
+        {{ isDockCollapsed ? '▶ Controls' : '◀ Hide' }}
       </button>
     </div>
 
-    <div class="dock-body" *ngIf="!isDockCollapsed">
-      <!-- Geometry Selector -->
-      <div class="dock-group">
-        <span class="dock-label">Geometry:</span>
-        <div class="dock-btn-row">
+    <div class="panel-body" *ngIf="!isDockCollapsed">
+      <!-- Shader Mode Selector -->
+      <div class="control-group">
+        <span class="control-label">Shader Type</span>
+        <div class="control-btn-grid cols-2">
           <button
-            class="dock-btn"
+            class="control-btn"
+            [class.active]="shaderMode === 'pan'"
+            (click)="setShaderMode('pan')"
+          >
+            ⚡ UV Pan Shader
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="shaderMode === 'plasma'"
+            (click)="setShaderMode('plasma')"
+          >
+            🌊 Wave Plasma
+          </button>
+        </div>
+      </div>
+
+      <!-- Pan Direction (visible when Pan Shader is active) -->
+      <div class="control-group" *ngIf="shaderMode === 'pan'">
+        <span class="control-label">Pan Direction</span>
+        <div class="control-btn-grid cols-3">
+          <button
+            class="control-btn"
+            [class.active]="panDirection === 'diagonal'"
+            (click)="setPanDirection('diagonal')"
+          >
+            ↗ Diagonal
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="panDirection === 'vertical'"
+            (click)="setPanDirection('vertical')"
+          >
+            ↑ Forward
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="panDirection === 'horizontal'"
+            (click)="setPanDirection('horizontal')"
+          >
+            → Lateral
+          </button>
+        </div>
+      </div>
+
+      <!-- Geometry Selector -->
+      <div class="control-group">
+        <span class="control-label">Geometry</span>
+        <div class="control-btn-grid cols-3">
+          <button
+            class="control-btn"
             [class.active]="geometryType === 'sphere'"
             (click)="setGeometry('sphere')"
           >
             Sphere
           </button>
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="geometryType === 'torusKnot'"
             (click)="setGeometry('torusKnot')"
           >
             Torus Knot
           </button>
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="geometryType === 'plane'"
             (click)="setGeometry('plane')"
           >
@@ -53,32 +109,32 @@
       </div>
 
       <!-- Palette Presets -->
-      <div class="dock-group">
-        <span class="dock-label">Palette:</span>
-        <div class="dock-btn-row">
+      <div class="control-group">
+        <span class="control-label">Color Palette</span>
+        <div class="control-btn-grid cols-2">
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="preset === 'cyanPlasma'"
             (click)="setPreset('cyanPlasma')"
           >
             Cyan Plasma
           </button>
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="preset === 'cyberNeon'"
             (click)="setPreset('cyberNeon')"
           >
             Cyber Neon
           </button>
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="preset === 'emeraldWave'"
             (click)="setPreset('emeraldWave')"
           >
             Emerald
           </button>
           <button
-            class="dock-btn"
+            class="control-btn"
             [class.active]="preset === 'solarFlare'"
             (click)="setPreset('solarFlare')"
           >
@@ -87,10 +143,13 @@
         </div>
       </div>
 
-      <!-- Sliders Row -->
-      <div class="dock-sliders-row">
+      <!-- Sliders List -->
+      <div class="sliders-list">
         <div class="slider-box">
-          <label>Speed: {{ speed | number: '1.1-2' }}</label>
+          <div class="slider-header">
+            <span>{{ shaderMode === 'pan' ? 'Pan Speed' : 'Wave Speed' }}</span>
+            <span class="slider-val">{{ speed | number: '1.1-2' }}</span>
+          </div>
           <input
             type="range"
             min="0.1"
@@ -101,7 +160,10 @@
           />
         </div>
         <div class="slider-box">
-          <label>Frequency: {{ frequency | number: '1.1-2' }}</label>
+          <div class="slider-header">
+            <span>{{ shaderMode === 'pan' ? 'Grid Density' : 'Frequency' }}</span>
+            <span class="slider-val">{{ frequency | number: '1.1-2' }}</span>
+          </div>
           <input
             type="range"
             min="0.5"
@@ -112,7 +174,10 @@
           />
         </div>
         <div class="slider-box">
-          <label>Amplitude: {{ amplitude | number: '1.2-2' }}</label>
+          <div class="slider-header">
+            <span>{{ shaderMode === 'pan' ? 'Pulse Intensity' : 'Wave Amplitude' }}</span>
+            <span class="slider-val">{{ amplitude | number: '1.2-2' }}</span>
+          </div>
           <input
             type="range"
             min="0.05"
@@ -124,17 +189,17 @@
         </div>
       </div>
 
-      <!-- Toggles Row -->
-      <div class="dock-toggles-row">
+      <!-- Toggles Grid -->
+      <div class="toggles-grid">
         <button
-          class="dock-btn toggle-btn"
+          class="control-btn toggle-btn"
           [class.active]="wireframe"
           (click)="toggleWireframe()"
         >
           {{ wireframe ? 'Solid' : 'Wireframe' }}
         </button>
         <button
-          class="dock-btn toggle-btn"
+          class="control-btn toggle-btn"
           [class.active]="autoRotate"
           (click)="toggleAutoRotate()"
         >

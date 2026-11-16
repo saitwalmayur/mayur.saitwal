@@ -28,6 +28,8 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
   @ViewChild('viewportContainer') containerRef!: ElementRef<HTMLDivElement>;
 
   // Shader Controls
+  shaderMode: 'pan' | 'plasma' = 'pan';
+  panDirection: 'diagonal' | 'vertical' | 'horizontal' = 'diagonal';
   geometryType: 'sphere' | 'torusKnot' | 'plane' = 'sphere';
   speed = 1.2;
   frequency = 2.0;
@@ -93,6 +95,8 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
     this.controls.dampingFactor = 0.05;
     this.controls.maxDistance = 25;
     this.controls.minDistance = 1;
+    this.controls.enablePan = true;
+    this.controls.screenSpacePanning = true;
 
     this.buildStarfield();
     this.buildShaderMesh();
@@ -105,30 +109,51 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
       uniform float uSpeed;
       uniform float uFrequency;
       uniform float uAmplitude;
+      uniform int uShaderMode;
+      uniform vec2 uPanDir;
 
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
       varying float vDisplacement;
+      varying vec2 vPannedUv;
 
       void main() {
         vUv = uv;
         vNormal = normalize(normalMatrix * normal);
 
-        float displacement = sin(position.x * uFrequency + uTime * uSpeed) *
-                             cos(position.y * uFrequency + uTime * uSpeed) *
-                             sin(position.z * uFrequency + uTime * uSpeed * 0.75);
+        if (uShaderMode == 0) {
+          // Wave Plasma vertex displacement
+          float displacement = sin(position.x * uFrequency + uTime * uSpeed) *
+                               cos(position.y * uFrequency + uTime * uSpeed) *
+                               sin(position.z * uFrequency + uTime * uSpeed * 0.75);
+          vDisplacement = displacement;
+          vec3 newPosition = position + normal * (displacement * uAmplitude);
+          vPosition = newPosition;
+          vPannedUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+        } else {
+          // UV Pan Shader: animated coordinates and surface traveling ripple
+          vec2 panned = uv + uPanDir * (uTime * uSpeed * 0.35);
+          vPannedUv = panned;
 
-        vDisplacement = displacement;
-        vec3 newPosition = position + normal * (displacement * uAmplitude);
-        vPosition = newPosition;
+          float travelWave = sin((uv.x * uPanDir.x + uv.y * uPanDir.y) * uFrequency * 6.0 - uTime * uSpeed * 3.0);
+          float displacement = travelWave * (uAmplitude * 0.4);
+          vDisplacement = travelWave;
 
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+          vec3 newPosition = position + normal * displacement;
+          vPosition = newPosition;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+        }
       }
     `;
 
     const fragmentShader = `
       uniform float uTime;
+      uniform float uSpeed;
+      uniform float uFrequency;
+      uniform float uAmplitude;
+      uniform int uShaderMode;
       uniform vec3 uColorA;
       uniform vec3 uColorB;
       uniform vec3 uColorC;
@@ -137,20 +162,49 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
       varying vec3 vNormal;
       varying vec3 vPosition;
       varying float vDisplacement;
+      varying vec2 vPannedUv;
 
       void main() {
         vec3 viewDir = normalize(-vPosition);
         float fresnel = dot(viewDir, vNormal);
         fresnel = clamp(1.0 - fresnel, 0.0, 1.0);
-        fresnel = pow(fresnel, 2.8);
+        float rim = pow(fresnel, 2.6);
 
-        float factor = (vDisplacement + 1.0) * 0.5;
-        vec3 baseColor = mix(uColorA, uColorB, factor);
-        vec3 finalColor = mix(baseColor, uColorC, fresnel * 0.85);
+        if (uShaderMode == 0) {
+          // Wave Plasma coloring
+          float factor = (vDisplacement + 1.0) * 0.5;
+          vec3 baseColor = mix(uColorA, uColorB, factor);
+          vec3 finalColor = mix(baseColor, uColorC, rim * 0.85);
+          finalColor += vec3(0.18) * pow(factor, 3.2);
+          gl_FragColor = vec4(finalColor, 1.0);
+        } else {
+          // UV Pan Shader: procedural animated cyber grid, neon flows and pulse
+          vec2 coord = vPannedUv * (uFrequency * 2.2);
 
-        finalColor += vec3(0.18) * pow(factor, 3.2);
+          // Procedural glowing grid lines
+          vec2 gridFract = abs(fract(coord - 0.5) - 0.5);
+          float gridX = smoothstep(0.08, 0.015, gridFract.x);
+          float gridY = smoothstep(0.08, 0.015, gridFract.y);
+          float gridPattern = max(gridX, gridY);
 
-        gl_FragColor = vec4(finalColor, 1.0);
+          // Moving diagonal energy streamer
+          float stream = sin((vPannedUv.x + vPannedUv.y) * (uFrequency * 3.5) - uTime * uSpeed * 3.5);
+          stream = smoothstep(0.55, 0.98, stream);
+
+          // Pulsing energy nodes
+          float nodePulse = sin(length(fract(coord) - 0.5) * 8.0 - uTime * uSpeed * 2.5);
+          nodePulse = smoothstep(0.65, 0.95, nodePulse) * 0.5;
+
+          // Color blending
+          vec3 baseColor = mix(uColorA, uColorB, fract(vPannedUv.y * 1.5 + vPannedUv.x * 0.7));
+          vec3 gridColor = mix(baseColor, uColorC, gridPattern * 0.85 + stream * 0.75);
+          vec3 finalColor = gridColor + uColorC * (nodePulse * 0.5 + rim * 0.9 * (1.0 + uAmplitude));
+
+          // Specular boost on energy lines
+          finalColor += vec3(0.22) * pow(stream, 3.5);
+
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
       }
     `;
 
@@ -164,6 +218,8 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
         uSpeed: { value: this.speed },
         uFrequency: { value: this.frequency },
         uAmplitude: { value: this.amplitude },
+        uShaderMode: { value: this.shaderMode === 'pan' ? 1 : 0 },
+        uPanDir: { value: this.getPanDirectionVector(this.panDirection) },
         uColorA: { value: colors.colorA },
         uColorB: { value: colors.colorB },
         uColorC: { value: colors.colorC },
@@ -175,6 +231,32 @@ export class Threejsshader implements AfterViewInit, OnDestroy {
     const geometry = this.createGeometry(this.geometryType);
     this.mesh = new THREE.Mesh(geometry, this.material);
     this.scene.add(this.mesh);
+  }
+
+  private getPanDirectionVector(dir: 'diagonal' | 'vertical' | 'horizontal'): THREE.Vector2 {
+    switch (dir) {
+      case 'vertical':
+        return new THREE.Vector2(0.0, 1.0);
+      case 'horizontal':
+        return new THREE.Vector2(1.0, 0.0);
+      case 'diagonal':
+      default:
+        return new THREE.Vector2(0.707, 0.707);
+    }
+  }
+
+  setShaderMode(mode: 'pan' | 'plasma') {
+    this.shaderMode = mode;
+    if (this.material) {
+      this.material.uniforms['uShaderMode'].value = mode === 'pan' ? 1 : 0;
+    }
+  }
+
+  setPanDirection(dir: 'diagonal' | 'vertical' | 'horizontal') {
+    this.panDirection = dir;
+    if (this.material) {
+      this.material.uniforms['uPanDir'].value = this.getPanDirectionVector(dir);
+    }
   }
 
   private createGeometry(type: 'sphere' | 'torusKnot' | 'plane'): THREE.BufferGeometry {

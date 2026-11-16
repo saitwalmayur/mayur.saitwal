@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 export interface RelatedProject {
   id: string;
@@ -23,8 +24,8 @@ export class Findmyspotunity {
   @ViewChild('gameIframe') gameIframeRef!: ElementRef<HTMLIFrameElement>;
 
   readonly gameUrl = '/FindMySpot/index.html';
-  currentIframeSrc = '/FindMySpot/index.html';
-  
+  currentIframeSrc: SafeResourceUrl;
+
   isLoading = true;
   isDeviceFrame = true;
   isFullscreen = false;
@@ -66,8 +67,12 @@ export class Findmyspotunity {
     },
   ];
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private sanitizer: DomSanitizer
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    this.currentIframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.gameUrl);
   }
 
   onIframeLoad() {
@@ -80,7 +85,7 @@ export class Findmyspotunity {
   restartGame() {
     this.isLoading = true;
     // Force iframe reload by re-assigning src with timestamp
-    this.currentIframeSrc = `${this.gameUrl}?t=${Date.now()}`;
+    this.currentIframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(`${this.gameUrl}?t=${Date.now()}`);
   }
 
   toggleDeviceFrame() {
