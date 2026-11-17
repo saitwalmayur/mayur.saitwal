@@ -201,6 +201,36 @@ export const routes: Routes = [
     loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
   },
   {
+    path: 'threejs/ductpipes',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'threejs/ductpipers',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'threejs/ductpopers',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'ductpipes',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'ductpipers',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'ductpopers',
+    title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
     path: 'unity',
     title: 'Unity 3D | Mayur Saitwal',
     loadComponent: () => import('./unityprojects/unityprojects').then((m) => m.Unityprojects),

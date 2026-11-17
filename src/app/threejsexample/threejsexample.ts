@@ -155,6 +155,18 @@ export class Threejsexample {
       gradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(16, 185, 129, 0.22))',
     },
     {
+      id: 'ductpipes',
+      route: '/threejs/ductpipes',
+      title: 'Industrial HVAC Duct Pipes & Ventilation Network',
+      tagline: 'Authentic 38-piece modular factory HVAC duct network with interactive airflow streamlines & kit showroom',
+      description:
+        'Large-scale industrial plant HVAC ventilation network assembled from 38 modular components: primary 1080mm overhead supply trunks, aerodynamic transitions, 4-way radial cross manifolds, down-firing linear louver diffusers, structural ceiling hangers, and parallel 400mm spiral-wound corrugated exhaust fume extraction lines. Features animated airflow particle streamlines, interactive component inspector, Solid vs X-Ray transparency, and animated transition between Plant Assembly and Kit Showroom palette.',
+      tags: ['Three.js', 'Industrial HVAC', 'Duct Pipes', 'Factory Ventilation', 'Particle Streamlines', 'Modular Kit'],
+      icon: '💨',
+      features: ['38 Modular Duct Components', 'Interconnected Factory HVAC Layout', 'Animated Supply & Exhaust Streamlines', 'Modular Kit Showroom Palette', 'Interactive Part Inspector HUD', 'PBR Galvanized & Weathered Metals'],
+      gradient: 'linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(59, 130, 246, 0.22))',
+    },
+    {
       id: 'ludo',
       route: '/threejs/ludo',
       title: '3D Ludo Arena (2-4 Players)',

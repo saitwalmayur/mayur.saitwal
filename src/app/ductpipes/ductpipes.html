@@ -1,1 +1,337 @@
-<p>ductpipes works!</p>
+<div class="ductpipes-container">
+  <!-- 3D Fullscreen WebGL Canvas -->
+  <canvas
+    #canvasRef
+    class="webgl-canvas"
+    (mousemove)="onPointerMove($event)"
+    (click)="onCanvasClick()"
+  ></canvas>
+
+  <!-- Top Floating Navigation & Header -->
+  <header class="top-nav-bar">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-pill" title="Back to Three.js Directory">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Three.js Demos</span>
+      </a>
+
+      <!-- Page Title & Mode Indicator -->
+      <div class="page-title-badge">
+        <div class="title-top">
+          <span class="badge-tag">HVAC SYSTEM</span>
+          <span class="live-dot"></span>
+          <span class="live-text">{{ layoutMode === 'industry' ? 'PLANT ASSEMBLY' : 'KIT PALETTE' }}</span>
+        </div>
+        <h1 class="main-title">Industrial Duct Pipes Network</h1>
+      </div>
+    </div>
+
+    <!-- Center Mode Switcher Pill -->
+    <div class="nav-center">
+      <div class="mode-toggle-group">
+        <button
+          type="button"
+          class="mode-toggle-btn"
+          [class.active]="layoutMode === 'industry'"
+          (click)="setLayoutMode('industry')"
+          title="Realistic interconnected factory ventilation network"
+        >
+          <span class="icon">🏭</span>
+          <span>Industrial Assembly</span>
+        </button>
+        <button
+          type="button"
+          class="mode-toggle-btn"
+          [class.active]="layoutMode === 'kit'"
+          (click)="setLayoutMode('kit')"
+          title="Flat 3D component catalog as in asset kit"
+        >
+          <span class="icon">🧩</span>
+          <span>Modular Kit Palette</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Camera Presets -->
+    <div class="nav-right">
+      <div class="camera-pill">
+        <span class="cam-label">CAM:</span>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'iso'"
+          (click)="setCameraPreset('iso')"
+          title="Isometric Plant Overview"
+        >
+          Overview
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'supply'"
+          (click)="setCameraPreset('supply')"
+          title="Main Large Supply Trunk"
+        >
+          Supply
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'branches'"
+          (click)="setCameraPreset('branches')"
+          title="Medium Distribution Branches & Registers"
+        >
+          Branches
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'spiral'"
+          (click)="setCameraPreset('spiral')"
+          title="Spiral Round Exhaust & Fume Snorkels"
+        >
+          Exhaust
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'ground'"
+          (click)="setCameraPreset('ground')"
+          title="Ground Level Factory View"
+        >
+          Floor
+        </button>
+        <button
+          type="button"
+          class="cam-btn kit-btn"
+          [class.active]="activeCameraPreset === 'kit'"
+          (click)="setCameraPreset('kit')"
+          title="Flat Kit Palette View"
+        >
+          Palette
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Real-Time Hover Inspector Tooltip -->
+  <div class="hover-tooltip" *ngIf="hoveredPiece && !selectedPiece">
+    <div class="tooltip-badge">{{ hoveredPiece.category }}</div>
+    <div class="tooltip-name">{{ hoveredPiece.name }}</div>
+    <div class="tooltip-dim">{{ hoveredPiece.dimensions }}</div>
+    <div class="tooltip-hint">Click piece to inspect technical specs</div>
+  </div>
+
+  <!-- Selected Component Detailed Inspector Card (Modal / Drawer) -->
+  <div class="inspector-card" *ngIf="selectedPiece">
+    <div class="inspector-header">
+      <div class="header-left">
+        <span class="category-pill">{{ selectedPiece.category }}</span>
+        <h3>{{ selectedPiece.name }}</h3>
+      </div>
+      <button type="button" class="close-btn" (click)="closeInspector()" title="Close Inspector">✕</button>
+    </div>
+    <div class="inspector-body">
+      <div class="detail-row">
+        <span class="label">Dimensions (L × H × W):</span>
+        <span class="value text-cyan">{{ selectedPiece.dimensions }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Material & Build:</span>
+        <span class="value">{{ selectedPiece.spec }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Capacity & Velocity:</span>
+        <span class="value text-amber">{{ selectedPiece.cfm }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Installation Method:</span>
+        <span class="value text-emerald">Overhead Trapeze Rods & Cleat Clamps</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Floating Industrial HVAC Telemetry HUD -->
+  <aside class="telemetry-hud">
+    <div class="hud-header">
+      <div class="hud-title-box">
+        <span class="icon">📊</span>
+        <span class="title">HVAC VENTILATION TELEMETRY</span>
+      </div>
+      <span class="fps-tag">{{ fps }} FPS</span>
+    </div>
+
+    <div class="hud-body">
+      <!-- Main Metric: Flow Rate -->
+      <div class="metric-hero">
+        <div class="metric-label">VOLUMETRIC AIRFLOW DELIVERY</div>
+        <div class="metric-huge">{{ telemetry.airflowRate }}</div>
+        <div class="metric-sub">Static Pressure: {{ telemetry.staticPressure }}</div>
+      </div>
+
+      <!-- Secondary Metrics -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Total Network Run</span>
+          <span class="num text-cyan">{{ telemetry.totalLength }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Face Velocity</span>
+          <span class="num text-emerald">{{ telemetry.faceVelocity }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Air Temperature</span>
+          <span class="num text-sky">{{ telemetry.airTemp }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Filtration Efficiency</span>
+          <span class="num text-emerald">{{ telemetry.filtrationEff }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Modular Components</span>
+          <span class="num text-amber">{{ telemetry.componentsCount }} Units</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Active Plant Runs</span>
+          <span class="num">{{ telemetry.activeRuns }} Zones</span>
+        </div>
+      </div>
+
+      <!-- System Description -->
+      <div class="system-summary-card">
+        <div class="summary-title">SYSTEM ARCHITECTURE:</div>
+        <p>
+          Heavy-duty industrial ventilation setup featuring 1080mm primary supply trunk,
+          4-way splitter manifold, low-turbulence turning elbows, down-firing linear diffusers,
+          and a parallel 400mm spiral-wound corrugated fume extraction exhaust line.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Floating Control Deck -->
+  <section class="bottom-controls-deck">
+    <div class="deck-main-card">
+      <div class="deck-row">
+        <!-- Housing Casing Visibility (Solid vs X-Ray) -->
+        <div class="ctrl-group">
+          <span class="group-title">CASING VIEW:</span>
+          <div class="btn-group">
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="casingVisibility === 'solid'"
+              (click)="setCasingVisibility('solid')"
+              title="Opaque galvanized sheet metal"
+            >
+              🛡️ Solid
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="casingVisibility === 'xray'"
+              (click)="setCasingVisibility('xray')"
+              title="Semi-transparent X-Ray view to see airflow paths"
+            >
+              👻 X-Ray
+            </button>
+          </div>
+        </div>
+
+        <!-- Metallic Material Finish -->
+        <div class="ctrl-group">
+          <span class="group-title">FINISH:</span>
+          <div class="btn-group">
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="materialTheme === 'galvanized'"
+              (click)="setMaterialTheme('galvanized')"
+              title="Standard Galvanized Zinc Steel"
+            >
+              ⚙️ Galvanized
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="materialTheme === 'weathered'"
+              (click)="setMaterialTheme('weathered')"
+              title="Aged Industrial Weathered Iron"
+            >
+              🍂 Weathered
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="materialTheme === 'stainless'"
+              (click)="setMaterialTheme('stainless')"
+              title="Cleanroom Mirror Stainless Steel"
+            >
+              ✨ Stainless
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="materialTheme === 'safety'"
+              (click)="setMaterialTheme('safety')"
+              title="Factory Hazard Safety Yellow / Dark Slate"
+            >
+              ⚠️ Safety Painted
+            </button>
+          </div>
+        </div>
+
+        <!-- Airflow Streamline Particle Simulation -->
+        <div class="ctrl-group airflow-group">
+          <span class="group-title">AIRFLOW STREAMLINES:</span>
+          <div class="airflow-controls">
+            <button
+              type="button"
+              class="mode-btn airflow-toggle"
+              [class.active]="airflowEnabled"
+              (click)="toggleAirflow()"
+              title="Toggle Supply (Cyan) and Exhaust (Amber) Particles"
+            >
+              <span class="pulse-dot" [class.on]="airflowEnabled"></span>
+              <span>{{ airflowEnabled ? 'Flow Active' : 'Flow Paused' }}</span>
+            </button>
+
+            <div class="speed-control" *ngIf="airflowEnabled">
+              <span class="speed-label">Speed: {{ airflowSpeed }}x</span>
+              <input
+                type="range"
+                min="0.4"
+                max="2.5"
+                step="0.1"
+                [(ngModel)]="airflowSpeed"
+                (ngModelChange)="setAirflowSpeed($event)"
+                class="speed-slider"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Loading Screen -->
+  <div *ngIf="isLoading" class="loading-scrim">
+    <div class="loader-box">
+      <div class="spinner-icon">💨</div>
+      <h3>Loading Industrial Duct Pipes Network</h3>
+      <p>Building 38 modular HVAC sections & factory assembly...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <span class="progress-text">{{ loadingProgress }}%</span>
+    </div>
+  </div>
+</div>
