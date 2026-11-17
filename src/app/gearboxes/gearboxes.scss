@@ -75,47 +75,273 @@
   }
 }
 
-.title-pill {
+/* =========================================================================
+   INTERACTIVE GEARBOX DROPDOWN SELECTOR
+   ========================================================================= */
+.gearbox-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+}
+
+.gearbox-dropdown-btn {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   padding: 8px 18px;
-  background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 9999px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  text-align: left;
 
-  .icon {
-    font-size: 1.25rem;
+  .dropdown-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.4));
   }
 
-  .text-group {
+  .dropdown-text {
     display: flex;
     flex-direction: column;
 
-    h1 {
-      margin: 0;
+    .dropdown-header-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .dropdown-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #64748b;
+        letter-spacing: 0.8px;
+      }
+
+      .dropdown-badge {
+        padding: 1px 6px;
+        background: rgba(14, 165, 233, 0.15);
+        border: 1px solid rgba(14, 165, 233, 0.35);
+        border-radius: 4px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #38bdf8;
+      }
+    }
+
+    .dropdown-name {
       font-size: 0.95rem;
       font-weight: 700;
       color: #f8fafc;
       letter-spacing: -0.01em;
-    }
-
-    .subtext {
-      font-size: 0.72rem;
-      color: #94a3b8;
+      line-height: 1.25;
     }
   }
 
-  .badge {
-    padding: 3px 8px;
-    background: rgba(14, 165, 233, 0.18);
-    border: 1px solid rgba(14, 165, 233, 0.35);
-    border-radius: 6px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #38bdf8;
+  .chevron-arrow {
+    color: #94a3b8;
+    transition: transform 0.25s ease, color 0.2s ease;
+    margin-left: 4px;
+
+    &.open {
+      transform: rotate(180deg);
+      color: #38bdf8;
+    }
+  }
+
+  &:hover {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(14, 165, 233, 0.5);
+    box-shadow: 0 6px 24px rgba(14, 165, 233, 0.25);
+
+    .dropdown-name {
+      color: #ffffff;
+    }
+    .chevron-arrow {
+      color: #38bdf8;
+    }
+  }
+
+  &.active {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.45);
+    background: rgba(15, 23, 42, 0.96);
+  }
+}
+
+/* Glassmorphic Dropdown Menu Panel */
+.gearbox-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(14, 165, 233, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdownAnim 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .menu-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.7px;
+    }
+
+    .counter {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: #0ea5e9;
+      background: rgba(14, 165, 233, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  }
+
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+    width: 100%;
+
+    .item-icon {
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .item-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+
+      .item-top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+
+        .item-title {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #e2e8f0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .item-ratio-pill {
+          font-size: 0.65rem;
+          font-weight: 700;
+          padding: 2px 6px;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 4px;
+          color: #94a3b8;
+          white-space: nowrap;
+        }
+      }
+
+      .item-description {
+        font-size: 0.7rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 2px;
+      }
+    }
+
+    .item-checkmark {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-left: 6px;
+      filter: drop-shadow(0 0 6px rgba(14, 165, 233, 0.6));
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.1);
+
+      .item-details .item-top-row .item-title {
+        color: #ffffff;
+      }
+      .item-details .item-top-row .item-ratio-pill {
+        color: #38bdf8;
+        background: rgba(14, 165, 233, 0.15);
+      }
+      .item-details .item-description {
+        color: #94a3b8;
+      }
+    }
+
+    &.selected {
+      background: rgba(14, 165, 233, 0.14);
+      border-color: rgba(14, 165, 233, 0.4);
+
+      .item-details .item-top-row .item-title {
+        color: #38bdf8;
+        font-weight: 700;
+      }
+      .item-details .item-top-row .item-ratio-pill {
+        background: rgba(14, 165, 233, 0.25);
+        color: #7dd3fc;
+        border: 1px solid rgba(14, 165, 233, 0.4);
+      }
+      .item-details .item-description {
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+@keyframes dropdownAnim {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -190,91 +416,11 @@
 }
 
 /* =========================================================================
-   GEARBOX SELECTOR TABS DOCK (Top Sub-bar)
-   ========================================================================= */
-.gearbox-selector-dock {
-  position: absolute;
-  top: 76px;
-  left: 20px;
-  right: 20px;
-  z-index: 18;
-  pointer-events: none;
-
-  .dock-scroll-wrapper {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    pointer-events: auto;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-}
-
-.gearbox-tab {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: rgba(15, 23, 42, 0.78);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  color: #94a3b8;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-
-  .tab-icon {
-    font-size: 1.2rem;
-  }
-
-  .tab-info {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-
-    .tab-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-
-    .tab-ratio {
-      font-size: 0.68rem;
-      color: #64748b;
-    }
-  }
-
-  &:hover {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
-  }
-
-  &.selected {
-    background: rgba(14, 165, 233, 0.16);
-    border-color: #0ea5e9;
-    box-shadow: 0 0 16px rgba(14, 165, 233, 0.35);
-
-    .tab-info .tab-title {
-      color: #38bdf8;
-    }
-    .tab-info .tab-ratio {
-      color: #7dd3fc;
-    }
-  }
-}
-
-/* =========================================================================
    REAL-TIME MECHANICAL TELEMETRY HUD (Upper-Right)
    ========================================================================= */
 .telemetry-hud {
   position: absolute;
-  top: 140px;
+  top: 76px;
   right: 20px;
   width: 290px;
   background: rgba(15, 23, 42, 0.85);
@@ -488,10 +634,12 @@
   }
 }
 
+.deck-row.options-row,
 .deck-row.drive-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
@@ -802,7 +950,7 @@
 
     .spinner-gear {
       font-size: 3rem;
-      animation: spinGear 2.5s linear infinite;
+      margin-bottom: 0.35rem;
     }
 
     h3 {
@@ -854,12 +1002,27 @@
     display: none; // Keep canvas unobstructed on mobile
   }
 
-  .deck-main-card {
-    padding: 10px 14px;
+  .gearbox-dropdown-btn {
+    padding: 6px 12px;
+    gap: 8px;
+
+    .dropdown-text {
+      .dropdown-name {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.82rem;
+      }
+    }
   }
 
-  .title-pill .subtext {
-    display: none;
+  .gearbox-dropdown-menu {
+    width: 310px;
+  }
+
+  .deck-main-card {
+    padding: 10px 14px;
   }
 }
 

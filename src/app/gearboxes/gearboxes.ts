@@ -91,7 +91,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       description:
         'Compact high-ratio speed reducer where a single or multi-start worm screw rotates a perpendicular worm wheel gear with inherent mechanical self-locking braking capability.',
       scale: 19.5,
-      centerOffset: [0.04, 0.035, -0.035],
+      centerOffset: [0.02, 0.0, -0.035],
     },
     {
       id: 'conical',
@@ -106,7 +106,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       description:
         'Intersecting shaft transmission transferring rotational drive at a 90-degree right angle through precision-machined conical bevel pinion and crown gears.',
       scale: 18.0,
-      centerOffset: [0.04, 0.05, 0],
+      centerOffset: [0.025, 0.048, 0.001],
     },
     {
       id: 'spur',
@@ -121,7 +121,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       description:
         'Classic parallel-shaft external spur gear speed reducer providing smooth, continuous power transmission with near-zero friction loss and high mechanical efficiency.',
       scale: 18.5,
-      centerOffset: [0.03, -0.03, 0],
+      centerOffset: [0.03, -0.032, -0.003],
     },
     {
       id: 'turboprop',
@@ -136,7 +136,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       description:
         'Aviation reduction gearbox reducing ultra-high-speed gas turbine shaft RPM down to propeller speed using balanced 4-branch compound idler gear torque splitters.',
       scale: 5.2,
-      centerOffset: [-0.29, 0.08, -0.19],
+      centerOffset: [-0.285, 0.0, -0.19],
     },
     {
       id: 'transmission',
@@ -151,7 +151,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       description:
         'Automotive constant-mesh manual transmission with synchronized layshaft gears providing 5 forward speeds plus reverse with real-time shift ratios and overdrive.',
       scale: 9.5,
-      centerOffset: [0.09, 0.04, -0.05],
+      centerOffset: [0.09, 0.035, -0.05],
     },
   ];
 
@@ -169,7 +169,8 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   selectedTransmissionGear: TransmissionGear = this.transmissionGears[1]; // default 2nd
 
   // Operational State & Controls
-  isPlaying = true;
+  isDropdownOpen = false;
+  isPlaying = false;
   isReversed = false;
   rpm = 1200; // Motor Input RPM (10 to 3000)
   housingMode: HousingMode = 'xray';
@@ -210,41 +211,6 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   private currentModelGroup: THREE.Group | null = null;
   private casingMeshes: THREE.Mesh[] = [];
 
-  // Dedicated Rotational Pivot Groups for Each Gearbox Type
-  private planetaryPivots = {
-    sun: new THREE.Group(),
-    carrier: new THREE.Group(),
-    p1: new THREE.Group(),
-    p2: new THREE.Group(),
-    p3: new THREE.Group(),
-  };
-
-  private wormPivots = {
-    input: new THREE.Group(),
-    output: new THREE.Group(),
-  };
-
-  private conicalPivots = {
-    input: new THREE.Group(),
-    output: new THREE.Group(),
-  };
-
-  private spurPivots = {
-    input: new THREE.Group(),
-    output: new THREE.Group(),
-  };
-
-  private turbopropPivots = {
-    turbine: new THREE.Group(),
-    propeller: new THREE.Group(),
-    idlers: [] as THREE.Group[],
-  };
-
-  private transmissionPivots = {
-    main: new THREE.Group(),
-    counter: new THREE.Group(),
-  };
-
   // Audio Engine
   private audioCtx: AudioContext | null = null;
   private oscNode: OscillatorNode | null = null;
@@ -281,6 +247,37 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.isDropdownOpen = false;
+    this.cdr.detectChanges();
+  }
+
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    this.cdr.detectChanges();
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+    this.cdr.detectChanges();
+  }
+
+  onSelectFromDropdown(config: GearboxConfig): void {
+    this.isDropdownOpen = false;
+    this.selectGearbox(config);
+    this.cdr.detectChanges();
+  }
+
+  onSelectGearboxById(id: string): void {
+    const found = this.gearboxes.find((g) => g.id === id);
+    if (found) {
+      this.isDropdownOpen = false;
+      this.selectGearbox(found);
+      this.cdr.detectChanges();
+    }
   }
 
   // =========================================================================
@@ -616,69 +613,18 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   }
 
   // =========================================================================
-  // SETUP KINEMATIC PIVOT AXES FOR EACH SPECIFIC GEARBOX
+  // CASING MESH IDENTIFICATION (SOLID / X-RAY / CUTAWAY)
+  // Preserves original CAD assembly without moving or detaching any parts
   // =========================================================================
   private setupKinematicsFor(type: GearboxType, root: THREE.Group): void {
     root.updateMatrixWorld(true);
+    this.casingMeshes = [];
 
     switch (type) {
       case 'planetary': {
-        const parent = root.getObjectByName('Object_9')?.parent || root;
-
-        // Reset pivots
-        this.planetaryPivots.sun = new THREE.Group();
-        this.planetaryPivots.carrier = new THREE.Group();
-        this.planetaryPivots.p1 = new THREE.Group();
-        this.planetaryPivots.p2 = new THREE.Group();
-        this.planetaryPivots.p3 = new THREE.Group();
-
-        parent.add(this.planetaryPivots.sun);
-        parent.add(this.planetaryPivots.carrier);
-
-        // Planet pivots mount onto carrier at 120 deg (radius 0.057)
-        this.planetaryPivots.p1.position.set(0, 0.057, 0.0);
-        this.planetaryPivots.p2.position.set(0, -0.0285, 0.0494);
-        this.planetaryPivots.p3.position.set(0, -0.0285, -0.0494);
-
-        this.planetaryPivots.carrier.add(this.planetaryPivots.p1);
-        this.planetaryPivots.carrier.add(this.planetaryPivots.p2);
-        this.planetaryPivots.carrier.add(this.planetaryPivots.p3);
-
-        parent.updateMatrixWorld(true);
-
-        // Attach Sun Gear meshes
-        ['Object_9', 'Object_131'].forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.planetaryPivots.sun.attach(m);
-        });
-
-        // Attach Carrier & Output Shaft meshes
-        ['Object_125', 'Object_129', 'Object_135', 'Object_136'].forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.planetaryPivots.carrier.attach(m);
-        });
-
-        // Attach Planet 1
-        ['Object_92', 'Object_93', 'Object_126', 'Object_132', 'Object_141'].forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.planetaryPivots.p1.attach(m);
-        });
-
-        // Attach Planet 2
-        ['Object_90', 'Object_95', 'Object_127', 'Object_134', 'Object_140'].forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.planetaryPivots.p2.attach(m);
-        });
-
-        // Attach Planet 3
-        ['Object_91', 'Object_94', 'Object_128', 'Object_133', 'Object_142'].forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.planetaryPivots.p3.attach(m);
-        });
-
-        // Casing meshes (stationary outer ring gear & bearing housing)
         const casingNames = new Set([
           'Object_2', 'Object_3', 'Object_4', 'Object_5', 'Object_6', 'Object_7', 'Object_8',
+          'Object_90', 'Object_91', 'Object_92', 'Object_93', 'Object_94', 'Object_95',
           'Object_100', 'Object_101', 'Object_102', 'Object_103', 'Object_104', 'Object_105',
           'Object_130', 'Object_139'
         ]);
@@ -691,42 +637,12 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       }
 
       case 'worm': {
-        const parent = root.getObjectByName('Object_3')?.parent || root;
-
-        // Worm Screw Input Pivot (along X at y = -0.040, z = 0.0)
-        this.wormPivots.input = new THREE.Group();
-        this.wormPivots.input.position.set(0, -0.04, 0);
-        parent.add(this.wormPivots.input);
-
-        // Worm Wheel Output Pivot (along Z at x = 0, y = 0)
-        this.wormPivots.output = new THREE.Group();
-        this.wormPivots.output.position.set(0, 0, 0);
-        parent.add(this.wormPivots.output);
-
-        parent.updateMatrixWorld(true);
-
-        const inMeshes = ['Object_20', 'Object_22', 'Object_36', 'Object_42', 'Object_45'];
-        inMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.wormPivots.input.attach(m);
-        });
-
-        const outMeshes = [
-          'Object_2', 'Object_3', 'Object_5', 'Object_19', 'Object_21', 'Object_24', 'Object_38', 'Object_44'
-        ];
-        outMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.wormPivots.output.attach(m);
-        });
-
-        // Casing meshes (cast iron outer body)
-        const casingNames = new Set([
-          'Object_7', 'Object_8', 'Object_9', 'Object_10', 'Object_11', 'Object_12', 'Object_13',
-          'Object_14', 'Object_17', 'Object_18', 'Object_37', 'Object_39', 'Object_40', 'Object_41',
-          'Object_43', 'Object_46', 'Object_47'
+        // Casing meshes: All stationary housing parts including Object_42 (motor bell), casing bodies, bolts
+        const gearNames = new Set([
+          'Object_36', 'Object_2', 'Object_3', 'Object_5', 'Object_19', 'Object_21', 'Object_24', 'Object_38', 'Object_44'
         ]);
         root.traverse((o) => {
-          if ((o as THREE.Mesh).isMesh && casingNames.has(o.name)) {
+          if ((o as THREE.Mesh).isMesh && !gearNames.has(o.name)) {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
@@ -734,37 +650,6 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       }
 
       case 'conical': {
-        const parent = root.getObjectByName('Object_4')?.parent || root;
-
-        // Input Pinion Pivot (along X at y = 0, z = -0.036)
-        this.conicalPivots.input = new THREE.Group();
-        this.conicalPivots.input.position.set(0, 0, -0.036);
-        parent.add(this.conicalPivots.input);
-
-        // Output Bevel Gear Pivot (along Z at x = 0, y = 0)
-        this.conicalPivots.output = new THREE.Group();
-        this.conicalPivots.output.position.set(0, 0, 0);
-        parent.add(this.conicalPivots.output);
-
-        parent.updateMatrixWorld(true);
-
-        const inMeshes = [
-          'Object_4', 'Object_37', 'Object_38', 'Object_42', 'Object_74', 'Object_76', 'Object_78', 'Object_81'
-        ];
-        inMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.conicalPivots.input.attach(m);
-        });
-
-        const outMeshes = [
-          'Object_40', 'Object_41', 'Object_43', 'Object_44', 'Object_75', 'Object_79', 'Object_80',
-          'Object_84', 'Object_85', 'Object_89', 'Object_91', 'Object_92'
-        ];
-        outMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.conicalPivots.output.attach(m);
-        });
-
         const casingNames = new Set([
           'Object_2', 'Object_3', 'Object_5', 'Object_6', 'Object_71', 'Object_72', 'Object_73',
           'Object_82', 'Object_86', 'Object_87', 'Object_88', 'Object_90'
@@ -778,37 +663,9 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       }
 
       case 'spur': {
-        const parent = root.getObjectByName('Object_4')?.parent || root;
-
-        // Input Shaft Pivot (along X at y = 0.032, z = -0.025)
-        this.spurPivots.input = new THREE.Group();
-        this.spurPivots.input.position.set(0, 0.032, -0.025);
-        parent.add(this.spurPivots.input);
-
-        // Output Shaft Pivot (along X at y = 0.030, z = 0.032)
-        this.spurPivots.output = new THREE.Group();
-        this.spurPivots.output.position.set(0, 0.03, 0.032);
-        parent.add(this.spurPivots.output);
-
-        parent.updateMatrixWorld(true);
-
-        const inMeshes = ['Object_4', 'Object_7', 'Object_16', 'Object_27'];
-        inMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.spurPivots.input.attach(m);
-        });
-
-        const outMeshes = [
-          'Object_8', 'Object_15', 'Object_28', 'Object_30', 'Object_31', 'Object_32', 'Object_33'
-        ];
-        outMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.spurPivots.output.attach(m);
-        });
-
         const casingNames = new Set([
           'Object_2', 'Object_3', 'Object_9', 'Object_10', 'Object_11', 'Object_12', 'Object_13',
-          'Object_14', 'Object_17', 'Object_22', 'Object_25', 'Object_29'
+          'Object_14', 'Object_17', 'Object_22', 'Object_25', 'Object_28', 'Object_29', 'Object_30'
         ]);
         root.traverse((o) => {
           if ((o as THREE.Mesh).isMesh && casingNames.has(o.name)) {
@@ -819,55 +676,6 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       }
 
       case 'turboprop': {
-        const parent = root.getObjectByName('Object_164')?.parent || root;
-
-        // Turbine Input Pivot (along X at y = 0, z = 0)
-        this.turbopropPivots.turbine = new THREE.Group();
-        this.turbopropPivots.turbine.position.set(0, 0, 0);
-        parent.add(this.turbopropPivots.turbine);
-
-        // Propeller Output Pivot (along X at y = -0.262, z = 0)
-        this.turbopropPivots.propeller = new THREE.Group();
-        this.turbopropPivots.propeller.position.set(0, -0.262, 0);
-        parent.add(this.turbopropPivots.propeller);
-
-        // 4 Compound Idlers
-        const idlerPivots: THREE.Group[] = [];
-        const idlerConfigs = [
-          { name: 'Object_62', pos: [0, -0.13, 0] },
-          { name: 'Object_60', pos: [0, -0.394, 0] },
-          { name: 'Object_61', pos: [0, -0.262, 0.132] },
-          { name: 'Object_63', pos: [0, -0.262, -0.132] },
-        ];
-        idlerConfigs.forEach((cfg) => {
-          const grp = new THREE.Group();
-          grp.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
-          parent.add(grp);
-          parent.updateMatrixWorld(true);
-          const m = root.getObjectByName(cfg.name);
-          if (m) grp.attach(m);
-          idlerPivots.push(grp);
-        });
-        this.turbopropPivots.idlers = idlerPivots;
-
-        parent.updateMatrixWorld(true);
-
-        const inMeshes = ['Object_164', 'Object_165', 'Object_166', 'Object_172', 'Object_173', 'Object_184'];
-        inMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.turbopropPivots.turbine.attach(m);
-        });
-
-        const outMeshes = [
-          'Object_3', 'Object_5', 'Object_8', 'Object_10', 'Object_64', 'Object_65', 'Object_167',
-          'Object_168', 'Object_170', 'Object_171', 'Object_179', 'Object_181', 'Object_188',
-          'Object_189', 'Object_190', 'Object_191'
-        ];
-        outMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.turbopropPivots.propeller.attach(m);
-        });
-
         const casingNames = new Set([
           'Object_7', 'Object_11', 'Object_12', 'Object_13', 'Object_14', 'Object_21', 'Object_174',
           'Object_175', 'Object_178', 'Object_180', 'Object_182', 'Object_198', 'Object_201'
@@ -881,41 +689,6 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       }
 
       case 'transmission': {
-        const parent = root.getObjectByName('Object_5')?.parent || root;
-
-        // Upper Mainshaft Pivot (along X at y = 0, z = 0)
-        this.transmissionPivots.main = new THREE.Group();
-        this.transmissionPivots.main.position.set(0, 0, 0);
-        parent.add(this.transmissionPivots.main);
-
-        // Lower Countershaft Pivot (along X at y = -0.120, z = 0)
-        this.transmissionPivots.counter = new THREE.Group();
-        this.transmissionPivots.counter.position.set(0, -0.12, 0);
-        parent.add(this.transmissionPivots.counter);
-
-        parent.updateMatrixWorld(true);
-
-        const mainMeshes = [
-          'Object_5', 'Object_19', 'Object_22', 'Object_30', 'Object_31', 'Object_34', 'Object_35',
-          'Object_36', 'Object_37', 'Object_38', 'Object_39', 'Object_40', 'Object_41', 'Object_42',
-          'Object_54', 'Object_59', 'Object_67', 'Object_68', 'Object_70'
-        ];
-        mainMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.transmissionPivots.main.attach(m);
-        });
-
-        const counterMeshes = [
-          'Object_14', 'Object_15', 'Object_20', 'Object_21', 'Object_23', 'Object_28', 'Object_29',
-          'Object_32', 'Object_33', 'Object_43', 'Object_44', 'Object_45', 'Object_46', 'Object_47',
-          'Object_53', 'Object_58', 'Object_63', 'Object_64', 'Object_65', 'Object_66', 'Object_69',
-          'Object_71'
-        ];
-        counterMeshes.forEach((n) => {
-          const m = root.getObjectByName(n);
-          if (m) this.transmissionPivots.counter.attach(m);
-        });
-
         const casingNames = new Set([
           'Object_4', 'Object_6', 'Object_7', 'Object_8', 'Object_10', 'Object_11', 'Object_12',
           'Object_13', 'Object_16', 'Object_17', 'Object_18', 'Object_25', 'Object_48', 'Object_49',
@@ -966,7 +739,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   }
 
   // =========================================================================
-  // MAIN ANIMATION LOOP & ROTATIONAL MECHANICS
+  // MAIN ANIMATION & RENDER LOOP (STATIC ENGINEERING INSPECTION VIEW)
   // =========================================================================
   private animate = (): void => {
     this.animationId = requestAnimationFrame(this.animate);
@@ -984,88 +757,9 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       this.fpsTimer = 0;
     }
 
-    if (this.isPlaying) {
-      this.stepGearboxKinematics(dt);
-    }
-
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
-
-  private stepGearboxKinematics(dt: number): void {
-    const dir = this.isReversed ? -1 : 1;
-    const baseRadPerSec = (this.rpm / 60) * (2 * Math.PI) * dir;
-    const dIn = baseInputSpeedScaled(baseRadPerSec, dt);
-
-    function baseInputSpeedScaled(speed: number, delta: number): number {
-      return speed * delta;
-    }
-
-    switch (this.selectedGearbox.id) {
-      case 'planetary': {
-        // Planetary epicyclic kinematics:
-        // Sun turns at input speed
-        // Carrier turns at input / 4.0
-        // Planet gears spin on pins at -(carrier * 3.0) while orbiting
-        this.planetaryPivots.sun.rotation.x += dIn;
-        this.planetaryPivots.carrier.rotation.x += dIn / 4.0;
-        const spin = -(dIn / 4.0) * 3.0;
-        this.planetaryPivots.p1.rotation.x += spin;
-        this.planetaryPivots.p2.rotation.x += spin;
-        this.planetaryPivots.p3.rotation.x += spin;
-        break;
-      }
-
-      case 'worm': {
-        // Input Worm Screw turns along X
-        // Output Worm Wheel turns along Z at 1/30 reduction
-        this.wormPivots.input.rotation.x += dIn;
-        this.wormPivots.output.rotation.z += dIn / 30.0;
-        break;
-      }
-
-      case 'conical': {
-        // Input Bevel Pinion turns along X
-        // Output Bevel Crown Gear turns along Z at 1/1.5 reduction
-        this.conicalPivots.input.rotation.x += dIn;
-        this.conicalPivots.output.rotation.z -= dIn / 1.5;
-        break;
-      }
-
-      case 'spur': {
-        // Input spur shaft turns along X
-        // Output spur shaft counter-rotates along X at 1/2.4 reduction
-        this.spurPivots.input.rotation.x += dIn;
-        this.spurPivots.output.rotation.x -= dIn / 2.4;
-        break;
-      }
-
-      case 'turboprop': {
-        // Turbine shaft turns at high RPM
-        // Propeller shaft turns at 1/8.0 reduction
-        // 4 compound idlers turn at -1/2.5
-        this.turbopropPivots.turbine.rotation.x += dIn;
-        this.turbopropPivots.propeller.rotation.x += dIn / 8.0;
-        this.turbopropPivots.idlers.forEach((id) => (id.rotation.x -= dIn / 2.5));
-        break;
-      }
-
-      case 'transmission': {
-        // Countershaft turns with input
-        // Mainshaft turns at current selected gear ratio
-        const ratio = this.selectedTransmissionGear.ratio;
-        this.transmissionPivots.counter.rotation.x += dIn;
-        this.transmissionPivots.main.rotation.x -= dIn / ratio;
-        break;
-      }
-    }
-
-    // Update audio pitch if unmuted
-    if (!this.isMuted && this.oscNode && this.audioCtx) {
-      const targetFreq = 45 + (this.rpm / 3000) * 190;
-      this.oscNode.frequency.setTargetAtTime(targetFreq, this.audioCtx.currentTime, 0.08);
-    }
-  }
 
   // =========================================================================
   // TELEMETRY & CONTROLS UPDATE

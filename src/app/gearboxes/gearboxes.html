@@ -12,13 +12,68 @@
         <span>Three.js Demos</span>
       </a>
 
-      <div class="title-pill">
-        <span class="icon">{{ selectedGearbox.icon }}</span>
-        <div class="text-group">
-          <h1>{{ selectedGearbox.name }}</h1>
-          <span class="subtext">{{ selectedGearbox.subtitle }}</span>
+      <!-- Interactive Gearbox Dropdown Selector -->
+      <div class="gearbox-dropdown-wrapper" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="gearbox-dropdown-btn"
+          [class.active]="isDropdownOpen"
+          (click)="toggleDropdown()"
+          aria-haspopup="listbox"
+          [attr.aria-expanded]="isDropdownOpen"
+          title="Click to change gearbox"
+        >
+          <span class="dropdown-icon">{{ selectedGearbox.icon }}</span>
+          <div class="dropdown-text">
+            <div class="dropdown-header-line">
+              <span class="dropdown-label">GEARBOX MODEL</span>
+              <span class="dropdown-badge">{{ selectedGearbox.badge }}</span>
+            </div>
+            <span class="dropdown-name">{{ selectedGearbox.name }}</span>
+          </div>
+          <svg
+            class="chevron-arrow"
+            [class.open]="isDropdownOpen"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Glassmorphic Dropdown Menu Panel -->
+        <div class="gearbox-dropdown-menu" *ngIf="isDropdownOpen">
+          <div class="menu-heading">
+            <span class="title">SELECT GEARBOX TRANSMISSION</span>
+            <span class="counter">{{ gearboxes.length }} LOADED</span>
+          </div>
+
+          <div class="menu-list" role="listbox">
+            <button
+              *ngFor="let g of gearboxes"
+              type="button"
+              class="menu-item"
+              [class.selected]="selectedGearbox.id === g.id"
+              (click)="onSelectFromDropdown(g)"
+              role="option"
+              [attr.aria-selected]="selectedGearbox.id === g.id"
+            >
+              <span class="item-icon">{{ g.icon }}</span>
+              <div class="item-details">
+                <div class="item-top-row">
+                  <span class="item-title">{{ g.name }}</span>
+                  <span class="item-ratio-pill">{{ g.badge }}</span>
+                </div>
+                <span class="item-description">{{ g.subtitle }}</span>
+              </div>
+              <span class="item-checkmark" *ngIf="selectedGearbox.id === g.id">✓</span>
+            </button>
+          </div>
         </div>
-        <span class="badge">{{ selectedGearbox.badge }}</span>
       </div>
     </div>
 
@@ -85,25 +140,6 @@
     </div>
   </header>
 
-  <!-- Gearbox Selection Tabs (Top Sub-bar) -->
-  <nav class="gearbox-selector-dock" aria-label="Select Gearbox System">
-    <div class="dock-scroll-wrapper">
-      <button
-        *ngFor="let g of gearboxes"
-        type="button"
-        class="gearbox-tab"
-        [class.selected]="selectedGearbox.id === g.id"
-        (click)="selectGearbox(g)"
-      >
-        <span class="tab-icon">{{ g.icon }}</span>
-        <div class="tab-info">
-          <span class="tab-title">{{ g.name }}</span>
-          <span class="tab-ratio">{{ g.badge }}</span>
-        </div>
-      </button>
-    </div>
-  </nav>
-
   <!-- Real-Time Mechanical Telemetry HUD (Upper-Right) -->
   <aside class="telemetry-hud">
     <div class="hud-header">
@@ -122,41 +158,33 @@
         <div class="metric-sub">Torque Multiplication: {{ telemetry.torqueMult }}</div>
       </div>
 
-      <!-- RPM Dual Dial Comparison -->
-      <div class="rpm-comparison-grid">
-        <div class="rpm-card input">
-          <span class="label">INPUT MOTOR</span>
-          <span class="val">{{ telemetry.inputRpm }} <small>RPM</small></span>
-          <span class="omega">{{ telemetry.inputOmega }} rad/s</span>
-        </div>
-        <div class="rpm-arrow">➔</div>
-        <div class="rpm-card output">
-          <span class="label">OUTPUT SHAFT</span>
-          <span class="val">{{ telemetry.outputRpm }} <small>RPM</small></span>
-          <span class="omega">{{ telemetry.outputOmega }} rad/s</span>
-        </div>
-      </div>
-
       <!-- Physics & Torque Rows -->
-      <div class="stats-row">
-        <div class="stat-item">
-          <span class="lbl">Output Torque</span>
-          <span class="num text-amber">{{ telemetry.outputTorque }} Nm</span>
-        </div>
-        <div class="stat-item">
-          <span class="lbl">Mech Power</span>
-          <span class="num">{{ telemetry.mechanicalPower }}</span>
-        </div>
-      </div>
-
       <div class="stats-row">
         <div class="stat-item">
           <span class="lbl">Efficiency</span>
           <span class="num text-emerald">{{ selectedGearbox.efficiency }}%</span>
         </div>
         <div class="stat-item">
-          <span class="lbl">Sump Temp</span>
-          <span class="num text-sky">{{ telemetry.temperature }}</span>
+          <span class="lbl">Configuration</span>
+          <span class="num text-sky">{{ selectedGearbox.badge }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Output Torque</span>
+          <span class="num text-amber">{{ telemetry.outputTorque }} Nm</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Nominal Rating</span>
+          <span class="num">{{ telemetry.mechanicalPower }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Design Status</span>
+          <span class="num text-emerald">Ready for CAD Inspection</span>
         </div>
       </div>
     </div>
@@ -165,59 +193,10 @@
   <!-- Bottom Control Deck -->
   <section class="bottom-controls-deck">
     <div class="deck-main-card">
-      <!-- Drive Controls Row -->
-      <div class="deck-row drive-row">
-        <!-- Play / Pause -->
-        <button
-          type="button"
-          class="ctrl-btn play-btn"
-          [class.playing]="isPlaying"
-          (click)="togglePlayPause()"
-        >
-          <span class="btn-icon">{{ isPlaying ? '⏸' : '▶' }}</span>
-          <span>{{ isPlaying ? 'Pause Drive' : 'Start Drive' }}</span>
-        </button>
-
-        <!-- Direction Reversal -->
-        <button
-          type="button"
-          class="ctrl-btn dir-btn"
-          [class.active]="isReversed"
-          (click)="toggleDirection()"
-          title="Toggle Rotation Direction"
-        >
-          <span class="btn-icon">⇄</span>
-          <span>{{ isReversed ? 'Reverse' : 'Forward' }}</span>
-        </button>
-
-        <!-- Motor Speed RPM Slider -->
-        <div class="rpm-slider-group">
-          <div class="slider-header">
-            <span class="slider-title">MOTOR INPUT SPEED:</span>
-            <span class="slider-val">{{ rpm }} RPM</span>
-          </div>
-          <div class="slider-control">
-            <input
-              type="range"
-              min="30"
-              max="3000"
-              step="30"
-              [(ngModel)]="rpm"
-              (ngModelChange)="setRpm($event)"
-              class="rpm-range-input"
-            />
-          </div>
-          <div class="rpm-quick-buttons">
-            <button type="button" (click)="setRpm(300)">300</button>
-            <button type="button" (click)="setRpm(900)">900</button>
-            <button type="button" (click)="setRpm(1500)">1500</button>
-            <button type="button" (click)="setRpm(2400)">2400</button>
-          </div>
-        </div>
-
+      <div class="deck-row options-row">
         <!-- Housing View Modes -->
         <div class="housing-mode-group">
-          <span class="group-title">HOUSING:</span>
+          <span class="group-title">HOUSING VIEW:</span>
           <div class="housing-buttons">
             <button
               type="button"
@@ -321,7 +300,7 @@
     <div class="loader-box">
       <div class="spinner-gear">⚙️</div>
       <h3>Loading {{ selectedGearbox.name }}</h3>
-      <p>Synchronizing precision gear teeth kinematics...</p>
+      <p>Loading high-detail CAD geometry & metallic shaders...</p>
       <div class="progress-bar">
         <div class="progress-fill" [style.width.%]="loadingProgress"></div>
       </div>
