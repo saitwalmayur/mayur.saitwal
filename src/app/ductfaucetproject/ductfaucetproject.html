@@ -1,0 +1,336 @@
+<div class="ductfaucet-wrapper">
+  <!-- 3D Canvas Viewport Container -->
+  <div #canvasContainer class="canvas-viewport"></div>
+
+  <!-- Top Floating Header Bar -->
+  <header class="top-nav-bar">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-pill" title="Back to Three.js Directory">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Three.js Demos</span>
+      </a>
+
+      <!-- Page Title & Badge -->
+      <div class="page-title-badge">
+        <div class="title-top">
+          <span class="badge-tag">FACTORY HVAC DUCTWORK</span>
+          <span class="live-dot"></span>
+          <span class="live-text">SPIRAL ROUND ARCHITECTURE</span>
+        </div>
+        <h1 class="main-title">Industrial Spiral Ductwork Structure</h1>
+      </div>
+    </div>
+
+    <!-- Center Mode Switcher & Export Action Dock -->
+    <div class="nav-center">
+      <div class="action-dock">
+        <!-- Material Finish Modes -->
+        <div class="mode-pill-group">
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="materialMode === 'galvanized'"
+            (click)="setMaterialMode('galvanized')"
+            title="Galvanized Zinc Spangle Spiral Sheet Metal (As seen in Reference Photos)"
+          >
+            ⚙️ Galvanized
+          </button>
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="materialMode === 'stainless'"
+            (click)="setMaterialMode('stainless')"
+            title="316L Specular Stainless Steel"
+          >
+            ✨ Stainless
+          </button>
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="materialMode === 'xray'"
+            (click)="setMaterialMode('xray')"
+            title="X-Ray Translucent Technical Mode"
+          >
+            👻 X-Ray
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Airflow & Hall Toggles -->
+        <button
+          type="button"
+          class="dock-btn toggle-btn"
+          [class.active]="showAirflow"
+          (click)="toggleAirflow()"
+          title="Toggle Animated Airflow Streamlines"
+        >
+          💨 Airflow: {{ showAirflow ? 'ON' : 'OFF' }}
+        </button>
+
+        <button
+          type="button"
+          class="dock-btn toggle-btn"
+          [class.active]="showFactoryHall"
+          (click)="toggleFactoryHall()"
+          title="Toggle Factory High-Bay Architecture & Trusses"
+        >
+          🏭 Hall: {{ showFactoryHall ? 'ON' : 'OFF' }}
+        </button>
+
+        <div class="divider"></div>
+
+        <!-- 1-Click GLB 3D Model Export (Requested: create glmbmodel) -->
+        <button
+          type="button"
+          class="dock-btn export-btn"
+          [disabled]="isExporting"
+          (click)="exportGLB()"
+          title="Download complete 3D structure as GLB model"
+        >
+          <span class="icon">{{ isExporting ? '⏳' : '📥' }}</span>
+          <span>{{ isExporting ? 'Exporting...' : 'Export GLB Model' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Camera Presets -->
+    <div class="nav-right">
+      <div class="camera-pill">
+        <span class="cam-label">CAM:</span>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'eye_level'"
+          (click)="setCameraPreset('eye_level')"
+          title="Eye-Level View Looking Up at Ducts (Matching Reference Photos)"
+        >
+          Eye-Level
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'overview'"
+          (click)="setCameraPreset('overview')"
+          title="Isometric Plant Overview"
+        >
+          Overview
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'trunk'"
+          (click)="setCameraPreset('trunk')"
+          title="Primary 1.5m Spiral Supply Trunk"
+        >
+          Trunk
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'blower'"
+          (click)="setCameraPreset('blower')"
+          title="Centrifugal Blower Fan Assembly (Image 2)"
+        >
+          Blower
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'drops'"
+          (click)="setCameraPreset('drops')"
+          title="Vertical Risers & Diffuser Nozzles (Image 3)"
+        >
+          Drops
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'top'"
+          (click)="setCameraPreset('top')"
+          title="Top-Down Engineering Layout"
+        >
+          Top
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'rectangular'"
+          (click)="setCameraPreset('rectangular')"
+          title="Rectangular Trunk & Square-to-Round Transition"
+        >
+          Rectangular
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'cyclone'"
+          (click)="setCameraPreset('cyclone')"
+          title="Industrial Cyclone Dust Collector"
+        >
+          Cyclone
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'flexible'"
+          (click)="setCameraPreset('flexible')"
+          title="Flexible S-Curve Accordion Bellows Duct"
+        >
+          Flexible
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'cross_duct'"
+          (click)="setCameraPreset('cross_duct')"
+          title="Fully Connected 4-Way Cross Duct Pipes (Matching Reference Photo)"
+        >
+          Cross Ducts
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Right Floating Engineering Telemetry HUD -->
+  <aside class="telemetry-hud">
+    <div class="hud-header">
+      <div class="hud-title-box">
+        <span class="icon">🏭</span>
+        <span class="title">HVAC PLANT SPECIFICATIONS</span>
+      </div>
+      <span class="fps-tag">{{ fps }} FPS</span>
+    </div>
+
+    <div class="hud-body">
+      <!-- Total Length Hero Metric -->
+      <div class="metric-hero">
+        <div class="metric-label">TOTAL DUCTWORK RUN</div>
+        <div class="metric-huge text-cyan">{{ stats.totalLengthMeters }} m</div>
+        <div class="metric-sub">Spiral Round + Rectangular Sheet Metal</div>
+      </div>
+
+      <!-- Component Breakdown Stats -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Straight Sections</span>
+          <span class="num text-cyan">{{ stats.straightSections }} Runs</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Gored Elbows</span>
+          <span class="num text-amber">{{ stats.goredElbows }} Bends</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Rectangular Trunk</span>
+          <span class="num text-emerald">{{ stats.rectangularRuns }} Flanged</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Sq-to-Round Hood</span>
+          <span class="num text-sky">{{ stats.transitionsCount }} Lofted</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Cyclone Separator</span>
+          <span class="num text-amber">{{ stats.cycloneCount }} Plant</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Flexible Bellows</span>
+          <span class="num text-cyan">{{ stats.flexibleBellowsCount }} S-Hoses</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Centrifugal Blowers</span>
+          <span class="num text-amber">{{ stats.blowersCount }} Fans</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Ceiling Hangers</span>
+          <span class="num text-slate">{{ stats.ceilingHangers }} Mounts</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item full-width">
+          <span class="lbl">Air Volume Capacity</span>
+          <span class="num text-emerald">{{ stats.airVolumeCapacity.toLocaleString() }} m³/h</span>
+        </div>
+      </div>
+
+      <!-- Engineering Specification Card -->
+      <div class="spec-card">
+        <div class="spec-title">FABRICATION STANDARD</div>
+        <div class="spec-detail-line">
+          <span class="lbl">Material:</span>
+          <span class="val">Galvanized Steel ASTM A653 G90</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Seam Type:</span>
+          <span class="val text-cyan">4-Ply Spiral Lockseam</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Elbow Type:</span>
+          <span class="val text-amber">5-Piece Segmented Gored</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Connections:</span>
+          <span class="val">Rolled Angle Flange Collars</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Suspension:</span>
+          <span class="val">M10 Threaded Rods + Unistrut</span>
+        </div>
+      </div>
+
+      <!-- Quick Export Prompt -->
+      <div class="export-hint-card">
+        <span class="hint-title">📦 3D MODEL GENERATION</span>
+        <p>This big industrial structure is procedurally generated. Click <strong>Export GLB Model</strong> to download the complete 3D file.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Floating Quick Controls Pill -->
+  <footer class="bottom-floating-pill">
+    <div class="pill-card">
+      <span class="pill-label">QUICK TOGGLE:</span>
+      <button
+        type="button"
+        class="quick-btn"
+        [class.active]="showCeilingHangers"
+        (click)="toggleCeilingHangers()"
+      >
+        🔩 Ceiling Hangers ({{ showCeilingHangers ? 'ON' : 'OFF' }})
+      </button>
+      <button
+        type="button"
+        class="quick-btn"
+        [class.active]="materialMode === 'galvanized'"
+        (click)="setMaterialMode('galvanized')"
+      >
+        ⚙️ Spiral Galvanized Zinc
+      </button>
+      <button
+        type="button"
+        class="quick-btn export-pill-btn"
+        [disabled]="isExporting"
+        (click)="exportGLB()"
+      >
+        📥 Download GLB
+      </button>
+    </div>
+  </footer>
+
+  <!-- Export Toast Alert Message -->
+  <div *ngIf="exportSuccessMsg" class="export-toast">
+    <span class="icon">✅</span>
+    <span class="msg">{{ exportSuccessMsg }}</span>
+  </div>
+</div>

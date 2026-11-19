@@ -23,6 +23,18 @@ export interface ThreeProjectItem {
 export class Threejsexample {
   readonly projects: ThreeProjectItem[] = [
     {
+      id: 'fluidexample1',
+      route: '/threejs/fluidexample1',
+      title: 'Particle Fluids Simulation',
+      tagline: 'Position-Based Dynamics & SPH fluid physics engine in Three.js',
+      description:
+        'Interactive real-time 3D particle fluid simulation inspired by Dan Greenheck’s threejs-particle-fluids. Features dam break, water drop impact, viscous honey coiling, whirlpool vortices, and multiphase liquids with live telemetry.',
+      tags: ['Three.js', 'PBD Fluids', 'SPH Simulation', 'Spatial Hashing', 'Viscoelastic', 'Multiphase'],
+      icon: '🌊',
+      features: ['Dam Break & Crown Splash', 'Viscous Honey Coiling', 'Vortex Whirlpools', 'Spatial Hash Grid', 'Interactive Splash Tool'],
+      gradient: 'linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(99, 102, 241, 0.1))',
+    },
+    {
       id: 'shaders',
       route: '/threejs/shaders',
       title: 'Custom GLSL Shaders',
@@ -145,26 +157,52 @@ export class Threejsexample {
     {
       id: 'gearboxes',
       route: '/threejs/gearboxes',
-      title: 'Industrial 3D Gearboxes & Mechanical Transmission',
-      tagline: 'Interactive mechanical engineering simulation of 6 real-world gearboxes with synchronized kinematics',
+      title: 'Industrial 3D Gearboxes & Mechanical Kinematics',
+      tagline: 'Interactive mechanical engineering simulation of 29 real-world gearboxes, bevel transmissions & kinematic mechanisms',
       description:
-        'Interactive mechanical engineering simulation showcasing 6 distinct industrial gear transmission systems: Planetary (Epicyclic), Worm Reduction, 90° Bevel/Conical, 3D-Printed Spur, Turboprop Aviation, and 5-Speed Manual Automotive Transmission. Features mathematically synchronized gear mesh rotation, interactive RPM speed control, forward/reverse drive, X-Ray transparent housing, cutaway gear train views, multi-speed shifting, and mechanical telemetry.',
-      tags: ['Three.js', 'Mechanical Engineering', 'Gearbox Simulation', 'Planetary Gears', 'Worm Drive', 'Transmission'],
+        'Interactive mechanical engineering simulation showcasing 29 distinct industrial gear transmissions, gearboxes, and kinematic mechanisms: Planetary Epicyclic, Worm Speed Reducers, Conical 90° Bevels, Hypoid Differentials, Double-Helical Herringbones, Multi-Speed Manual Automotive Transmissions, Geneva Beaver-Tail Indexing Drives, Hypocycloid Scotch Yokes, Nautilus Spiral Gears, and 3D Interlocking Cube Gears. Features PBR metallic reflections, X-Ray & Cutaway housing modes, real-time kinematics, and search/filtering.',
+      tags: ['Three.js', 'Mechanical Engineering', '29 Gearboxes', 'Kinematics', 'Planetary Gears', 'Metallic Shaders'],
       icon: '⚙️',
-      features: ['6 Industrial Gearbox Systems', 'Synchronized Gear Mesh Physics', 'RPM & Direction Motor Controls', 'X-Ray & Cutaway Housing Views', '5-Speed Shifter with Overdrive', 'Engineering Velocity Telemetry HUD'],
+      features: ['29 Industrial Models & Kinematics', 'Synchronized Gear Motion Mechanics', 'PBR Metallic Finish Selector', 'X-Ray & Cutaway Housing Views', 'Model Search & Category Filters', 'Engineering Velocity Telemetry HUD'],
       gradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(16, 185, 129, 0.22))',
     },
     {
       id: 'ductpipes',
       route: '/threejs/ductpipes',
-      title: 'Industrial HVAC Duct Pipes & Ventilation Network',
-      tagline: 'Authentic 38-piece modular factory HVAC duct network with interactive airflow streamlines & kit showroom',
+      title: 'Industrial Factory Spiral Ductwork Structure',
+      tagline: 'Massive multi-tier factory ventilation structure with 1.5m spiral-seam ducts, gored elbows, blowers & GLB export',
       description:
-        'Large-scale industrial plant HVAC ventilation network assembled from 38 modular components: primary 1080mm overhead supply trunks, aerodynamic transitions, 4-way radial cross manifolds, down-firing linear louver diffusers, structural ceiling hangers, and parallel 400mm spiral-wound corrugated exhaust fume extraction lines. Features animated airflow particle streamlines, interactive component inspector, Solid vs X-Ray transparency, and animated transition between Plant Assembly and Kit Showroom palette.',
-      tags: ['Three.js', 'Industrial HVAC', 'Duct Pipes', 'Factory Ventilation', 'Particle Streamlines', 'Modular Kit'],
-      icon: '💨',
-      features: ['38 Modular Duct Components', 'Interconnected Factory HVAC Layout', 'Animated Supply & Exhaust Streamlines', 'Modular Kit Showroom Palette', 'Interactive Part Inspector HUD', 'PBR Galvanized & Weathered Metals'],
-      gradient: 'linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(59, 130, 246, 0.22))',
+        'Large-scale industrial plant ventilation structure modeled directly after industrial factory reference installations. Features massive 1.5m spiral-wound galvanized ducts with helical seams, 5-piece segmented gored 90° elbows, aerodynamic conical reducers, down-firing vertical drops with bell-mouth diffusers, centrifugal blower fans with electric motors, high-bay steel roof trusses, animated airflow streamlines, and 1-click GLB 3D model export.',
+      tags: ['Three.js', 'Industrial Spiral Ducts', 'Factory Ventilation', 'Gored Elbows', 'Blower Fans', 'GLB Export'],
+      icon: '🏭',
+      features: [
+        'Massive 1.5m Spiral-Seam Round Duct Trunk',
+        '5-Piece Segmented Gored 90° Elbows',
+        'Aerodynamic Conical Transition Reducers',
+        'Downward Vertical Drops with Bellmouth Diffusers',
+        'Centrifugal Fan Blowers with Electric Motors',
+        '1-Click GLB 3D Model File Download',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(16, 185, 129, 0.25))',
+    },
+    {
+      id: 'ductfaucet',
+      route: '/threejs/ductfaucet',
+      title: 'Industrial Factory Spiral Ductwork Structure',
+      tagline: 'Massive multi-tier factory ventilation structure with 1.5m spiral-seam ducts, gored elbows, blowers, and GLB export',
+      description:
+        'Large-scale industrial plant ventilation structure modeled directly after industrial factory reference installations. Features massive 1.5m spiral-wound galvanized ducts with helical seams, 5-piece segmented gored 90° elbows, aerodynamic conical reducers, down-firing vertical drops with bell-mouth diffusers, centrifugal blower fans with electric motors, high-bay steel roof trusses, animated airflow streamlines, and 1-click GLB 3D model export.',
+      tags: ['Three.js', 'Industrial Spiral Ducts', 'Factory Ventilation', 'Gored Elbows', 'Blower Fans', 'GLB Export'],
+      icon: '🏭',
+      features: [
+        'Massive 1.5m Spiral-Seam Round Duct Trunk',
+        '5-Piece Segmented Gored 90° Elbows',
+        'Aerodynamic Conical Transition Reducers',
+        'Downward Vertical Drops with Bellmouth Diffusers',
+        'Centrifugal Fan Blowers with Electric Motors',
+        '1-Click GLB 3D Model File Download',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(16, 185, 129, 0.25))',
     },
     {
       id: 'ludo',

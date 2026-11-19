@@ -216,6 +216,16 @@ export const routes: Routes = [
     loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
   },
   {
+    path: 'threejs/ductcleaning',
+    title: 'Industrial Duct Cleaning & Rotary Nozzles | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'ductcleaning',
+    title: 'Industrial Duct Cleaning & Rotary Nozzles | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
     path: 'ductpipes',
     title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
     loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
@@ -229,6 +239,66 @@ export const routes: Routes = [
     path: 'ductpopers',
     title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
     loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
+  },
+  {
+    path: 'ductfaucetproject',
+    title: 'Modular Circular Duct & Lechler Retractable Spray Cleaning | Three.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./ductfaucetproject/ductfaucetproject').then((m) => m.Ductfaucetproject),
+  },
+  {
+    path: 'ductfaucet',
+    title: 'Modular Circular Duct & Lechler Retractable Spray Cleaning | Three.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./ductfaucetproject/ductfaucetproject').then((m) => m.Ductfaucetproject),
+  },
+  {
+    path: 'threejs/ductfaucetproject',
+    title: 'Modular Circular Duct & Lechler Retractable Spray Cleaning | Three.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./ductfaucetproject/ductfaucetproject').then((m) => m.Ductfaucetproject),
+  },
+  {
+    path: 'threejs/ductfaucet',
+    title: 'Modular Circular Duct & Lechler Retractable Spray Cleaning | Three.js | Mayur Saitwal',
+    loadComponent: () =>
+      import('./ductfaucetproject/ductfaucetproject').then((m) => m.Ductfaucetproject),
+  },
+  {
+    path: 'threejs/fluidexample1',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
+  },
+  {
+    path: 'fluidexample1',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
+  },
+  {
+    path: 'threejs/fluidsexample1',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
+  },
+  {
+    path: 'fluidsexample1',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
+  },
+  {
+    path: 'threejs/particle-fluids',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
+  },
+  {
+    path: 'particle-fluids',
+    title: 'Three.js Particle Fluids Simulation | Position-Based Dynamics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./fluidsexample1/fluidsexample1').then((m) => m.Fluidsexample1),
   },
   {
     path: 'unity',

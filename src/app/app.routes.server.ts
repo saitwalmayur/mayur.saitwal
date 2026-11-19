@@ -82,6 +82,30 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'ductpipes',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'ductpipers',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'ductpopers',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'ductcleaning',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'ductfaucetproject',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'ductfaucet',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'indstry/**',
     renderMode: RenderMode.Client,
   },

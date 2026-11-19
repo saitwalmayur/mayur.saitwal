@@ -1,13 +1,8 @@
 <div class="ductpipes-container">
   <!-- 3D Fullscreen WebGL Canvas -->
-  <canvas
-    #canvasRef
-    class="webgl-canvas"
-    (mousemove)="onPointerMove($event)"
-    (click)="onCanvasClick()"
-  ></canvas>
+  <canvas #canvasRef class="webgl-canvas"></canvas>
 
-  <!-- Top Floating Navigation & Header -->
+  <!-- Top Floating Navigation & Header Bar -->
   <header class="top-nav-bar">
     <div class="nav-left">
       <a routerLink="/threejs" class="back-pill" title="Back to Three.js Directory">
@@ -17,52 +12,108 @@
         <span>Three.js Demos</span>
       </a>
 
-      <!-- Page Title & Mode Indicator -->
+      <!-- Page Title Badge -->
       <div class="page-title-badge">
         <div class="title-top">
-          <span class="badge-tag">HVAC SYSTEM</span>
+          <span class="badge-tag">FACTORY HVAC VENTILATION</span>
           <span class="live-dot"></span>
-          <span class="live-text">{{ layoutMode === 'industry' ? 'PLANT ASSEMBLY' : 'KIT PALETTE' }}</span>
+          <span class="live-text">SPIRAL DUCT ARCHITECTURE</span>
         </div>
-        <h1 class="main-title">Industrial Duct Pipes Network</h1>
+        <h1 class="main-title">Industrial Round Spiral Ductwork Structure</h1>
       </div>
     </div>
 
-    <!-- Center Mode Switcher Pill -->
+    <!-- Center Mode Switcher & Export Action Dock -->
     <div class="nav-center">
-      <div class="mode-toggle-group">
+      <div class="action-dock">
+        <!-- Material Finish Modes -->
+        <div class="mode-pill-group">
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="displayMode === 'galvanized'"
+            (click)="setDisplayMode('galvanized')"
+            title="Galvanized Zinc Spangle Spiral Sheet Metal (As seen in Reference Photos)"
+          >
+            ⚙️ Galvanized
+          </button>
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="displayMode === 'stainless'"
+            (click)="setDisplayMode('stainless')"
+            title="316L Specular Stainless Steel"
+          >
+            ✨ Stainless
+          </button>
+          <button
+            type="button"
+            class="dock-btn"
+            [class.active]="displayMode === 'xray'"
+            (click)="setDisplayMode('xray')"
+            title="X-Ray Translucent Technical Mode"
+          >
+            👻 X-Ray
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Toggles -->
         <button
           type="button"
-          class="mode-toggle-btn"
-          [class.active]="layoutMode === 'industry'"
-          (click)="setLayoutMode('industry')"
-          title="Realistic interconnected factory ventilation network"
+          class="dock-btn toggle-btn"
+          [class.active]="showAirflow"
+          (click)="toggleAirflow()"
+          title="Toggle Animated Airflow Streamlines"
         >
-          <span class="icon">🏭</span>
-          <span>Industrial Assembly</span>
+          💨 Airflow: {{ showAirflow ? 'ON' : 'OFF' }}
         </button>
+
         <button
           type="button"
-          class="mode-toggle-btn"
-          [class.active]="layoutMode === 'kit'"
-          (click)="setLayoutMode('kit')"
-          title="Flat 3D component catalog as in asset kit"
+          class="dock-btn toggle-btn"
+          [class.active]="showFactoryEnvironment"
+          (click)="toggleFactoryEnvironment()"
+          title="Toggle Factory High-Bay Architecture & Trusses"
         >
-          <span class="icon">🧩</span>
-          <span>Modular Kit Palette</span>
+          🏭 Hall: {{ showFactoryEnvironment ? 'ON' : 'OFF' }}
+        </button>
+
+        <div class="divider"></div>
+
+        <!-- 1-Click GLB 3D Model Export -->
+        <button
+          type="button"
+          class="dock-btn export-btn"
+          [disabled]="isExporting"
+          (click)="exportGLB()"
+          title="Download complete 3D structure as GLB file"
+        >
+          <span class="icon">{{ isExporting ? '⏳' : '📥' }}</span>
+          <span>{{ isExporting ? 'Exporting...' : 'Export GLB Model' }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Camera Presets -->
+    <!-- Right Camera Presets -->
     <div class="nav-right">
       <div class="camera-pill">
         <span class="cam-label">CAM:</span>
         <button
           type="button"
           class="cam-btn"
-          [class.active]="activeCameraPreset === 'iso'"
-          (click)="setCameraPreset('iso')"
+          [class.active]="activeCameraPreset === 'walkthrough'"
+          (click)="setCameraPreset('walkthrough')"
+          title="Eye-Level View Looking Up at Ducts (Matching Reference Photos)"
+        >
+          Eye-Level
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'overview'"
+          (click)="setCameraPreset('overview')"
           title="Isometric Plant Overview"
         >
           Overview
@@ -70,268 +121,216 @@
         <button
           type="button"
           class="cam-btn"
-          [class.active]="activeCameraPreset === 'supply'"
-          (click)="setCameraPreset('supply')"
-          title="Main Large Supply Trunk"
+          [class.active]="activeCameraPreset === 'trunk'"
+          (click)="setCameraPreset('trunk')"
+          title="Primary 1.5m Spiral Supply Trunk"
         >
-          Supply
+          Trunk
         </button>
         <button
           type="button"
           class="cam-btn"
-          [class.active]="activeCameraPreset === 'branches'"
-          (click)="setCameraPreset('branches')"
-          title="Medium Distribution Branches & Registers"
+          [class.active]="activeCameraPreset === 'blower'"
+          (click)="setCameraPreset('blower')"
+          title="Centrifugal Blower Fan Assembly (Image 2)"
         >
-          Branches
+          Blower
         </button>
         <button
           type="button"
           class="cam-btn"
-          [class.active]="activeCameraPreset === 'spiral'"
-          (click)="setCameraPreset('spiral')"
-          title="Spiral Round Exhaust & Fume Snorkels"
+          [class.active]="activeCameraPreset === 'nozzles'"
+          (click)="setCameraPreset('nozzles')"
+          title="Vertical Risers & Diffuser Nozzles (Image 3)"
         >
-          Exhaust
+          Drops
         </button>
         <button
           type="button"
           class="cam-btn"
-          [class.active]="activeCameraPreset === 'ground'"
-          (click)="setCameraPreset('ground')"
-          title="Ground Level Factory View"
+          [class.active]="activeCameraPreset === 'top'"
+          (click)="setCameraPreset('top')"
+          title="Top-Down Engineering Layout"
         >
-          Floor
+          Top
         </button>
         <button
           type="button"
-          class="cam-btn kit-btn"
-          [class.active]="activeCameraPreset === 'kit'"
-          (click)="setCameraPreset('kit')"
-          title="Flat Kit Palette View"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'rectangular'"
+          (click)="setCameraPreset('rectangular')"
+          title="Rectangular Trunk & Square-to-Round Transition"
         >
-          Palette
+          Rectangular
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'cyclone'"
+          (click)="setCameraPreset('cyclone')"
+          title="Industrial Cyclone Dust Collector"
+        >
+          Cyclone
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'flexible'"
+          (click)="setCameraPreset('flexible')"
+          title="Flexible S-Curve Accordion Bellows Duct"
+        >
+          Flexible
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'cross_duct'"
+          (click)="setCameraPreset('cross_duct')"
+          title="Fully Connected 4-Way Cross Duct Pipes (Matching Reference Photo)"
+        >
+          Cross Ducts
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Real-Time Hover Inspector Tooltip -->
-  <div class="hover-tooltip" *ngIf="hoveredPiece && !selectedPiece">
-    <div class="tooltip-badge">{{ hoveredPiece.category }}</div>
-    <div class="tooltip-name">{{ hoveredPiece.name }}</div>
-    <div class="tooltip-dim">{{ hoveredPiece.dimensions }}</div>
-    <div class="tooltip-hint">Click piece to inspect technical specs</div>
-  </div>
-
-  <!-- Selected Component Detailed Inspector Card (Modal / Drawer) -->
-  <div class="inspector-card" *ngIf="selectedPiece">
-    <div class="inspector-header">
-      <div class="header-left">
-        <span class="category-pill">{{ selectedPiece.category }}</span>
-        <h3>{{ selectedPiece.name }}</h3>
-      </div>
-      <button type="button" class="close-btn" (click)="closeInspector()" title="Close Inspector">✕</button>
-    </div>
-    <div class="inspector-body">
-      <div class="detail-row">
-        <span class="label">Dimensions (L × H × W):</span>
-        <span class="value text-cyan">{{ selectedPiece.dimensions }}</span>
-      </div>
-      <div class="detail-row">
-        <span class="label">Material & Build:</span>
-        <span class="value">{{ selectedPiece.spec }}</span>
-      </div>
-      <div class="detail-row">
-        <span class="label">Capacity & Velocity:</span>
-        <span class="value text-amber">{{ selectedPiece.cfm }}</span>
-      </div>
-      <div class="detail-row">
-        <span class="label">Installation Method:</span>
-        <span class="value text-emerald">Overhead Trapeze Rods & Cleat Clamps</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right Floating Industrial HVAC Telemetry HUD -->
+  <!-- Right Floating Engineering Telemetry HUD -->
   <aside class="telemetry-hud">
     <div class="hud-header">
       <div class="hud-title-box">
-        <span class="icon">📊</span>
-        <span class="title">HVAC VENTILATION TELEMETRY</span>
+        <span class="icon">🏭</span>
+        <span class="title">HVAC PLANT SPECIFICATIONS</span>
       </div>
       <span class="fps-tag">{{ fps }} FPS</span>
     </div>
 
     <div class="hud-body">
-      <!-- Main Metric: Flow Rate -->
+      <!-- Total Length Hero Metric -->
       <div class="metric-hero">
-        <div class="metric-label">VOLUMETRIC AIRFLOW DELIVERY</div>
-        <div class="metric-huge">{{ telemetry.airflowRate }}</div>
-        <div class="metric-sub">Static Pressure: {{ telemetry.staticPressure }}</div>
+        <div class="metric-label">TOTAL DUCTWORK RUN</div>
+        <div class="metric-huge text-cyan">{{ stats.totalLengthMeters }} m</div>
+        <div class="metric-sub">Spiral Round + Rectangular Sheet Metal</div>
       </div>
 
-      <!-- Secondary Metrics -->
+      <!-- Component Breakdown Stats -->
       <div class="stats-row">
         <div class="stat-item">
-          <span class="lbl">Total Network Run</span>
-          <span class="num text-cyan">{{ telemetry.totalLength }}</span>
+          <span class="lbl">Straight Sections</span>
+          <span class="num text-cyan">{{ stats.straightSections }} Runs</span>
         </div>
         <div class="stat-item">
-          <span class="lbl">Face Velocity</span>
-          <span class="num text-emerald">{{ telemetry.faceVelocity }}</span>
-        </div>
-      </div>
-
-      <div class="stats-row">
-        <div class="stat-item">
-          <span class="lbl">Air Temperature</span>
-          <span class="num text-sky">{{ telemetry.airTemp }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="lbl">Filtration Efficiency</span>
-          <span class="num text-emerald">{{ telemetry.filtrationEff }}</span>
+          <span class="lbl">Gored Elbows</span>
+          <span class="num text-amber">{{ stats.elbowCount }} Bends</span>
         </div>
       </div>
 
       <div class="stats-row">
         <div class="stat-item">
-          <span class="lbl">Modular Components</span>
-          <span class="num text-amber">{{ telemetry.componentsCount }} Units</span>
+          <span class="lbl">Rectangular Trunk</span>
+          <span class="num text-emerald">{{ stats.rectangularRuns }} Flanged</span>
         </div>
         <div class="stat-item">
-          <span class="lbl">Active Plant Runs</span>
-          <span class="num">{{ telemetry.activeRuns }} Zones</span>
+          <span class="lbl">Sq-to-Round Hood</span>
+          <span class="num text-sky">{{ stats.transitionsCount }} Lofted</span>
         </div>
       </div>
 
-      <!-- System Description -->
-      <div class="system-summary-card">
-        <div class="summary-title">SYSTEM ARCHITECTURE:</div>
-        <p>
-          Heavy-duty industrial ventilation setup featuring 1080mm primary supply trunk,
-          4-way splitter manifold, low-turbulence turning elbows, down-firing linear diffusers,
-          and a parallel 400mm spiral-wound corrugated fume extraction exhaust line.
-        </p>
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Cyclone Separator</span>
+          <span class="num text-amber">{{ stats.cycloneCount }} Plant</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Flexible Bellows</span>
+          <span class="num text-cyan">{{ stats.flexibleBellowsCount }} S-Hoses</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Centrifugal Blowers</span>
+          <span class="num text-amber">{{ stats.fansCount }} Fans</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Ceiling Hangers</span>
+          <span class="num text-slate">{{ stats.hangersCount }} Mounts</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item full-width">
+          <span class="lbl">Air Volume Capacity</span>
+          <span class="num text-emerald">{{ stats.airVolumeCapacity.toLocaleString() }} m³/h</span>
+        </div>
+      </div>
+
+      <!-- Engineering Specification Card -->
+      <div class="spec-card">
+        <div class="spec-title">FABRICATION STANDARD</div>
+        <div class="spec-detail-line">
+          <span class="lbl">Material:</span>
+          <span class="val">Galvanized Steel ASTM A653 G90</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Seam Type:</span>
+          <span class="val text-cyan">4-Ply Spiral Lockseam</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Elbow Type:</span>
+          <span class="val text-amber">5-Piece Segmented Gored</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Connections:</span>
+          <span class="val">Rolled Angle Flange Collars</span>
+        </div>
+        <div class="spec-detail-line">
+          <span class="lbl">Suspension:</span>
+          <span class="val">M10 Threaded Rods + Unistrut</span>
+        </div>
+      </div>
+
+      <!-- Quick Export Prompt -->
+      <div class="export-hint-card">
+        <span class="hint-title">📦 3D MODEL GENERATION</span>
+        <p>This big industrial structure is procedurally generated. Click <strong>Export GLB Model</strong> to download the complete 3D file.</p>
       </div>
     </div>
   </aside>
 
-  <!-- Bottom Floating Control Deck -->
-  <section class="bottom-controls-deck">
-    <div class="deck-main-card">
-      <div class="deck-row">
-        <!-- Housing Casing Visibility (Solid vs X-Ray) -->
-        <div class="ctrl-group">
-          <span class="group-title">CASING VIEW:</span>
-          <div class="btn-group">
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="casingVisibility === 'solid'"
-              (click)="setCasingVisibility('solid')"
-              title="Opaque galvanized sheet metal"
-            >
-              🛡️ Solid
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="casingVisibility === 'xray'"
-              (click)="setCasingVisibility('xray')"
-              title="Semi-transparent X-Ray view to see airflow paths"
-            >
-              👻 X-Ray
-            </button>
-          </div>
-        </div>
-
-        <!-- Metallic Material Finish -->
-        <div class="ctrl-group">
-          <span class="group-title">FINISH:</span>
-          <div class="btn-group">
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="materialTheme === 'galvanized'"
-              (click)="setMaterialTheme('galvanized')"
-              title="Standard Galvanized Zinc Steel"
-            >
-              ⚙️ Galvanized
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="materialTheme === 'weathered'"
-              (click)="setMaterialTheme('weathered')"
-              title="Aged Industrial Weathered Iron"
-            >
-              🍂 Weathered
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="materialTheme === 'stainless'"
-              (click)="setMaterialTheme('stainless')"
-              title="Cleanroom Mirror Stainless Steel"
-            >
-              ✨ Stainless
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              [class.active]="materialTheme === 'safety'"
-              (click)="setMaterialTheme('safety')"
-              title="Factory Hazard Safety Yellow / Dark Slate"
-            >
-              ⚠️ Safety Painted
-            </button>
-          </div>
-        </div>
-
-        <!-- Airflow Streamline Particle Simulation -->
-        <div class="ctrl-group airflow-group">
-          <span class="group-title">AIRFLOW STREAMLINES:</span>
-          <div class="airflow-controls">
-            <button
-              type="button"
-              class="mode-btn airflow-toggle"
-              [class.active]="airflowEnabled"
-              (click)="toggleAirflow()"
-              title="Toggle Supply (Cyan) and Exhaust (Amber) Particles"
-            >
-              <span class="pulse-dot" [class.on]="airflowEnabled"></span>
-              <span>{{ airflowEnabled ? 'Flow Active' : 'Flow Paused' }}</span>
-            </button>
-
-            <div class="speed-control" *ngIf="airflowEnabled">
-              <span class="speed-label">Speed: {{ airflowSpeed }}x</span>
-              <input
-                type="range"
-                min="0.4"
-                max="2.5"
-                step="0.1"
-                [(ngModel)]="airflowSpeed"
-                (ngModelChange)="setAirflowSpeed($event)"
-                class="speed-slider"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- Bottom Floating View Controls Pill -->
+  <footer class="bottom-floating-pill">
+    <div class="pill-card">
+      <span class="pill-label">QUICK TOGGLE:</span>
+      <button
+        type="button"
+        class="quick-btn"
+        [class.active]="showHangerSupports"
+        (click)="toggleHangerSupports()"
+      >
+        🔩 Ceiling Hangers ({{ showHangerSupports ? 'ON' : 'OFF' }})
+      </button>
+      <button
+        type="button"
+        class="quick-btn"
+        [class.active]="displayMode === 'galvanized'"
+        (click)="setDisplayMode('galvanized')"
+      >
+        ⚙️ Spiral Galvanized Zinc
+      </button>
+      <button
+        type="button"
+        class="quick-btn export-pill-btn"
+        [disabled]="isExporting"
+        (click)="exportGLB()"
+      >
+        📥 Download GLB
+      </button>
     </div>
-  </section>
+  </footer>
 
-  <!-- Interactive Loading Screen -->
-  <div *ngIf="isLoading" class="loading-scrim">
-    <div class="loader-box">
-      <div class="spinner-icon">💨</div>
-      <h3>Loading Industrial Duct Pipes Network</h3>
-      <p>Building 38 modular HVAC sections & factory assembly...</p>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="loadingProgress"></div>
-      </div>
-      <span class="progress-text">{{ loadingProgress }}%</span>
-    </div>
+  <!-- Export Toast Alert Message -->
+  <div *ngIf="exportSuccessMsg" class="export-toast">
+    <span class="icon">✅</span>
+    <span class="msg">{{ exportSuccessMsg }}</span>
   </div>
 </div>

@@ -58,7 +58,13 @@ export class App {
       url.includes('/roboticsarm') ||
       url.includes('/roboticarm') ||
       url.includes('/gearboxes') ||
-      url.includes('/gearbox');
+      url.includes('/gearbox') ||
+      url.includes('/ductpipes') ||
+      url.includes('/ductpipers') ||
+      url.includes('/ductpopers') ||
+      url.includes('/ductcleaning') ||
+      url.includes('/ductfaucet') ||
+      url.includes('/ductfaucetproject');
 
     this.isThreeJs.set(isThree);
   }

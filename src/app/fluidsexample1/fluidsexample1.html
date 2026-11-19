@@ -1,0 +1,315 @@
+<div id="app" class="particle-fluids-app">
+  <header class="topbar">
+    <div class="brand-group">
+      <a class="brand" href="./" aria-label="Three.js Particle Fluids home">
+        <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
+          <rect width="34" height="34" rx="8" fill="#1b2533" />
+          <circle cx="17" cy="17" r="10" stroke="#74c9df" stroke-width="2" stroke-dasharray="4 2" />
+          <circle cx="17" cy="17" r="4" fill="#74c9df" />
+        </svg>
+        <span>Three.js <strong>Particle Fluids</strong></span>
+      </a>
+      <a
+        class="version"
+        href="https://github.com/dgreenheck/threejs-particle-fluids/releases/tag/v0.1.0"
+        target="_blank"
+        rel="noopener"
+        aria-label="Version 0.1.0 release notes"
+      >v0.1.0</a>
+    </div>
+    <nav class="top-links" aria-label="Project links">
+      <a
+        class="top-link"
+        href="https://github.com/dgreenheck/threejs-particle-fluids/tree/main/docs#readme"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5Z"/>
+          <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>
+        </svg>
+        <span>Docs</span>
+      </a>
+      <a
+        class="top-link"
+        href="https://github.com/dgreenheck/threejs-particle-fluids"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </nav>
+  </header>
+
+  <main class="workspace">
+    <!-- Gallery Sidebar -->
+    <nav class="gallery" aria-label="Choose a preset">
+      <section *ngFor="let group of groups" class="preset-group">
+        <h2 class="eyebrow">{{ group }}</h2>
+        <div class="preset-grid">
+          <button
+            *ngFor="let p of getPresetsByGroup(group)"
+            class="preset-card"
+            [attr.data-preset]="p.id"
+            [attr.aria-pressed]="selected.id === p.id"
+            [attr.title]="p.category"
+            [style.--card-accent]="p.accent"
+            (click)="selectPreset(p)"
+          >
+            <span class="preset-preview">
+              <img [src]="'/previews/' + p.id + '.png'" [alt]="p.name" width="862" height="690" loading="lazy" />
+            </span>
+            <span class="preset-title">{{ p.name }}</span>
+            <span class="preset-number">{{ p.number }}</span>
+          </button>
+        </div>
+      </section>
+    </nav>
+
+    <!-- Main Viewport -->
+    <section class="viewport" aria-label="Simulation viewport">
+      <div #canvasHost id="canvas-host"></div>
+
+      <!-- Live Diagnostics -->
+      <aside class="diagnostics" aria-label="Live performance diagnostics">
+        <div class="diagnostic-heading">
+          <span class="live-dot" [class.paused]="!playing"></span>
+          <span id="sim-state">{{ simStateText }}</span>
+        </div>
+        <dl>
+          <div>
+            <dt>FPS</dt>
+            <dd id="fps">{{ diagnostics.fps }}</dd>
+          </div>
+          <div>
+            <dt>Frame</dt>
+            <dd><span id="frame-ms">{{ diagnostics.frameMs }}</span><small>ms</small></dd>
+          </div>
+          <div>
+            <dt>Particles</dt>
+            <dd id="particle-count">{{ diagnostics.particles | number }}</dd>
+          </div>
+        </dl>
+        <div class="diagnostic-foot">
+          <span id="solver-info">{{ solverInfoText }}</span>
+          <span id="sim-time">{{ diagnostics.time.toFixed(1) }} s</span>
+        </div>
+      </aside>
+
+      <!-- Particle Count Select -->
+      <label class="particle-level">
+        <span>Particles</span>
+        <select id="particle-level" [(ngModel)]="particleLevel" (ngModelChange)="onLevelChange()">
+          <option *ngFor="let lvl of particleLevels" [value]="lvl.id">
+            {{ lvl.label }} · {{ getParticleCountForLevel(selected, lvl.id) | number }}
+          </option>
+        </select>
+      </label>
+
+      <!-- Scene Label -->
+      <div class="scene-label">
+        <span id="scene-category">{{ selected.number }} / {{ selected.category }}</span>
+        <h1 id="scene-name">{{ selected.name }}</h1>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div id="loading" class="loading" [hidden]="!loading" role="status">
+        <span class="spinner"></span>
+        <strong id="loading-title">Preparing {{ selected.name.toLowerCase() }}</strong>
+        <span id="loading-copy">Building particles and compiling shaders…</span>
+      </div>
+
+      <!-- Error Card (if any) -->
+      <div id="error" class="error-card" [hidden]="!hasError" role="alert">
+        <span class="eyebrow">GRAPHICS NOTICE</span>
+        <h2>Notice</h2>
+        <p id="error-copy">{{ errorMessage }}</p>
+        <button id="retry" class="primary" (click)="retry()">
+          Try again
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Viewport Bottom Controls -->
+      <div class="viewport-bottom">
+        <div class="camera-hint" id="interaction-hint">{{ interactionHint }}</div>
+        <div class="transport" aria-label="Playback controls">
+          <button
+            id="play"
+            class="play-button"
+            [title]="playing ? 'Pause (Space)' : 'Play (Space)'"
+            [attr.aria-label]="playing ? 'Pause simulation' : 'Play simulation'"
+            (click)="togglePlay()"
+          >
+            <svg *ngIf="playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M8 5v14M16 5v14"/>
+            </svg>
+            <svg *ngIf="!playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="m8 5 11 7-11 7Z"/>
+            </svg>
+          </button>
+          <button id="restart" class="icon-button" title="Restart (R)" aria-label="Restart simulation" (click)="restart()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>
+            </svg>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button id="camera-reset" class="icon-button" title="Reset camera" aria-label="Reset camera" (click)="resetCamera()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="3"/>
+              <ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-35 12 12)"/>
+            </svg>
+          </button>
+          <button id="capture" class="icon-button" title="Save image" aria-label="Save image" (click)="capture()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 7h4l2-3h6l2 3h4v13H3Z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </button>
+        </div>
+        <button
+          id="mobile-controls"
+          class="mobile-controls"
+          aria-controls="inspector"
+          [attr.aria-expanded]="controlsOpen"
+          (click)="controlsOpen = !controlsOpen"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 7h16M4 17h16M8 4v6M16 14v6"/>
+          </svg>
+          Parameters
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Inspector Panel -->
+    <aside class="inspector" id="inspector" [class.open]="controlsOpen" aria-label="Preset parameters">
+      <div class="inspector-top">
+        <span class="eyebrow">PRESET</span>
+        <button id="close-controls" class="icon-button" aria-label="Close parameters" (click)="controlsOpen = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="m6 6 12 12M18 6 6 18"/>
+          </svg>
+        </button>
+        <span id="preset-index">{{ selected.number }} / 13</span>
+      </div>
+      <h2 id="panel-name">{{ selected.name }}</h2>
+      <p id="description" class="description">{{ selected.description }}</p>
+      <div class="section-label">
+        <span>PARAMETERS</span>
+        <button id="defaults" class="text-button" (click)="resetDefaults()">Reset all</button>
+      </div>
+
+      <!-- Live Dynamic Parameters -->
+      <div id="parameters">
+        <div *ngFor="let control of selected.controls" class="parameter">
+          <div class="parameter-label">
+            <label [for]="'control-' + control.key">
+              {{ control.label }}
+              <span *ngIf="control.restart" class="restart-mark" title="Restarts the experiment">↻</span>
+            </label>
+            <output [id]="'value-' + control.key">
+              {{ formatValue(values[control.key], control.step) }}
+              <small *ngIf="control.unit">{{ control.unit }}</small>
+            </output>
+          </div>
+          <input
+            type="range"
+            [id]="'control-' + control.key"
+            [min]="control.min"
+            [max]="control.max"
+            [step]="control.step"
+            [(ngModel)]="values[control.key]"
+            (input)="onParamInput(control)"
+            (change)="onParamChange(control)"
+            [style.--fill]="getFillPercent(control)"
+          />
+          <p class="parameter-help" [id]="'help-' + control.key">
+            {{ control.description }}{{ control.restart ? ' Restarts the experiment.' : '' }}
+          </p>
+        </div>
+      </div>
+
+      <p class="parameter-note" id="parameter-note">{{ parameterNote }}</p>
+
+      <!-- Appearance & Advanced Settings -->
+      <div class="render-settings">
+        <div class="section-label"><span>APPEARANCE</span></div>
+        <fieldset class="segmented">
+          <legend class="sr-only">Render mode</legend>
+          <label>
+            <input
+              type="radio"
+              name="render-mode"
+              value="surface"
+              [checked]="!particleView"
+              (change)="setParticleView(false)"
+            />
+            <span>Surface</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="render-mode"
+              value="particles"
+              [checked]="particleView"
+              (change)="setParticleView(true)"
+            />
+            <span>Particles</span>
+          </label>
+        </fieldset>
+
+        <label class="setting-row switch-row" for="reflections">
+          <span>Reflections</span>
+          <input
+            type="checkbox"
+            id="reflections"
+            [(ngModel)]="reflections"
+            (ngModelChange)="onReflectionsChange()"
+          />
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
+        <label class="setting-row switch-row" for="ambient-occlusion">
+          <span>Ambient occlusion</span>
+          <input
+            type="checkbox"
+            id="ambient-occlusion"
+            [(ngModel)]="ambientOcclusion"
+            (ngModelChange)="onAOChange()"
+          />
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
+        <label class="setting-row switch-row" for="loop">
+          <span>Loop experiment</span>
+          <input
+            type="checkbox"
+            id="loop"
+            [(ngModel)]="looping"
+            (ngModelChange)="onLoopChange()"
+          />
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
+        <div class="section-label"><span>ADVANCED</span></div>
+        <div class="setting-row">
+          <label for="substeps" title="Solver substeps per frame.">Substeps</label>
+          <select id="substeps" [(ngModel)]="substepSelection" (ngModelChange)="onSubstepsChange()">
+            <option value="auto">Auto ({{ currentSubsteps }})</option>
+            <option *ngFor="let s of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]" [value]="s">
+              {{ s }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" role="status" class="toast" [hidden]="!toastVisible">{{ toastMessage }}</div>
+</div>
