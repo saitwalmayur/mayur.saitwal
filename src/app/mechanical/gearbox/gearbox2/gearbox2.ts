@@ -79,7 +79,7 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
   // Operational State & Controls
   isPlaying = true;
   isReversed = false;
-  rpm = 1200;
+  rpm = 60;
   housingMode: HousingMode = 'xray';
   metallicTheme: MetallicTheme = 'steel';
   isMuted = true;
@@ -96,16 +96,16 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
 
   // Telemetry Readout
   telemetry = {
-    inputRpm: 1200,
-    outputRpm: 300,
-    inputOmega: 125.7,
-    outputOmega: 31.4,
-    ratio: '4.00 : 1',
-    torqueMult: '4.00x',
+    inputRpm: 60,
+    outputRpm: 30,
+    inputOmega: 6.3,
+    outputOmega: 3.1,
+    ratio: '2.00 : 1',
+    torqueMult: '1.94x',
     inputTorque: 25.0,
-    outputTorque: 97.0,
-    mechanicalPower: '3.14 kW',
-    temperature: '48.5 °C',
+    outputTorque: 48.5,
+    mechanicalPower: '0.15 kW',
+    temperature: '44.8 °C',
   };
 
   fps = 60;
@@ -927,11 +927,11 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
     this.lastTime = now;
 
     if (this.mixer && this.isPlaying) {
-      const targetCycleTime = 1.25 * (1200 / Math.max(50, this.rpm));
+      const targetCycleTime = 60 / Math.max(5, this.rpm);
       this.mixer.timeScale = (this.activeClipDuration / targetCycleTime) * (this.isReversed ? -1 : 1);
       this.mixer.update(dt);
     } else if (this.isPlaying && this.kinematicRotators.length > 0) {
-      const targetCycleTime = 1.25 * (1200 / Math.max(50, this.rpm));
+      const targetCycleTime = 60 / Math.max(5, this.rpm);
       const deltaAngle = ((Math.PI * 2) / targetCycleTime) * dt * (this.isReversed ? -1 : 1);
       for (const rot of this.kinematicRotators) {
         rot.pivot.rotateOnAxis(rot.axis, deltaAngle * rot.speedMultiplier);
@@ -961,6 +961,13 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
   setRpm(val: number): void {
     this.rpm = Number(val);
     this.updateTelemetry();
+    if (this.oscNode && this.audioCtx) {
+      this.oscNode.frequency.setTargetAtTime(
+        45 + (this.rpm / 600) * 190,
+        this.audioCtx.currentTime,
+        0.05
+      );
+    }
   }
 
   setTransmissionGear(gear: TransmissionGear): void {
@@ -1018,7 +1025,7 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
       inputTorque: inTorque,
       outputTorque: Number(outTorque),
       mechanicalPower: `${powerKw} kW`,
-      temperature: `${(42 + (this.rpm / 3000) * 28).toFixed(1)} °C`,
+      temperature: `${(42 + (this.rpm / 600) * 28).toFixed(1)} °C`,
     };
   }
 
@@ -1195,7 +1202,7 @@ export class Gearbox2 implements OnInit, AfterViewInit, OnDestroy {
         this.oscNode = this.audioCtx.createOscillator();
         this.oscNode.type = 'sawtooth';
         this.oscNode.frequency.setValueAtTime(
-          45 + (this.rpm / 3000) * 190,
+          45 + (this.rpm / 600) * 190,
           this.audioCtx.currentTime
         );
 
