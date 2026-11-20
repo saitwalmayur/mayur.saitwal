@@ -5,42 +5,104 @@
       <div class="badge-pill">Interactive Experiments</div>
       <h1>Three.js Projects</h1>
       <p>
-        Real-time 3D graphics, GPU shaders, Web Audio visualizers, and interactive particle systems built with Three.js. Select any experiment below to launch it.
+        Real-time 3D graphics, GPU shaders, Web Audio visualizers, physics engines, and interactive particle systems built with Three.js. Select any experiment below to launch it.
       </p>
+
+      <!-- Search Box -->
+      <div class="search-bar-header">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            placeholder="Search experiments, shaders, tags..."
+            aria-label="Search Three.js projects"
+          />
+          <button
+            *ngIf="searchQuery"
+            type="button"
+            class="clear-search-btn"
+            (click)="searchQuery = ''"
+            title="Clear search"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Project List Grid -->
-    <div class="projects-grid">
-      <a
-        *ngFor="let proj of projects"
-        class="project-card"
-        [routerLink]="proj.route"
-        [style.background]="proj.gradient"
+    <!-- Category Sections: Title then Cards -->
+    <div class="category-sections" *ngIf="categorySections.length > 0">
+      <section
+        *ngFor="let sec of categorySections"
+        class="category-section"
+        [id]="'category-' + sec.category.id"
       >
-        <div class="card-top">
-          <div class="card-icon">{{ proj.icon }}</div>
-          <span class="launch-pill">Launch Demo ↗</span>
-        </div>
-
-        <div class="card-header">
-          <h3>{{ proj.title }}</h3>
-        </div>
-
-        <p class="card-tagline">{{ proj.tagline }}</p>
-        <p class="card-desc">{{ proj.description }}</p>
-
-        <div class="features-list">
-          <span class="feature-bullet" *ngFor="let feat of proj.features">
-            ✓ {{ feat }}
-          </span>
-        </div>
-
-        <div class="card-footer">
-          <div class="tags-row">
-            <span class="tag" *ngFor="let tag of proj.tags">{{ tag }}</span>
+        <!-- Category Section Title Header -->
+        <div class="section-title-bar">
+          <div class="title-left">
+            <span class="section-icon">{{ sec.category.icon }}</span>
+            <div class="title-text">
+              <h2>{{ sec.category.label }}</h2>
+              <p class="section-desc">{{ sec.category.description }}</p>
+            </div>
+          </div>
+          <div class="title-right">
+            <span class="count-pill">
+              {{ sec.projects.length }} {{ sec.projects.length === 1 ? 'Project' : 'Projects' }}
+            </span>
           </div>
         </div>
-      </a>
+
+        <!-- Cards Grid for this Category -->
+        <div class="projects-grid">
+          <a
+            *ngFor="let proj of sec.projects"
+            class="project-card"
+            [routerLink]="proj.route"
+            [style.background]="proj.gradient"
+          >
+            <div class="card-top">
+              <div class="card-icon">{{ proj.icon }}</div>
+              <div class="top-pills">
+                <span class="cat-tag-pill" *ngIf="proj.categoryLabel">{{ proj.categoryLabel }}</span>
+                <span class="launch-pill">Launch Demo ↗</span>
+              </div>
+            </div>
+
+            <div class="card-header">
+              <h3>{{ proj.title }}</h3>
+            </div>
+
+            <p class="card-tagline">{{ proj.tagline }}</p>
+            <p class="card-desc">{{ proj.description }}</p>
+
+            <div class="features-list">
+              <span class="feature-bullet" *ngFor="let feat of proj.features">
+                ✓ {{ feat }}
+              </span>
+            </div>
+
+            <div class="card-footer">
+              <div class="tags-row">
+                <span class="tag" *ngFor="let tag of proj.tags">{{ tag }}</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="categorySections.length === 0">
+      <div class="empty-icon">🔍</div>
+      <h3>No Experiments Found</h3>
+      <p>No projects match your current filter or search criteria "{{ searchQuery }}".</p>
+      <div class="empty-actions">
+        <button type="button" class="reset-filter-btn" (click)="selectedCategory = 'all'; searchQuery = ''">
+          Reset Filters & Show All
+        </button>
+      </div>
     </div>
   </div>
 </div>

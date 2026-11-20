@@ -12,140 +12,23 @@
         <span>Three.js Demos</span>
       </a>
 
-      <!-- Interactive Gearbox Dropdown Selector -->
-      <div class="gearbox-dropdown-wrapper" (click)="$event.stopPropagation()">
-        <button
-          type="button"
-          class="gearbox-dropdown-btn"
-          [class.active]="isDropdownOpen"
-          (click)="toggleDropdown()"
-          aria-haspopup="listbox"
-          [attr.aria-expanded]="isDropdownOpen"
-          title="Click to select from 29 gearboxes & mechanisms"
-        >
-          <span class="dropdown-icon">{{ selectedGearbox.icon }}</span>
-          <div class="dropdown-text">
-            <div class="dropdown-header-line">
-              <span class="dropdown-label">GEARBOX MODEL</span>
-              <span class="dropdown-badge">{{ selectedGearbox.badge }}</span>
-            </div>
-            <span class="dropdown-name">{{ selectedGearbox.name }}</span>
+      <!-- Dedicated Gearbox 1 Model Pill (Precision 90° Bevel Gearset) -->
+      <div class="gearbox-model-badge" title="Gearbox 1: Precision 90° Bevel Gearset">
+        <span class="dropdown-icon">{{ selectedGearbox.icon }}</span>
+        <div class="dropdown-text">
+          <div class="dropdown-header-line">
+            <span class="dropdown-label">GEARBOX 1</span>
+            <span class="dropdown-badge">{{ selectedGearbox.badge }}</span>
           </div>
-          <svg
-            class="chevron-arrow"
-            [class.open]="isDropdownOpen"
-            viewBox="0 0 24 24"
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-
-        <!-- Glassmorphic Dropdown Menu Panel with Search & Filter -->
-        <div class="gearbox-dropdown-menu" *ngIf="isDropdownOpen">
-          <div class="menu-heading">
-            <span class="title">SELECT GEARBOX TRANSMISSION</span>
-            <span class="counter">{{ filteredGearboxes.length }} of {{ gearboxes.length }} MODELS</span>
-          </div>
-
-          <!-- Quick Search Filter Box -->
-          <div class="dropdown-search-box">
-            <svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input
-              type="text"
-              placeholder="Search 29 models (e.g. planetary, worm, bevel)..."
-              [(ngModel)]="searchQuery"
-              (click)="$event.stopPropagation()"
-              class="dropdown-search-input"
-            />
-            <button
-              *ngIf="searchQuery"
-              type="button"
-              class="clear-search-btn"
-              (click)="searchQuery = ''"
-            >✕</button>
-          </div>
-
-          <!-- Category Filter Tabs -->
-          <div class="category-filter-tabs">
-            <button
-              type="button"
-              class="cat-pill"
-              [class.active]="selectedCategory === 'all'"
-              (click)="setCategoryFilter('all')"
-            >
-              All (29)
-            </button>
-            <button
-              type="button"
-              class="cat-pill"
-              [class.active]="selectedCategory === 'industrial'"
-              (click)="setCategoryFilter('industrial')"
-            >
-              Industrial
-            </button>
-            <button
-              type="button"
-              class="cat-pill"
-              [class.active]="selectedCategory === 'bevel'"
-              (click)="setCategoryFilter('bevel')"
-            >
-              Bevel & Skew
-            </button>
-            <button
-              type="button"
-              class="cat-pill"
-              [class.active]="selectedCategory === 'kinematic'"
-              (click)="setCategoryFilter('kinematic')"
-            >
-              Kinematic
-            </button>
-            <button
-              type="button"
-              class="cat-pill"
-              [class.active]="selectedCategory === 'specialty'"
-              (click)="setCategoryFilter('specialty')"
-            >
-              Specialty
-            </button>
-          </div>
-
-          <!-- Menu Item List -->
-          <div class="menu-list" role="listbox">
-            <button
-              *ngFor="let g of filteredGearboxes"
-              type="button"
-              class="menu-item"
-              [class.selected]="selectedGearbox.id === g.id"
-              (click)="onSelectFromDropdown(g)"
-              role="option"
-              [attr.aria-selected]="selectedGearbox.id === g.id"
-            >
-              <span class="item-icon">{{ g.icon }}</span>
-              <div class="item-details">
-                <div class="item-top-row">
-                  <span class="item-title">{{ g.name }}</span>
-                  <span class="item-ratio-pill">{{ g.badge }}</span>
-                </div>
-                <span class="item-description">{{ g.subtitle }}</span>
-              </div>
-              <span class="item-anim-tag" *ngIf="g.hasEmbeddedAnimation" title="Contains active motion animation">⚙️ Motion</span>
-              <span class="item-checkmark" *ngIf="selectedGearbox.id === g.id">✓</span>
-            </button>
-
-            <div class="no-results-msg" *ngIf="filteredGearboxes.length === 0">
-              No matching model found for "{{ searchQuery }}"
-            </div>
-          </div>
+          <span class="dropdown-name">{{ selectedGearbox.name }}</span>
         </div>
       </div>
+
+      <!-- Quick Link to All 29 Gears in Gearbox Hub -->
+      <a routerLink="/gearboxhome" class="hub-pill" title="Explore All 29 Gears in 3D Gearbox Hub">
+        <span>Gearbox Hub (All 29 Gears)</span>
+        <span class="arrow">↗</span>
+      </a>
     </div>
 
     <!-- Center Play/Pause & RPM Dock -->

@@ -1,0 +1,418 @@
+<div class="gearbox-home-page">
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-link" title="Return to Three.js Projects">
+        <span class="back-arrow">←</span>
+        <span>Three.js Showcase</span>
+      </a>
+      <div class="divider">/</div>
+      <div class="brand">
+        <span class="brand-icon">⚙️</span>
+        <span class="brand-title">3D Gearbox Hub</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a routerLink="/threejs/gearboxes" class="btn-primary-sim">
+        <span>Launch Full 3D Simulator</span>
+        <span class="btn-arrow">↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section with Live 3D Preview -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="badge-pill">
+        <span class="pulse-dot"></span>
+        <span>Interactive Mechanical CAD & Kinematics Portal</span>
+      </div>
+
+      <h1 class="hero-title">
+        Industrial 3D Gearbox & Transmission Hub
+      </h1>
+
+      <p class="hero-description">
+        Explore <strong>29 individual real-world industrial gear mechanisms</strong>, epicyclic planetary drives, right-angle bevels, multi-speed transmissions, and precision kinematic linkages. Select any gear below to preview it live in 3D or launch the full mechanical simulator with explode animations.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/threejs/gearboxes" class="cta-btn primary">
+          <span>Launch 3D Simulator</span>
+          <span class="icon">🚀</span>
+        </a>
+        <a href="#catalog" class="cta-btn secondary">
+          <span>Explore All 29 Gears Below</span>
+          <span class="icon">⬇</span>
+        </a>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="metrics-strip">
+        <div class="metric-item">
+          <div class="metric-num">29</div>
+          <div class="metric-lbl">Individual Gears</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">4</div>
+          <div class="metric-lbl">Categories</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">30:1</div>
+          <div class="metric-lbl">Max Ratio</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">PBR</div>
+          <div class="metric-lbl">Metallic Shaders</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-num">100%</div>
+          <div class="metric-lbl">Interactive Explode</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live 3D Preview Card -->
+    <div class="hero-preview-wrapper">
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="live-tag">
+            <span class="dot"></span>
+            <span>Live 3D Viewport</span>
+          </div>
+          <div class="preview-controls">
+            <button
+              type="button"
+              class="icon-ctrl"
+              (click)="toggleRotation()"
+              [title]="isRotating ? 'Pause Rotation' : 'Resume Rotation'"
+            >
+              {{ isRotating ? '⏸' : '▶' }}
+            </button>
+            <button
+              type="button"
+              class="icon-ctrl"
+              (click)="resetCamera()"
+              title="Reset View"
+            >
+              ⟲
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <div *ngIf="isLoadingPreview" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Loading 3D Mesh...</span>
+          </div>
+          <canvas #heroCanvas class="webgl-canvas"></canvas>
+          <div class="orbit-hint">Drag to orbit • Scroll to zoom</div>
+        </div>
+
+        <div class="preview-footer">
+          <div class="footer-meta">
+            <span class="meta-icon">{{ activePreview.icon }}</span>
+            <div class="meta-text">
+              <span class="meta-label">Active Preview:</span>
+              <span class="meta-val">{{ activePreview.name }}</span>
+            </div>
+          </div>
+          <a
+            routerLink="/threejs/gearboxes"
+            [queryParams]="{ id: activePreview.id }"
+            class="inspect-btn"
+            title="Open in Full 3D Simulator with Explode Animation"
+          >
+            Launch in Simulator ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Card: Navigate to Gearbox 1 -->
+  <section class="gearbox1-nav-card-container">
+    <div class="gearbox1-nav-card">
+      <div class="g1-badge-row">
+        <span class="g1-badge">🚀 Main Simulator</span>
+        <span class="g1-subbadge">Gearbox 1 • Real-Time 3D Kinematics</span>
+      </div>
+
+      <div class="g1-card-body">
+        <div class="g1-icon-col">
+          <div class="g1-icon-glow">⚙️</div>
+        </div>
+
+        <div class="g1-info-col">
+          <div class="g1-title-row">
+            <h2>Gearbox 1: Industrial 3D Simulator & Kinematics Studio</h2>
+            <span class="g1-status-pill">Interactive Workbench</span>
+          </div>
+          <p class="g1-desc">
+            Directly access the primary <strong>Gearbox 1</strong> simulation workbench with synchronized kinematics, interactive explode animations for housing disassembly, X-Ray cutaway transparent casings, PBR metallic reflections, and live transmission telemetry for all 29 industrial mechanisms.
+          </p>
+          <div class="g1-tags">
+            <span class="g1-tag">💥 Explode Animation Slider</span>
+            <span class="g1-tag">📐 90° Bevel & Epicyclic Solvers</span>
+            <span class="g1-tag">🔍 X-Ray Transparent Housing</span>
+            <span class="g1-tag">⚡ Speed Ratio & Torque Telemetry</span>
+          </div>
+        </div>
+
+        <div class="g1-action-col">
+          <a routerLink="/threejs/gearboxes" class="g1-launch-btn" title="Open Gearbox 1 3D Simulation">
+            <span>Navigate to Gearbox 1</span>
+            <span class="btn-arrow">↗</span>
+          </a>
+          <span class="g1-action-hint">Opens full 3D interactive simulator</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Engineering Capabilities Section -->
+  <section class="features-section">
+    <div class="section-heading">
+      <span class="sub-badge">Engineering Capabilities</span>
+      <h2>Advanced Mechanical Simulation Features</h2>
+      <p>Built with Three.js and custom kinematic solvers for high-fidelity mechanical visualization.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feat-icon">💥</div>
+        <h3>Explode Animation</h3>
+        <p>Disassemble gearbox casings and housings with smooth interactive slide expansion to inspect internal gears, bearings, and shafts.</p>
+        <div class="feat-badge">Kinematic Decomposition</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">🔄</div>
+        <h3>Synchronized Kinematics</h3>
+        <p>Intermeshing teeth calculate rotational pitch velocities in real time, accurately reflecting true gear reduction ratios and torque multiplication.</p>
+        <div class="feat-badge">Real-Time Ratio Solver</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">🔍</div>
+        <h3>X-Ray & Cutaway Housing</h3>
+        <p>Switch between solid cast casings, transparent X-Ray glass, and quarter-cutaway views to monitor internal components in motion.</p>
+        <div class="feat-badge">Interior Inspection</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">✨</div>
+        <h3>PBR Metallic Shaders</h3>
+        <p>Realistic physical material shaders simulating cold-rolled industrial steel, cast bearing bronze, polished gold, and gunmetal dark oxide.</p>
+        <div class="feat-badge">Photorealistic Finish</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete 29 Individual Gear Cards Catalog & Filter Section -->
+  <section id="catalog" class="catalog-section">
+    <div class="catalog-header">
+      <div>
+        <span class="sub-badge">Complete 29-Gear Catalog</span>
+        <h2>Explore Individual Gear Models ({{ filteredGearboxes.length }} / 29)</h2>
+        <p>Click <strong>"Preview Here 👁️"</strong> to view the gear in the 3D viewport above, or <strong>"Launch in 3D ↗"</strong> to open the full interactive simulator.</p>
+      </div>
+
+      <!-- Search Input -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Search by name, type, ratio..."
+          class="search-input"
+        />
+        <button *ngIf="searchQuery" class="clear-btn" (click)="searchQuery = ''">✕</button>
+      </div>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="category-tabs">
+      <button
+        *ngFor="let cat of categories"
+        type="button"
+        class="tab-btn"
+        [class.active]="selectedCategory === cat.id"
+        (click)="selectCategory(cat.id)"
+      >
+        <span class="tab-icon">{{ cat.icon }}</span>
+        <span>{{ cat.label }}</span>
+      </button>
+    </div>
+
+    <!-- 29 Individual Gearbox Cards Grid -->
+    <div class="gearbox-grid">
+      <div
+        *ngFor="let gb of filteredGearboxes"
+        class="gearbox-card"
+        [class.is-active-preview]="activePreview.id === gb.id"
+      >
+        <div class="card-header">
+          <div class="card-icon-circle">{{ gb.icon }}</div>
+          <div class="header-tags">
+            <span class="ratio-badge">{{ gb.badge }}</span>
+          </div>
+        </div>
+
+        <div class="card-title-group">
+          <h3>{{ gb.name }}</h3>
+          <p class="subtitle">{{ gb.subtitle }}</p>
+        </div>
+
+        <p class="card-desc">{{ gb.description }}</p>
+
+        <div class="specs-row">
+          <div class="spec-pill">
+            <span class="spec-k">Ratio:</span>
+            <span class="spec-v">{{ gb.ratioStr }}</span>
+          </div>
+          <div class="spec-pill">
+            <span class="spec-k">Efficiency:</span>
+            <span class="spec-v">{{ gb.efficiency }}%</span>
+          </div>
+          <div class="spec-pill category-tag">
+            <span class="spec-v">{{ gb.category | uppercase }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button
+            type="button"
+            class="btn-preview"
+            [class.active]="activePreview.id === gb.id"
+            (click)="loadModelPreview(gb)"
+            title="Preview this 3D model in the viewport above"
+          >
+            <span>{{ activePreview.id === gb.id ? 'Viewing 👁️' : 'Preview Here 👁️' }}</span>
+          </button>
+
+          <a
+            routerLink="/threejs/gearboxes"
+            [queryParams]="{ id: gb.id }"
+            class="launch-btn"
+            title="Launch Full Interactive 3D Simulator with Explode Controls"
+          >
+            <span>Launch in 3D</span>
+            <span class="arrow">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredGearboxes.length === 0" class="empty-state">
+      <span class="empty-icon">⚙️</span>
+      <h3>No gearboxes match your search</h3>
+      <p>Try clearing your search term or switching to "All Gears".</p>
+      <button type="button" class="reset-btn" (click)="searchQuery = ''; selectCategory('all')">
+        Reset Filters
+      </button>
+    </div>
+  </section>
+
+  <!-- Engineering Gear Transmission Comparison Table -->
+  <section class="comparison-section">
+    <div class="section-heading">
+      <span class="sub-badge">Mechanical Reference</span>
+      <h2>Gear Transmission Types Comparison</h2>
+      <p>Key trade-offs across common industrial gear configurations.</p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Gear Type</th>
+            <th>Shaft Orientation</th>
+            <th>Single-Stage Ratio</th>
+            <th>Efficiency</th>
+            <th>Noise / Vibration</th>
+            <th>Primary Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Spur Gears</strong></td>
+            <td>Parallel</td>
+            <td>1:1 – 6:1</td>
+            <td>98% – 99%</td>
+            <td>Moderate (Impact noise)</td>
+            <td>Conveyors, clocks, machine tools</td>
+          </tr>
+          <tr>
+            <td><strong>Helical Gears</strong></td>
+            <td>Parallel / Crossed</td>
+            <td>1:1 – 10:1</td>
+            <td>96% – 98%</td>
+            <td>Low (Gradual meshing)</td>
+            <td>Automotive transmissions, high-speed drives</td>
+          </tr>
+          <tr>
+            <td><strong>Herringbone (Double-Helical)</strong></td>
+            <td>Parallel</td>
+            <td>1:1 – 12:1</td>
+            <td>97% – 99%</td>
+            <td>Very Low (Zero thrust)</td>
+            <td>Heavy steel mills, marine turbines</td>
+          </tr>
+          <tr>
+            <td><strong>Bevel Gears (Straight / Spiral)</strong></td>
+            <td>Intersecting 90°</td>
+            <td>1:1 – 6:1</td>
+            <td>95% – 98%</td>
+            <td>Low to Moderate</td>
+            <td>Differential drives, right-angle reducers</td>
+          </tr>
+          <tr>
+            <td><strong>Hypoid Gears</strong></td>
+            <td>Non-intersecting Offset 90°</td>
+            <td>3:1 – 10:1</td>
+            <td>90% – 95%</td>
+            <td>Very Low (Quiet)</td>
+            <td>Automotive rear axles, truck differentials</td>
+          </tr>
+          <tr>
+            <td><strong>Worm Gears</strong></td>
+            <td>Skew Non-intersecting 90°</td>
+            <td>5:1 – 70:1</td>
+            <td>50% – 85%</td>
+            <td>Silent (Self-locking)</td>
+            <td>Elevators, winches, precision steering</td>
+          </tr>
+          <tr>
+            <td><strong>Epicyclic Planetary</strong></td>
+            <td>Coaxial In-line</td>
+            <td>3:1 – 100:1</td>
+            <td>94% – 97%</td>
+            <td>Low (Load sharing)</td>
+            <td>Wind turbines, robotics, aerospace actuators</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Bottom CTA Banner -->
+  <section class="bottom-cta-banner">
+    <div class="banner-inner">
+      <div class="banner-left">
+        <h2>Ready to Explore in Full 3D?</h2>
+        <p>Launch the dedicated simulator to interact with all 29 models, trigger explode animations, adjust RPM speeds, and inspect component kinematics.</p>
+      </div>
+      <div class="banner-right">
+        <a routerLink="/threejs/gearboxes" class="cta-btn primary large">
+          <span>Open Full 3D Simulator</span>
+          <span class="icon">🚀</span>
+        </a>
+        <a routerLink="/threejs" class="cta-btn secondary">
+          <span>Back to Three.js Gallery</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

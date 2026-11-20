@@ -125,7 +125,7 @@ export class Fluidsexample1 implements AfterViewInit, OnDestroy {
         const found = presets.find((p) => p.id === paramPreset);
         if (found) this.selected = found;
       }
-    } catch {}
+    } catch { }
 
     this.selectPreset(this.selected, false);
   }
@@ -184,7 +184,7 @@ export class Fluidsexample1 implements AfterViewInit, OnDestroy {
         const url = new URL(window.location.href);
         url.searchParams.set('preset', preset.id);
         history.replaceState(null, '', url);
-      } catch {}
+      } catch { }
     }
 
     this.rebuild(false);

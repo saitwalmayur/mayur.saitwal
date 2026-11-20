@@ -82,6 +82,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'gearboxhome',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'ductpipes',
     renderMode: RenderMode.Client,
   },

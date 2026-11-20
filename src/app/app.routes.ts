@@ -201,6 +201,16 @@ export const routes: Routes = [
     loadComponent: () => import('./gearboxes/gearboxes').then((m) => m.Gearboxes),
   },
   {
+    path: 'threejs/gearboxhome',
+    title: 'Industrial 3D Gearbox Engineering Hub | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxhome/gearboxhome').then((m) => m.Gearboxhome),
+  },
+  {
+    path: 'gearboxhome',
+    title: 'Industrial 3D Gearbox Engineering Hub | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./gearboxhome/gearboxhome').then((m) => m.Gearboxhome),
+  },
+  {
     path: 'threejs/ductpipes',
     title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
     loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),
