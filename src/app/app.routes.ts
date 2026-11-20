@@ -211,6 +211,442 @@ export const routes: Routes = [
     loadComponent: () => import('./gearboxhome/gearboxhome').then((m) => m.Gearboxhome),
   },
   {
+    path: 'threejs/gearbox1',
+    title: 'Gearbox 1: Epicyclic Planetary Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox1/gearbox1').then((m) => m.Gearbox1),
+  },
+  {
+    path: 'gearbox1',
+    title: 'Gearbox 1: Epicyclic Planetary Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox1/gearbox1').then((m) => m.Gearbox1),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox1',
+    title: 'Gearbox 1: Epicyclic Planetary Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox1/gearbox1').then((m) => m.Gearbox1),
+  },
+  {
+    path: 'threejs/gearbox2',
+    title: 'Gearbox 2: Industrial Worm Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox2/gearbox2').then((m) => m.Gearbox2),
+  },
+  {
+    path: 'gearbox2',
+    title: 'Gearbox 2: Industrial Worm Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox2/gearbox2').then((m) => m.Gearbox2),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox2',
+    title: 'Gearbox 2: Industrial Worm Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox2/gearbox2').then((m) => m.Gearbox2),
+  },
+  {
+    path: 'threejs/gearbox3',
+    title: 'Gearbox 3: Heavy Cast Enclosed Worm Drive Unit | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox3/gearbox3').then((m) => m.Gearbox3),
+  },
+  {
+    path: 'gearbox3',
+    title: 'Gearbox 3: Heavy Cast Enclosed Worm Drive Unit | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox3/gearbox3').then((m) => m.Gearbox3),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox3',
+    title: 'Gearbox 3: Heavy Cast Enclosed Worm Drive Unit | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox3/gearbox3').then((m) => m.Gearbox3),
+  },
+  {
+    path: 'threejs/gearbox4',
+    title: 'Gearbox 4: Dual-Stage Spur Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox4/gearbox4').then((m) => m.Gearbox4),
+  },
+  {
+    path: 'gearbox4',
+    title: 'Gearbox 4: Dual-Stage Spur Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox4/gearbox4').then((m) => m.Gearbox4),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox4',
+    title: 'Gearbox 4: Dual-Stage Spur Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox4/gearbox4').then((m) => m.Gearbox4),
+  },
+  {
+    path: 'threejs/gearbox5',
+    title: 'Gearbox 5: Turboprop Aviation Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox5/gearbox5').then((m) => m.Gearbox5),
+  },
+  {
+    path: 'gearbox5',
+    title: 'Gearbox 5: Turboprop Aviation Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox5/gearbox5').then((m) => m.Gearbox5),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox5',
+    title: 'Gearbox 5: Turboprop Aviation Reduction Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox5/gearbox5').then((m) => m.Gearbox5),
+  },
+  {
+    path: 'threejs/gearbox6',
+    title: 'Gearbox 6: 5-Speed Manual Automotive Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox6/gearbox6').then((m) => m.Gearbox6),
+  },
+  {
+    path: 'gearbox6',
+    title: 'Gearbox 6: 5-Speed Manual Automotive Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox6/gearbox6').then((m) => m.Gearbox6),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox6',
+    title: 'Gearbox 6: 5-Speed Manual Automotive Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox6/gearbox6').then((m) => m.Gearbox6),
+  },
+  {
+    path: 'threejs/gearbox7',
+    title: 'Gearbox 7: Industrial Synchromesh Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox7/gearbox7').then((m) => m.Gearbox7),
+  },
+  {
+    path: 'gearbox7',
+    title: 'Gearbox 7: Industrial Synchromesh Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox7/gearbox7').then((m) => m.Gearbox7),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox7',
+    title: 'Gearbox 7: Industrial Synchromesh Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox7/gearbox7').then((m) => m.Gearbox7),
+  },
+  {
+    path: 'threejs/gearbox8',
+    title: 'Gearbox 8: High-Precision Industrial Planetary Reducer | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox8/gearbox8').then((m) => m.Gearbox8),
+  },
+  {
+    path: 'gearbox8',
+    title: 'Gearbox 8: High-Precision Industrial Planetary Reducer | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox8/gearbox8').then((m) => m.Gearbox8),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox8',
+    title: 'Gearbox 8: High-Precision Industrial Planetary Reducer | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox8/gearbox8').then((m) => m.Gearbox8),
+  },
+  {
+    path: 'threejs/gearbox9',
+    title: 'Gearbox 9: 90° Bevel (Conical) Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox9/gearbox9').then((m) => m.Gearbox9),
+  },
+  {
+    path: 'gearbox9',
+    title: 'Gearbox 9: 90° Bevel (Conical) Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox9/gearbox9').then((m) => m.Gearbox9),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox9',
+    title: 'Gearbox 9: 90° Bevel (Conical) Gearbox | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox9/gearbox9').then((m) => m.Gearbox9),
+  },
+  {
+    path: 'threejs/gearbox10',
+    title: 'Gearbox 10: Precision 90° Bevel Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox10/gearbox10').then((m) => m.Gearbox10),
+  },
+  {
+    path: 'gearbox10',
+    title: 'Gearbox 10: Precision 90° Bevel Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox10/gearbox10').then((m) => m.Gearbox10),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox10',
+    title: 'Gearbox 10: Precision 90° Bevel Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox10/gearbox10').then((m) => m.Gearbox10),
+  },
+  {
+    path: 'threejs/gearbox11',
+    title: 'Gearbox 11: Triple-Speed Bevel Gear Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox11/gearbox11').then((m) => m.Gearbox11),
+  },
+  {
+    path: 'gearbox11',
+    title: 'Gearbox 11: Triple-Speed Bevel Gear Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox11/gearbox11').then((m) => m.Gearbox11),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox11',
+    title: 'Gearbox 11: Triple-Speed Bevel Gear Transmission | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox11/gearbox11').then((m) => m.Gearbox11),
+  },
+  {
+    path: 'threejs/gearbox12',
+    title: 'Gearbox 12: Automotive Offset Hypoid Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox12/gearbox12').then((m) => m.Gearbox12),
+  },
+  {
+    path: 'gearbox12',
+    title: 'Gearbox 12: Automotive Offset Hypoid Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox12/gearbox12').then((m) => m.Gearbox12),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox12',
+    title: 'Gearbox 12: Automotive Offset Hypoid Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox12/gearbox12').then((m) => m.Gearbox12),
+  },
+  {
+    path: 'threejs/gearbox13',
+    title: 'Gearbox 13: Double-Helical Herringbone Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox13/gearbox13').then((m) => m.Gearbox13),
+  },
+  {
+    path: 'gearbox13',
+    title: 'Gearbox 13: Double-Helical Herringbone Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox13/gearbox13').then((m) => m.Gearbox13),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox13',
+    title: 'Gearbox 13: Double-Helical Herringbone Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox13/gearbox13').then((m) => m.Gearbox13),
+  },
+  {
+    path: 'threejs/gearbox14',
+    title: 'Gearbox 14: Beaver-Tail Geneva Indexing Drive | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox14/gearbox14').then((m) => m.Gearbox14),
+  },
+  {
+    path: 'gearbox14',
+    title: 'Gearbox 14: Beaver-Tail Geneva Indexing Drive | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox14/gearbox14').then((m) => m.Gearbox14),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox14',
+    title: 'Gearbox 14: Beaver-Tail Geneva Indexing Drive | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox14/gearbox14').then((m) => m.Gearbox14),
+  },
+  {
+    path: 'threejs/gearbox15',
+    title: 'Gearbox 15: Hypocycloid Scotch Yoke Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox15/gearbox15').then((m) => m.Gearbox15),
+  },
+  {
+    path: 'gearbox15',
+    title: 'Gearbox 15: Hypocycloid Scotch Yoke Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox15/gearbox15').then((m) => m.Gearbox15),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox15',
+    title: 'Gearbox 15: Hypocycloid Scotch Yoke Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox15/gearbox15').then((m) => m.Gearbox15),
+  },
+  {
+    path: 'threejs/gearbox16',
+    title: 'Gearbox 16: External Positive Displacement Gear Pump | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox16/gearbox16').then((m) => m.Gearbox16),
+  },
+  {
+    path: 'gearbox16',
+    title: 'Gearbox 16: External Positive Displacement Gear Pump | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox16/gearbox16').then((m) => m.Gearbox16),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox16',
+    title: 'Gearbox 16: External Positive Displacement Gear Pump | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox16/gearbox16').then((m) => m.Gearbox16),
+  },
+  {
+    path: 'threejs/gearbox17',
+    title: 'Gearbox 17: Differential Superposition Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox17/gearbox17').then((m) => m.Gearbox17),
+  },
+  {
+    path: 'gearbox17',
+    title: 'Gearbox 17: Differential Superposition Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox17/gearbox17').then((m) => m.Gearbox17),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox17',
+    title: 'Gearbox 17: Differential Superposition Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox17/gearbox17').then((m) => m.Gearbox17),
+  },
+  {
+    path: 'threejs/gearbox18',
+    title: 'Gearbox 18: Eccentric Reciprocating Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox18/gearbox18').then((m) => m.Gearbox18),
+  },
+  {
+    path: 'gearbox18',
+    title: 'Gearbox 18: Eccentric Reciprocating Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox18/gearbox18').then((m) => m.Gearbox18),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox18',
+    title: 'Gearbox 18: Eccentric Reciprocating Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox18/gearbox18').then((m) => m.Gearbox18),
+  },
+  {
+    path: 'threejs/gearbox19',
+    title: 'Gearbox 19: Oscillating Sector Gear Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox19/gearbox19').then((m) => m.Gearbox19),
+  },
+  {
+    path: 'gearbox19',
+    title: 'Gearbox 19: Oscillating Sector Gear Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox19/gearbox19').then((m) => m.Gearbox19),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox19',
+    title: 'Gearbox 19: Oscillating Sector Gear Mechanism | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox19/gearbox19').then((m) => m.Gearbox19),
+  },
+  {
+    path: 'threejs/gearbox20',
+    title: 'Gearbox 20: Dual Worm Gear Precision XY Table | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox20/gearbox20').then((m) => m.Gearbox20),
+  },
+  {
+    path: 'gearbox20',
+    title: 'Gearbox 20: Dual Worm Gear Precision XY Table | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox20/gearbox20').then((m) => m.Gearbox20),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox20',
+    title: 'Gearbox 20: Dual Worm Gear Precision XY Table | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox20/gearbox20').then((m) => m.Gearbox20),
+  },
+  {
+    path: 'threejs/gearbox21',
+    title: 'Gearbox 21: Nautilus Logarithmic Spiral Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox21/gearbox21').then((m) => m.Gearbox21),
+  },
+  {
+    path: 'gearbox21',
+    title: 'Gearbox 21: Nautilus Logarithmic Spiral Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox21/gearbox21').then((m) => m.Gearbox21),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox21',
+    title: 'Gearbox 21: Nautilus Logarithmic Spiral Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox21/gearbox21').then((m) => m.Gearbox21),
+  },
+  {
+    path: 'threejs/gearbox22',
+    title: 'Gearbox 22: 3D Interlocking Cube Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox22/gearbox22').then((m) => m.Gearbox22),
+  },
+  {
+    path: 'gearbox22',
+    title: 'Gearbox 22: 3D Interlocking Cube Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox22/gearbox22').then((m) => m.Gearbox22),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox22',
+    title: 'Gearbox 22: 3D Interlocking Cube Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox22/gearbox22').then((m) => m.Gearbox22),
+  },
+  {
+    path: 'threejs/gearbox23',
+    title: 'Gearbox 23: Harmonic Epicyclic Train XXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox23/gearbox23').then((m) => m.Gearbox23),
+  },
+  {
+    path: 'gearbox23',
+    title: 'Gearbox 23: Harmonic Epicyclic Train XXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox23/gearbox23').then((m) => m.Gearbox23),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox23',
+    title: 'Gearbox 23: Harmonic Epicyclic Train XXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox23/gearbox23').then((m) => m.Gearbox23),
+  },
+  {
+    path: 'threejs/gearbox24',
+    title: 'Gearbox 24: High-Density Planetary Array XXXII | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox24/gearbox24').then((m) => m.Gearbox24),
+  },
+  {
+    path: 'gearbox24',
+    title: 'Gearbox 24: High-Density Planetary Array XXXII | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox24/gearbox24').then((m) => m.Gearbox24),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox24',
+    title: 'Gearbox 24: High-Density Planetary Array XXXII | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox24/gearbox24').then((m) => m.Gearbox24),
+  },
+  {
+    path: 'threejs/gearbox25',
+    title: 'Gearbox 25: Kinematic Gear Assemblage XXXXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox25/gearbox25').then((m) => m.Gearbox25),
+  },
+  {
+    path: 'gearbox25',
+    title: 'Gearbox 25: Kinematic Gear Assemblage XXXXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox25/gearbox25').then((m) => m.Gearbox25),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox25',
+    title: 'Gearbox 25: Kinematic Gear Assemblage XXXXI | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox25/gearbox25').then((m) => m.Gearbox25),
+  },
+  {
+    path: 'threejs/gearbox26',
+    title: 'Gearbox 26: Classic Spur Gearmesh Pair | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox26/gearbox26').then((m) => m.Gearbox26),
+  },
+  {
+    path: 'gearbox26',
+    title: 'Gearbox 26: Classic Spur Gearmesh Pair | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox26/gearbox26').then((m) => m.Gearbox26),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox26',
+    title: 'Gearbox 26: Classic Spur Gearmesh Pair | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox26/gearbox26').then((m) => m.Gearbox26),
+  },
+  {
+    path: 'threejs/gearbox27',
+    title: 'Gearbox 27: Heavy Industrial Cast Spur Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox27/gearbox27').then((m) => m.Gearbox27),
+  },
+  {
+    path: 'gearbox27',
+    title: 'Gearbox 27: Heavy Industrial Cast Spur Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox27/gearbox27').then((m) => m.Gearbox27),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox27',
+    title: 'Gearbox 27: Heavy Industrial Cast Spur Gears | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox27/gearbox27').then((m) => m.Gearbox27),
+  },
+  {
+    path: 'threejs/gearbox28',
+    title: 'Gearbox 28: Synchronized Multi-Shaft Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox28/gearbox28').then((m) => m.Gearbox28),
+  },
+  {
+    path: 'gearbox28',
+    title: 'Gearbox 28: Synchronized Multi-Shaft Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox28/gearbox28').then((m) => m.Gearbox28),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox28',
+    title: 'Gearbox 28: Synchronized Multi-Shaft Gear Train | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox28/gearbox28').then((m) => m.Gearbox28),
+  },
+  {
+    path: 'threejs/gearbox29',
+    title: 'Gearbox 29: Open Frame Reduction Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox29/gearbox29').then((m) => m.Gearbox29),
+  },
+  {
+    path: 'gearbox29',
+    title: 'Gearbox 29: Open Frame Reduction Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox29/gearbox29').then((m) => m.Gearbox29),
+  },
+  {
+    path: 'mechanical/gearbox/gearbox29',
+    title: 'Gearbox 29: Open Frame Reduction Gearset | Mechanical Simulation | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/gearbox/gearbox29/gearbox29').then((m) => m.Gearbox29),
+  },
+
+  {
     path: 'threejs/ductpipes',
     title: 'Industrial HVAC Duct Pipes Network | Three.js | Mayur Saitwal',
     loadComponent: () => import('./ductpipes/ductpipes').then((m) => m.Ductpipes),

@@ -21,7 +21,7 @@ export type GearboxCategory = 'all' | 'industrial' | 'bevel' | 'kinematic' | 'sp
 
 export type HousingMode = 'solid' | 'xray' | 'cutaway';
 
-export type MetallicTheme = 'steel' | 'bronze' | 'gold' | 'dark';
+export type MetallicTheme = 'steel' | 'dark';
 
 export interface TransmissionGear {
   id: string;
@@ -534,44 +534,11 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
                 mat.color.setHex(0x334155); // Slate cast gunmetal
                 mat.metalness = 0.88;
                 mat.roughness = 0.30;
-              } else if (isWorm && (mesh.name === 'Object_3' || mesh.name === 'Object_38')) {
-                // Phosphor bronze worm wheel gear
-                mat.color.setHex(0xf59e0b);
-                mat.metalness = 0.94;
-                mat.roughness = 0.16;
               } else {
                 // Precision alloy gear steel
                 mat.color.setHex(0xe2e8f0);
                 mat.metalness = 0.96;
                 mat.roughness = 0.16;
-              }
-              break;
-            }
-
-            case 'bronze': {
-              if (isCasing) {
-                mat.color.setHex(0x1e293b); // Deep titanium graphite
-                mat.metalness = 0.92;
-                mat.roughness = 0.26;
-              } else {
-                // Industrial golden bronze / brass gears
-                mat.color.setHex(0xd97706);
-                mat.metalness = 0.95;
-                mat.roughness = 0.15;
-              }
-              break;
-            }
-
-            case 'gold': {
-              if (isCasing) {
-                mat.color.setHex(0x0f172a); // Midnight black billet aluminum
-                mat.metalness = 0.94;
-                mat.roughness = 0.22;
-              } else {
-                // Anodized motorsport racing gold
-                mat.color.setHex(0xfbbf24);
-                mat.metalness = 0.96;
-                mat.roughness = 0.13;
               }
               break;
             }

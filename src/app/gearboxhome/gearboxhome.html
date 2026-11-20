@@ -119,12 +119,11 @@
             </div>
           </div>
           <a
-            routerLink="/threejs/gearboxes"
-            [queryParams]="{ id: activePreview.id }"
+            [routerLink]="getGearboxRoute(activePreview)"
             class="inspect-btn"
-            title="Open in Full 3D Simulator with Explode Animation"
+            [title]="'Open Gearbox ' + getGearboxIndex(activePreview) + ' Page with 3D Controls'"
           >
-            Launch in Simulator ↗
+            Open Gearbox {{ getGearboxIndex(activePreview) }} ↗
           </a>
         </div>
       </div>
@@ -161,11 +160,11 @@
         </div>
 
         <div class="g1-action-col">
-          <a routerLink="/threejs/gearboxes" class="g1-launch-btn" title="Open Gearbox 1 3D Simulation">
+          <a routerLink="/gearbox1" class="g1-launch-btn" title="Open Gearbox 1 3D Simulation Page">
             <span>Navigate to Gearbox 1</span>
             <span class="btn-arrow">↗</span>
           </a>
-          <span class="g1-action-hint">Opens full 3D interactive simulator</span>
+          <span class="g1-action-hint">Opens dedicated Gearbox 1 3D page</span>
         </div>
       </div>
     </div>
@@ -204,7 +203,7 @@
       <div class="feature-card">
         <div class="feat-icon">✨</div>
         <h3>PBR Metallic Shaders</h3>
-        <p>Realistic physical material shaders simulating cold-rolled industrial steel, cast bearing bronze, polished gold, and gunmetal dark oxide.</p>
+        <p>Realistic physical material shaders simulating cold-rolled industrial alloy steel, polished mirror chrome, and stealth gunmetal dark oxide.</p>
         <div class="feat-badge">Photorealistic Finish</div>
       </div>
     </div>
@@ -256,6 +255,7 @@
         <div class="card-header">
           <div class="card-icon-circle">{{ gb.icon }}</div>
           <div class="header-tags">
+            <span class="gearbox-index-pill">Gearbox {{ getGearboxIndex(gb) }}</span>
             <span class="ratio-badge">{{ gb.badge }}</span>
           </div>
         </div>
@@ -293,12 +293,11 @@
           </button>
 
           <a
-            routerLink="/threejs/gearboxes"
-            [queryParams]="{ id: gb.id }"
+            [routerLink]="getGearboxRoute(gb)"
             class="launch-btn"
-            title="Launch Full Interactive 3D Simulator with Explode Controls"
+            [title]="'Launch Dedicated Page for Gearbox ' + getGearboxIndex(gb)"
           >
-            <span>Launch in 3D</span>
+            <span>Open Gearbox {{ getGearboxIndex(gb) }}</span>
             <span class="arrow">↗</span>
           </a>
         </div>

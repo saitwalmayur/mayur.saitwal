@@ -513,6 +513,15 @@ export class Gearboxhome implements AfterViewInit, OnDestroy {
     this.selectedCategory = catId;
   }
 
+  getGearboxIndex(gb: FeaturedGearbox): number {
+    const idx = this.gearboxes.findIndex((g) => g.id === gb.id);
+    return idx >= 0 ? idx + 1 : 1;
+  }
+
+  getGearboxRoute(gb: FeaturedGearbox): string {
+    return '/gearbox' + this.getGearboxIndex(gb);
+  }
+
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
     this.initHeroThree();

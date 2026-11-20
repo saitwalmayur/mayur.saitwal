@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { GearboxViewerComponent } from '../gearbox-viewer/gearbox-viewer';
 
 @Component({
   selector: 'app-gearbox1',
-  imports: [],
+  standalone: true,
+  imports: [GearboxViewerComponent],
   templateUrl: './gearbox1.html',
   styleUrl: './gearbox1.scss',
 })
