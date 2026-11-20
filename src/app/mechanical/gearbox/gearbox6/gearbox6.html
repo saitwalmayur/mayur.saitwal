@@ -1,1 +1,486 @@
-<app-gearbox-viewer [index]="6"></app-gearbox-viewer>
+<div class="gearbox-viewer-container">
+  <!-- 3D Fullscreen WebGL Canvas -->
+  <canvas #canvasRef class="webgl-canvas"></canvas>
+
+  <!-- Top Floating Navigation Header -->
+  <header class="top-nav-bar">
+    <div class="nav-left">
+      <!-- Back to Gearbox Hub -->
+      <a routerLink="/gearboxhome" class="back-pill" title="Return to Gearbox Hub (All 29 Gears)">
+        <span class="back-arrow">←</span>
+        <span>Gearbox Hub</span>
+      </a>
+
+      <!-- Quick Previous Gearbox Button -->
+      <a
+        [routerLink]="['/gearbox' + prevIndex]"
+        class="nav-step-btn prev-btn"
+        title="Go to Previous Gearbox (Gearbox {{ prevIndex }})"
+      >
+        <span>‹ G{{ prevIndex }}</span>
+      </a>
+
+      <!-- Current Gearbox Dropdown Badge & Selector -->
+      <div class="gearbox-dropdown-wrapper">
+        <button
+          type="button"
+          class="gearbox-model-badge"
+          (click)="toggleDropdown()"
+          [title]="'Gearbox ' + currentIndex + ': ' + selectedGearbox.name + ' (Click to browse all 29)'"
+        >
+          <span class="dropdown-icon">{{ selectedGearbox.icon }}</span>
+          <div class="dropdown-text">
+            <div class="dropdown-header-line">
+              <span class="dropdown-label">GEARBOX {{ currentIndex }} OF {{ allGearboxes.length }}</span>
+              <span class="dropdown-badge">{{ selectedGearbox.badge }}</span>
+            </div>
+            <span class="dropdown-name">{{ selectedGearbox.name }}</span>
+          </div>
+          <span class="dropdown-caret" [class.open]="isDropdownOpen">▾</span>
+        </button>
+
+        <!-- Dropdown Menu for All 29 Gearboxes -->
+        <div *ngIf="isDropdownOpen" class="gearbox-dropdown-menu">
+          <div class="dropdown-search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              [(ngModel)]="dropdownSearch"
+              placeholder="Search 29 gearboxes..."
+              class="dropdown-search-input"
+              (click)="$event.stopPropagation()"
+            />
+            <span class="count-tag">{{ filteredDropdownGearboxes.length }} gears</span>
+          </div>
+
+          <div class="dropdown-list">
+            <button
+              *ngFor="let itemData of filteredDropdownGearboxes"
+              type="button"
+              class="dropdown-item"
+              [class.active]="itemData.idx === currentIndex"
+              (click)="navigateToGearbox(itemData.idx)"
+            >
+              <span class="item-idx">#{{ itemData.idx }}</span>
+              <span class="item-icon">{{ itemData.item.icon }}</span>
+              <div class="item-info">
+                <span class="item-name">{{ itemData.item.name }}</span>
+                <span class="item-sub">{{ itemData.item.ratioStr }} • {{ itemData.item.badge }}</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Next Gearbox Button -->
+      <a
+        [routerLink]="['/gearbox' + nextIndex]"
+        class="nav-step-btn next-btn"
+        title="Go to Next Gearbox (Gearbox {{ nextIndex }})"
+      >
+        <span>G{{ nextIndex }} ›</span>
+      </a>
+    </div>
+
+    <!-- Center Play/Pause & RPM Dock -->
+    <div class="nav-center">
+      <div class="action-dock">
+        <button
+          type="button"
+          class="dock-btn play-btn"
+          [class.active]="isPlaying"
+          (click)="togglePlayPause()"
+          [title]="isPlaying ? 'Pause Mechanism' : 'Run Mechanism'"
+        >
+          <span class="icon">{{ isPlaying ? '⏸' : '▶' }}</span>
+          <span>{{ isPlaying ? 'Pause' : 'Run' }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="dock-btn reverse-btn"
+          [class.active]="isReversed"
+          (click)="toggleDirection()"
+          title="Toggle Forward / Reverse Rotation"
+        >
+          <span class="icon">🔁</span>
+          <span>{{ isReversed ? 'Reverse' : 'Forward' }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="dock-btn explode-btn"
+          [class.active]="isExploded"
+          (click)="toggleExplode()"
+          [title]="isExploded ? 'Assemble Mechanism' : 'Explode View Disassembly'"
+        >
+          <span class="icon">{{ isExploded ? '🧩' : '💥' }}</span>
+          <span>{{ isExploded ? 'Assemble' : 'Explode' }}</span>
+        </button>
+
+        <div class="rpm-control-chip">
+          <span class="rpm-lbl">RPM:</span>
+          <input
+            type="range"
+            min="100"
+            max="3000"
+            step="50"
+            [value]="rpm"
+            (input)="setRpm($any($event.target).value)"
+            class="rpm-mini-slider"
+          />
+          <span class="rpm-val">{{ rpm }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camera Presets & Utilities -->
+    <div class="nav-right">
+      <div class="camera-pill">
+        <span class="cam-label">CAM:</span>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'iso'"
+          (click)="setCameraPreset('iso')"
+          title="Isometric Technical View"
+        >
+          ISO
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'input'"
+          (click)="setCameraPreset('input')"
+          title="Input Focus"
+        >
+          IN
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'mesh'"
+          (click)="setCameraPreset('mesh')"
+          title="Gear Teeth Mesh Focus"
+        >
+          MESH
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'output'"
+          (click)="setCameraPreset('output')"
+          title="Output Focus"
+        >
+          OUT
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="activeCameraPreset === 'top'"
+          (click)="setCameraPreset('top')"
+          title="Top-Down View"
+        >
+          TOP
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="icon-btn"
+        [class.active]="!isMuted"
+        (click)="toggleAudio()"
+        [title]="isMuted ? 'Unmute Mechanical Sound' : 'Mute Sound'"
+      >
+        <span>{{ isMuted ? '🔇' : '🔊' }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="icon-btn info-btn"
+        [class.active]="showDetailsModal"
+        (click)="showDetailsModal = !showDetailsModal"
+        title="Technical Specifications & Notes"
+      >
+        <span>ℹ️</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Real-Time Mechanical Telemetry HUD (Upper-Right) -->
+  <aside class="telemetry-hud">
+    <div class="hud-header">
+      <div class="status-indicator">
+        <span class="pulse-dot" [class.paused]="!isPlaying"></span>
+        <span class="status-text">{{ isPlaying ? (isReversed ? 'REVERSE DRIVE' : 'FORWARD DRIVE') : 'DRIVE STOPPED' }}</span>
+      </div>
+      <span class="fps-tag">{{ fps }} FPS</span>
+    </div>
+
+    <div class="hud-body">
+      <!-- Ratio Metric -->
+      <div class="metric-hero">
+        <div class="metric-label">GEAR RATIO</div>
+        <div class="metric-huge">{{ telemetry.ratio }}</div>
+        <div class="metric-sub">Torque Multiplication: {{ telemetry.torqueMult }}</div>
+      </div>
+
+      <!-- Physics & Torque Rows -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Efficiency</span>
+          <span class="num text-emerald">{{ selectedGearbox.efficiency }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Category</span>
+          <span class="num text-sky">{{ selectedGearbox.category | uppercase }}</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Input RPM</span>
+          <span class="num text-cyan">{{ telemetry.inputRpm }} RPM</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Output RPM</span>
+          <span class="num text-amber">{{ telemetry.outputRpm }} RPM</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="lbl">Output Torque</span>
+          <span class="num text-amber">{{ telemetry.outputTorque }} Nm</span>
+        </div>
+        <div class="stat-item">
+          <span class="lbl">Mechanical Power</span>
+          <span class="num">{{ telemetry.mechanicalPower }}</span>
+        </div>
+      </div>
+
+      <!-- Animation / Kinematics Status Tag -->
+      <div class="motion-status-box" [class.has-anim]="hasEmbeddedAnimation">
+        <span class="icon">{{ hasEmbeddedAnimation ? '⚙️' : '📐' }}</span>
+        <span class="text">
+          {{ hasEmbeddedAnimation ? 'Kinematic Motion Synchronization Active' : 'Precision 3D Mechanical Assembly' }}
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Control Deck -->
+  <section class="bottom-controls-deck">
+    <div class="deck-main-card">
+      <div class="deck-row options-row">
+        <!-- Housing View Modes -->
+        <div class="housing-mode-group">
+          <span class="group-title">HOUSING VIEW:</span>
+          <div class="housing-buttons">
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'solid'"
+              (click)="setHousingMode('solid')"
+              title="Solid Opaque Industrial Housing"
+            >
+              🛡️ Solid
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'xray'"
+              (click)="setHousingMode('xray')"
+              title="X-Ray Semi-Transparent Casing"
+            >
+              👻 X-Ray
+            </button>
+            <button
+              type="button"
+              class="mode-btn"
+              [class.active]="housingMode === 'cutaway'"
+              (click)="setHousingMode('cutaway')"
+              title="Cutaway / Internal Gears View"
+            >
+              ✂️ Cutaway
+            </button>
+          </div>
+        </div>
+
+        <!-- Metallic Material Finish Group -->
+        <div class="theme-mode-group">
+          <span class="group-title">METALLIC FINISH:</span>
+          <div class="theme-buttons">
+            <button
+              type="button"
+              class="mode-btn steel-btn"
+              [class.active]="metallicTheme === 'steel'"
+              (click)="setMetallicTheme('steel')"
+              title="Forged Alloy Steel & Polished Finish"
+            >
+              ⚙️ Steel
+            </button>
+            <button
+              type="button"
+              class="mode-btn dark-btn"
+              [class.active]="metallicTheme === 'dark'"
+              (click)="setMetallicTheme('dark')"
+              title="Stealth Gunmetal Carbon & Mirror Chrome"
+            >
+              🖤 Gunmetal
+            </button>
+          </div>
+        </div>
+
+        <!-- Exploded View Disassembly Group -->
+        <div class="explode-mode-group">
+          <div class="explode-group-top">
+            <span class="group-title">💥 EXPLODED VIEW:</span>
+            <span class="explode-pct-badge" [class.active]="explodeProgress > 0.05">
+              {{ (explodeProgress * 100) | number : '1.0-0' }}%
+            </span>
+          </div>
+          <div class="explode-widget-row">
+            <button
+              type="button"
+              class="explode-quick-btn"
+              [class.active]="isExploded"
+              (click)="toggleExplode()"
+              [title]="isExploded ? 'Assemble Gearbox' : 'Explode Gearbox'"
+            >
+              {{ isExploded ? '🧩 Assemble' : '💥 Explode' }}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              [value]="explodeProgress * 100"
+              (input)="setExplodeProgress($any($event.target).value)"
+              class="explode-range-slider"
+              title="Drag to smoothly explode/implode gearbox components"
+            />
+            <div class="explode-chips">
+              <button
+                type="button"
+                class="pct-chip"
+                [class.active]="targetExplodeProgress === 0"
+                (click)="setExplodePreset(0)"
+                title="Fully Assembled"
+              >
+                0%
+              </button>
+              <button
+                type="button"
+                class="pct-chip"
+                [class.active]="targetExplodeProgress === 0.5"
+                (click)="setExplodePreset(0.5)"
+                title="Partial Inspection"
+              >
+                50%
+              </button>
+              <button
+                type="button"
+                class="pct-chip"
+                [class.active]="targetExplodeProgress === 1.0"
+                (click)="setExplodePreset(1.0)"
+                title="Full Exploded Disassembly"
+              >
+                100%
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transmission Shifter Row (Visible Only For Manual Transmission) -->
+      <div
+        *ngIf="selectedGearbox.id === 'transmission' || selectedGearbox.id === 'manual_transmission_gear_box'"
+        class="transmission-shifter-row"
+      >
+        <div class="shifter-label">
+          <span>🏎️ SELECT TRANSMISSION GEAR:</span>
+          <span class="active-gear-tag">Active: {{ selectedTransmissionGear.name }} ({{ selectedTransmissionGear.ratio }} : 1)</span>
+        </div>
+        <div class="shifter-gates">
+          <button
+            *ngFor="let gear of transmissionGears"
+            type="button"
+            class="gate-btn"
+            [class.active]="selectedTransmissionGear.id === gear.id"
+            [class.reverse]="gear.id === 'R'"
+            (click)="setTransmissionGear(gear)"
+          >
+            <span class="gear-num">{{ gear.id }}</span>
+            <span class="gear-name">{{ gear.name }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Details Modal -->
+  <div *ngIf="showDetailsModal" class="details-modal-backdrop" (click)="showDetailsModal = false">
+    <div class="details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="title-col">
+          <span class="modal-badge">GEARBOX {{ currentIndex }} OF 29</span>
+          <h2>{{ selectedGearbox.icon }} {{ selectedGearbox.name }}</h2>
+          <p class="modal-subtitle">{{ selectedGearbox.subtitle }}</p>
+        </div>
+        <button type="button" class="close-btn" (click)="showDetailsModal = false">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-specs-grid">
+          <div class="spec-card">
+            <span class="k">Gear Ratio</span>
+            <span class="v text-cyan">{{ selectedGearbox.ratioStr }}</span>
+          </div>
+          <div class="spec-card">
+            <span class="k">Mechanical Efficiency</span>
+            <span class="v text-emerald">{{ selectedGearbox.efficiency }}%</span>
+          </div>
+          <div class="spec-card">
+            <span class="k">Category</span>
+            <span class="v text-sky">{{ selectedGearbox.category | uppercase }}</span>
+          </div>
+          <div class="spec-card">
+            <span class="k">Badge Specification</span>
+            <span class="v text-amber">{{ selectedGearbox.badge }}</span>
+          </div>
+        </div>
+
+        <div class="modal-desc">
+          <h3>Engineering Description</h3>
+          <p>{{ selectedGearbox.description }}</p>
+        </div>
+
+        <div class="modal-actions">
+          <a [routerLink]="['/gearbox' + prevIndex]" (click)="showDetailsModal = false" class="modal-btn">
+            ‹ Previous (Gearbox {{ prevIndex }})
+          </a>
+          <a routerLink="/gearboxhome" class="modal-btn hub-btn">
+            Explore All 29 Gears Hub ↗
+          </a>
+          <a [routerLink]="['/gearbox' + nextIndex]" (click)="showDetailsModal = false" class="modal-btn">
+            Next (Gearbox {{ nextIndex }}) ›
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Model Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-scrim">
+    <div class="loader-box">
+      <div class="spinner-gear">⚙️</div>
+      <h3>Loading Gearbox {{ currentIndex }}</h3>
+      <p class="model-name">{{ selectedGearbox.name }}</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <span class="progress-text">{{ loadingProgress }}%</span>
+    </div>
+  </div>
+</div>

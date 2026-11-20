@@ -35,6 +35,12 @@ export interface ExplodePart {
   delta: THREE.Vector3;
 }
 
+export interface KinematicRotator {
+  pivot: THREE.Group;
+  axis: THREE.Vector3;
+  speedMultiplier: number;
+}
+
 export interface GearboxConfig {
   id: string;
   name: string;
@@ -71,9 +77,9 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       subtitle: 'Dual intersecting conical gears with 1:1 right-angle drive transfer',
       file: '/3dModels/Gearboxes/bevel_gears.glb',
       icon: '⚡',
-      badge: 'Right-Angle / 1:1',
-      ratioStr: '1.00 : 1',
-      baseRatio: 1.0,
+      badge: 'Right-Angle / 2:1',
+      ratioStr: '2.00 : 1',
+      baseRatio: 2.0,
       efficiency: 97,
       category: 'bevel',
       description:
@@ -129,6 +135,8 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   // Animation System
   private mixer: THREE.AnimationMixer | null = null;
   hasEmbeddedAnimation = false;
+  private kinematicRotators: KinematicRotator[] = [];
+  private activeClipDuration = 1.0;
 
   // Live Telemetry Readout
   telemetry = {
@@ -407,6 +415,7 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
       this.mixer = null;
     }
     this.casingMeshes = [];
+    this.kinematicRotators = [];
     this.hasEmbeddedAnimation = false;
     this.explodeParts = [];
     this.explodeProgress = 0;
@@ -460,15 +469,17 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
         // Check if model contains embedded kinematic gear animations
         if (gltf.animations && gltf.animations.length > 0) {
           this.hasEmbeddedAnimation = true;
+          this.activeClipDuration = gltf.animations[0]?.duration || 1.0;
           this.mixer = new THREE.AnimationMixer(root);
           gltf.animations.forEach((clip) => {
             const action = this.mixer!.clipAction(clip);
+            action.setLoop(THREE.LoopRepeat, Infinity);
             action.play();
           });
+        } else {
+          // Configure casing meshes and procedural rotators for models without animations
+          this.setupKinematicsFor(config.id, root);
         }
-
-        // Configure casing meshes for solid / xray / cutaway modes
-        this.setupKinematicsFor(config.id, root);
 
         // Enhance all components with high-grade metallic PBR materials
         this.enhanceMaterials(root);
@@ -568,11 +579,124 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
   // CASING MESH IDENTIFICATION (SOLID / X-RAY / CUTAWAY)
   // Preserves original CAD assembly without moving or detaching any parts
   // =========================================================================
+  private createPivotAndAttach(
+    root: THREE.Group,
+    meshNamesOrObjects: (string | THREE.Mesh)[],
+    preferredCenter?: THREE.Vector3,
+    axis: THREE.Vector3 = new THREE.Vector3(0, 0, 1),
+    speedMultiplier: number = 1.0
+  ): KinematicRotator | null {
+    const meshesToAttach: THREE.Mesh[] = [];
+
+    if (meshNamesOrObjects.length > 0 && typeof meshNamesOrObjects[0] === 'string') {
+      const nameSet = new Set(meshNamesOrObjects as string[]);
+      root.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh && nameSet.has(child.name)) {
+          meshesToAttach.push(child as THREE.Mesh);
+        }
+      });
+    } else {
+      meshesToAttach.push(...(meshNamesOrObjects as THREE.Mesh[]));
+    }
+
+    if (meshesToAttach.length === 0) return null;
+
+    let localCenter: THREE.Vector3;
+    if (preferredCenter) {
+      localCenter = preferredCenter.clone();
+    } else {
+      const combinedBox = new THREE.Box3();
+      meshesToAttach.forEach((m) => {
+        m.updateMatrixWorld(true);
+        combinedBox.expandByObject(m);
+      });
+      const worldCenter = new THREE.Vector3();
+      combinedBox.getCenter(worldCenter);
+      localCenter = root.worldToLocal(worldCenter);
+    }
+
+    const pivot = new THREE.Group();
+    pivot.position.copy(localCenter);
+    root.add(pivot);
+    pivot.updateMatrixWorld(true);
+
+    for (const mesh of meshesToAttach) {
+      pivot.attach(mesh);
+    }
+
+    return { pivot, axis: axis.clone().normalize(), speedMultiplier };
+  }
+
   private setupKinematicsFor(type: string, root: THREE.Group): void {
+    if (this.hasEmbeddedAnimation) {
+      return;
+    }
     root.updateMatrixWorld(true);
     this.casingMeshes = [];
+    this.kinematicRotators = [];
+
+    const getMeshCenter = (name: string): THREE.Vector3 => {
+      const m = root.getObjectByName(name) as THREE.Mesh;
+      if (!m) return new THREE.Vector3();
+      m.updateMatrixWorld(true);
+      const b = new THREE.Box3().setFromObject(m);
+      const wc = new THREE.Vector3();
+      b.getCenter(wc);
+      return root.worldToLocal(wc);
+    };
 
     switch (type) {
+      case 'gears_mechanism': {
+        // Gearbox 29: Open Frame Reduction Gearset
+        const casingNames = new Set(['pSphere20_M_Mechanismus_0', 'pCube1_M_Mechanismus_0']);
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && casingNames.has(o.name)) {
+            this.casingMeshes.push(o as THREE.Mesh);
+          }
+        });
+
+        const zAxis = new THREE.Vector3(0, 0, 1);
+
+        // Stage 1: Top crank + pinion gear
+        const topCenter = getMeshCenter('pCylinder10_M_Mechanismus_0');
+        const topRot = this.createPivotAndAttach(
+          root,
+          [
+            'polySurface5_M_Mechanismus_0',
+            'pCylinder10_M_Mechanismus_0',
+            'pCylinder8_M_Mechanismus_0',
+            'pCylinder9_M_Mechanismus_0',
+          ],
+          topCenter,
+          zAxis,
+          1.0
+        );
+        if (topRot) this.kinematicRotators.push(topRot);
+
+        // Stage 2: Middle intermediate gear
+        const midCenter = getMeshCenter('pTorus2_M_Mechanismus_0');
+        const midRot = this.createPivotAndAttach(
+          root,
+          ['pTorus2_M_Mechanismus_0', 'pCylinder11_M_Mechanismus_0'],
+          midCenter,
+          zAxis,
+          -0.5
+        );
+        if (midRot) this.kinematicRotators.push(midRot);
+
+        // Stage 3: Bottom output gear
+        const botCenter = getMeshCenter('pTorus4_M_Mechanismus_0');
+        const botRot = this.createPivotAndAttach(
+          root,
+          ['pTorus4_M_Mechanismus_0'],
+          botCenter,
+          zAxis,
+          0.5
+        );
+        if (botRot) this.kinematicRotators.push(botRot);
+        break;
+      }
+
       case 'planetary': {
         const casingNames = new Set([
           'Object_2', 'Object_3', 'Object_4', 'Object_5', 'Object_6', 'Object_7', 'Object_8',
@@ -585,19 +709,57 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const rotatingMeshes: THREE.Mesh[] = [];
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && !this.casingMeshes.includes(o as THREE.Mesh)) {
+            rotatingMeshes.push(o as THREE.Mesh);
+          }
+        });
+        const planetCenter = getMeshCenter('Object_9');
+        const planetRot = this.createPivotAndAttach(
+          root,
+          rotatingMeshes,
+          planetCenter,
+          new THREE.Vector3(0, 0, 1),
+          1.0
+        );
+        if (planetRot) this.kinematicRotators.push(planetRot);
         break;
       }
 
       case 'worm':
-      case 'warm_gearbox': {
+      case 'warm_gearbox':
+      case 'warm_gear_box': {
         const gearNames = new Set([
-          'Object_36', 'Object_2', 'Object_3', 'Object_5', 'Object_19', 'Object_21', 'Object_24', 'Object_38', 'Object_44'
+          'Object_2', 'Object_3', 'Object_5', 'Object_19', 'Object_21', 'Object_24', 'Object_38', 'Object_44',
+          'Object_22', 'Object_36', 'Object_42', 'Object_45',
         ]);
         root.traverse((o) => {
           if ((o as THREE.Mesh).isMesh && !gearNames.has(o.name)) {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const screwCenter = getMeshCenter('Object_36');
+        const screwRot = this.createPivotAndAttach(
+          root,
+          ['Object_22', 'Object_36', 'Object_42', 'Object_45'],
+          screwCenter,
+          new THREE.Vector3(1, 0, 0),
+          1.0
+        );
+        if (screwRot) this.kinematicRotators.push(screwRot);
+
+        const wheelCenter = getMeshCenter('Object_3');
+        const wheelRot = this.createPivotAndAttach(
+          root,
+          ['Object_2', 'Object_3', 'Object_5', 'Object_19', 'Object_21', 'Object_24', 'Object_38', 'Object_44'],
+          wheelCenter,
+          new THREE.Vector3(0, 0, 1),
+          1.0 / 30.0
+        );
+        if (wheelRot) this.kinematicRotators.push(wheelRot);
         break;
       }
 
@@ -612,6 +774,26 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const pinionCenter = getMeshCenter('Object_85');
+        const pinionRot = this.createPivotAndAttach(
+          root,
+          ['Object_75', 'Object_79', 'Object_80', 'Object_85'],
+          pinionCenter,
+          new THREE.Vector3(1, 0, 0),
+          1.0
+        );
+        if (pinionRot) this.kinematicRotators.push(pinionRot);
+
+        const crownCenter = getMeshCenter('Object_78');
+        const crownRot = this.createPivotAndAttach(
+          root,
+          ['Object_78', 'Object_81'],
+          crownCenter,
+          new THREE.Vector3(0, 0, 1),
+          -0.67
+        );
+        if (crownRot) this.kinematicRotators.push(crownRot);
         break;
       }
 
@@ -626,6 +808,26 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const inputCenter = getMeshCenter('Object_4');
+        const inputRot = this.createPivotAndAttach(
+          root,
+          ['Object_4', 'Object_5', 'Object_6', 'Object_7', 'Object_8'],
+          inputCenter,
+          new THREE.Vector3(1, 0, 0),
+          1.0
+        );
+        if (inputRot) this.kinematicRotators.push(inputRot);
+
+        const outputCenter = getMeshCenter('Object_26');
+        const outputRot = this.createPivotAndAttach(
+          root,
+          ['Object_15', 'Object_16', 'Object_18', 'Object_19', 'Object_20', 'Object_21', 'Object_26'],
+          outputCenter,
+          new THREE.Vector3(1, 0, 0),
+          -0.416
+        );
+        if (outputRot) this.kinematicRotators.push(outputRot);
         break;
       }
 
@@ -640,11 +842,28 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const rotorMeshes: THREE.Mesh[] = [];
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && !this.casingMeshes.includes(o as THREE.Mesh)) {
+            rotorMeshes.push(o as THREE.Mesh);
+          }
+        });
+        const turbineCenter = getMeshCenter('Object_85');
+        const rotorRot = this.createPivotAndAttach(
+          root,
+          rotorMeshes,
+          turbineCenter,
+          new THREE.Vector3(0, 0, 1),
+          1.0
+        );
+        if (rotorRot) this.kinematicRotators.push(rotorRot);
         break;
       }
 
       case 'transmission':
-      case 'transmission_model_for_3d_printing': {
+      case 'transmission_model_for_3d_printing':
+      case 'manual_transmission_gear_box': {
         const casingNames = new Set([
           'Object_4', 'Object_6', 'Object_7', 'Object_8', 'Object_10', 'Object_11', 'Object_12',
           'Object_13', 'Object_16', 'Object_17', 'Object_18', 'Object_25', 'Object_48', 'Object_49',
@@ -655,17 +874,105 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const upperMeshes: THREE.Mesh[] = [];
+        const lowerMeshes: THREE.Mesh[] = [];
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && !this.casingMeshes.includes(o as THREE.Mesh)) {
+            const b = new THREE.Box3().setFromObject(o);
+            const c = new THREE.Vector3();
+            b.getCenter(c);
+            if (c.y > 1.0) {
+              upperMeshes.push(o as THREE.Mesh);
+            } else {
+              lowerMeshes.push(o as THREE.Mesh);
+            }
+          }
+        });
+
+        if (upperMeshes.length > 0) {
+          const upperRot = this.createPivotAndAttach(
+            root,
+            upperMeshes,
+            undefined,
+            new THREE.Vector3(1, 0, 0),
+            1.0
+          );
+          if (upperRot) this.kinematicRotators.push(upperRot);
+        }
+
+        if (lowerMeshes.length > 0) {
+          const lowerRot = this.createPivotAndAttach(
+            root,
+            lowerMeshes,
+            undefined,
+            new THREE.Vector3(1, 0, 0),
+            -0.31
+          );
+          if (lowerRot) this.kinematicRotators.push(lowerRot);
+        }
+        break;
+      }
+
+      case 'gears_-_ingralarghi': {
+        const meshes: THREE.Mesh[] = [];
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh) {
+            meshes.push(o as THREE.Mesh);
+          }
+        });
+
+        const firstMesh = meshes[0];
+        let shaftCenter = new THREE.Vector3(0, 0, 0);
+        let shaftAxis = new THREE.Vector3(0, 0, 1);
+        if (firstMesh) {
+          firstMesh.updateMatrixWorld(true);
+          const pLocalCenter = new THREE.Vector3(0, 0, 1.6475);
+          const pLocalAxis = new THREE.Vector3(0, 1, 1.6475);
+          firstMesh.localToWorld(pLocalCenter);
+          firstMesh.localToWorld(pLocalAxis);
+
+          shaftCenter = root.worldToLocal(pLocalCenter);
+          const pRootAxis = root.worldToLocal(pLocalAxis);
+          shaftAxis = new THREE.Vector3().subVectors(pRootAxis, shaftCenter).normalize();
+        }
+
+        const rotator = this.createPivotAndAttach(
+          root,
+          meshes,
+          shaftCenter,
+          shaftAxis,
+          1.0
+        );
+        if (rotator) this.kinematicRotators.push(rotator);
         break;
       }
 
       default: {
-        // General heuristic: meshes with casing/housing/cover/body keywords
-        const casingKeyword = /casing|housing|cover|body|frame|shell|enclosure/i;
+        const casingKeyword = /casing|housing|cover|body|frame|shell|enclosure|base|stand/i;
         root.traverse((o) => {
           if ((o as THREE.Mesh).isMesh && casingKeyword.test(o.name)) {
             this.casingMeshes.push(o as THREE.Mesh);
           }
         });
+
+        const activeMeshes: THREE.Mesh[] = [];
+        root.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && !this.casingMeshes.includes(o as THREE.Mesh)) {
+            activeMeshes.push(o as THREE.Mesh);
+          }
+        });
+
+        if (activeMeshes.length > 0) {
+          const fallbackRot = this.createPivotAndAttach(
+            root,
+            activeMeshes,
+            undefined,
+            new THREE.Vector3(0, 0, 1),
+            1.0
+          );
+          if (fallbackRot) this.kinematicRotators.push(fallbackRot);
+        }
         break;
       }
     }
@@ -717,9 +1024,15 @@ export class Gearboxes implements AfterViewInit, OnDestroy {
 
     // Kinematic gear train animation mixer
     if (this.mixer && this.isPlaying) {
-      const speedFactor = (this.rpm / 1200) * (this.isReversed ? -1 : 1);
-      this.mixer.timeScale = speedFactor;
+      const targetCycleTime = 1.25 * (1200 / Math.max(50, this.rpm));
+      this.mixer.timeScale = (this.activeClipDuration / targetCycleTime) * (this.isReversed ? -1 : 1);
       this.mixer.update(dt);
+    } else if (this.isPlaying && this.kinematicRotators.length > 0) {
+      const targetCycleTime = 1.25 * (1200 / Math.max(50, this.rpm));
+      const deltaAngle = ((Math.PI * 2) / targetCycleTime) * dt * (this.isReversed ? -1 : 1);
+      for (const rot of this.kinematicRotators) {
+        rot.pivot.rotateOnAxis(rot.axis, deltaAngle * rot.speedMultiplier);
+      }
     }
 
     // Smooth Exploded View Disassembly Transition
