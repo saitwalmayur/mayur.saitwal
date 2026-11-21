@@ -1,0 +1,443 @@
+<div class="steelfactory-viewport">
+  <!-- 3D Canvas -->
+  <canvas #canvasRef class="webgl-canvas"></canvas>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loader-card">
+      <div class="spinner-core"></div>
+      <h3>Initializing Hot Strip Mill Digital Twin</h3>
+      <p>Loading 3D machinery models, PBR shaders, and particle physics engines...</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" [style.width.%]="loadingProgress"></div>
+      </div>
+      <span class="pct">{{ loadingProgress }}%</span>
+    </div>
+  </div>
+
+  <!-- Top Navigation & Control Dock -->
+  <header class="top-nav-bar">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-pill" title="Back to Three.js Projects">
+        <span class="icon">◀</span>
+        <span>Three.js Projects</span>
+      </a>
+
+      <div class="plant-title-chip">
+        <span class="icon-burn">🔥</span>
+        <div class="titles">
+          <span class="main-title">Hot Rolled Strip Steel Manufacturing</span>
+          <span class="sub-title">AIST / Purdue CIVS Continuous Mill Digital Twin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Playback & Speed Controls -->
+    <div class="nav-center">
+      <div class="action-dock">
+        <button
+          type="button"
+          class="btn-action"
+          (click)="togglePlayPause()"
+          [title]="isPlaying ? 'Pause Simulation' : 'Play Continuous Process'"
+        >
+          <span class="icon">{{ isPlaying ? '⏸️' : '▶️' }}</span>
+          <span>{{ isPlaying ? 'Pause' : 'Play' }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-action btn-secondary"
+          (click)="resetSimulation()"
+          title="Restart Cycle from Reheating Furnace"
+        >
+          <span class="icon">🔄</span>
+          <span>Reset</span>
+        </button>
+
+        <div class="speed-pill">
+          <span class="lbl">Speed:</span>
+          <button
+            type="button"
+            class="speed-btn"
+            [class.active]="simSpeed === 0.5"
+            (click)="simSpeed = 0.5"
+          >
+            0.5x
+          </button>
+          <button
+            type="button"
+            class="speed-btn"
+            [class.active]="simSpeed === 1.0"
+            (click)="simSpeed = 1.0"
+          >
+            1.0x
+          </button>
+          <button
+            type="button"
+            class="speed-btn"
+            [class.active]="simSpeed === 2.0"
+            (click)="simSpeed = 2.0"
+          >
+            2.0x
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="btn-action btn-icon"
+          (click)="toggleParticles()"
+          [class.active]="particlesEnabled"
+          [title]="particlesEnabled ? 'Disable Steam & Water FX' : 'Enable Steam & Water FX'"
+        >
+          <span>{{ particlesEnabled ? '💨 FX On' : '💨 FX Off' }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-action btn-icon"
+          (click)="toggleAudio()"
+          [title]="isMuted ? 'Unmute Factory Sound' : 'Mute Factory Sound'"
+        >
+          <span>{{ isMuted ? '🔇' : '🔊' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Utility Buttons -->
+    <div class="nav-right">
+      <button
+        type="button"
+        class="help-btn"
+        (click)="showHelpModal = !showHelpModal"
+        title="View Engineering Process Guide"
+      >
+        <span>📖 Process Guide</span>
+      </button>
+
+      <a routerLink="/showcase" class="showcase-pill" title="3D Showcase Hub">
+        <span>Showcase</span>
+        <span class="icon">↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Process Stage Timeline Scrub Bar (Horizontal Timeline) -->
+  <div class="process-timeline-bar">
+    <div class="timeline-track" (click)="jumpToStage($any($event).offsetX / 600 * 100)">
+      <div class="timeline-fill" [style.width.%]="telemetry.progressPercent"></div>
+    </div>
+
+    <div class="stages-pills">
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 1"
+        (click)="jumpToStage(0); setCameraPreset('furnace')"
+      >
+        <span class="chip-num">1</span>
+        <span class="chip-name">Reheat Furnace</span>
+      </button>
+
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 2"
+        (click)="jumpToStage(18); setCameraPreset('descaler')"
+      >
+        <span class="chip-num">2</span>
+        <span class="chip-name">Descaling</span>
+      </button>
+
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 3"
+        (click)="jumpToStage(32); setCameraPreset('rougher')"
+      >
+        <span class="chip-num">3</span>
+        <span class="chip-name">Roughing Mill</span>
+      </button>
+
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 4"
+        (click)="jumpToStage(50); setCameraPreset('finishing')"
+      >
+        <span class="chip-num">4</span>
+        <span class="chip-name">Finishing Train</span>
+      </button>
+
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 5"
+        (click)="jumpToStage(72); setCameraPreset('cooling')"
+      >
+        <span class="chip-num">5</span>
+        <span class="chip-name">Laminar Cooling</span>
+      </button>
+
+      <button
+        type="button"
+        class="stage-chip"
+        [class.active]="telemetry.stageNum === 6"
+        (click)="jumpToStage(90); setCameraPreset('coiler')"
+      >
+        <span class="chip-num">6</span>
+        <span class="chip-name">Downcoiler</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Camera Angles & Perspective Bar -->
+  <div class="camera-toolbar">
+    <span class="cam-lbl">CAMERA:</span>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'overview'"
+      (click)="setCameraPreset('overview')"
+    >
+      🛰️ Overview
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'follow'"
+      (click)="setCameraPreset('follow')"
+    >
+      🎯 Follow Steel
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'pulpit'"
+      (click)="setCameraPreset('pulpit')"
+    >
+      🎛️ Operator Pulpit
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'furnace'"
+      (click)="setCameraPreset('furnace')"
+    >
+      🔥 Furnace
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'rougher'"
+      (click)="setCameraPreset('rougher')"
+    >
+      ⚙️ Rougher
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'finishing'"
+      (click)="setCameraPreset('finishing')"
+    >
+      🏭 Finishing
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'cooling'"
+      (click)="setCameraPreset('cooling')"
+    >
+      💧 Cooling
+    </button>
+    <button
+      type="button"
+      class="cam-btn"
+      [class.active]="activeCameraPreset === 'coiler'"
+      (click)="setCameraPreset('coiler')"
+    >
+      🌀 Coiler
+    </button>
+  </div>
+
+  <!-- Live Metallurgical & Process Telemetry HUD (Floating Glass Card) -->
+  <aside class="telemetry-hud">
+    <div class="hud-header">
+      <div class="status-indicator">
+        <span class="pulsing-dot"></span>
+        <span class="active-stage-title">{{ telemetry.stageName }}</span>
+      </div>
+      <span class="hud-badge">STAGE {{ telemetry.stageNum }}/6</span>
+    </div>
+
+    <!-- Thermal Temperature Gauge -->
+    <div class="thermal-card">
+      <div class="thermal-top">
+        <span class="label">Steel Temperature</span>
+        <span
+          class="temp-val"
+          [style.color]="
+            telemetry.temperatureC > 1050
+              ? '#f59e0b'
+              : telemetry.temperatureC > 750
+              ? '#ef4444'
+              : '#38bdf8'
+          "
+        >
+          {{ telemetry.temperatureC }} °C
+        </span>
+      </div>
+      <div class="thermal-bar-wrap">
+        <div
+          class="thermal-bar-fill"
+          [style.width.%]="((telemetry.temperatureC - 500) / 750) * 100"
+          [style.background]="
+            telemetry.temperatureC > 1050
+              ? 'linear-gradient(90deg, #ef4444, #f59e0b, #fff)'
+              : telemetry.temperatureC > 750
+              ? 'linear-gradient(90deg, #991b1b, #ef4444)'
+              : 'linear-gradient(90deg, #334155, #64748b)'
+          "
+        ></div>
+      </div>
+      <div class="temp-markers">
+        <span>500°C (Cooled)</span>
+        <span>900°C (Ar3 Point)</span>
+        <span>1250°C (Furnace)</span>
+      </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-cell">
+        <span class="m-lbl">Thickness</span>
+        <span class="m-val text-amber">{{ telemetry.thicknessMm }} mm</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Width</span>
+        <span class="m-val text-slate">{{ telemetry.widthMm }} mm</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Line Speed</span>
+        <span class="m-val text-cyan">{{ telemetry.speedMpm }} m/min</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Length</span>
+        <span class="m-val text-emerald">{{ telemetry.lengthM }} m</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Rolling Force</span>
+        <span class="m-val text-rose">{{ telemetry.rollingForceMn }} MN</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Cooling Flow</span>
+        <span class="m-val text-sky">{{ telemetry.waterFlowLpm }} L/min</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Active Rollers</span>
+        <span class="m-val text-emerald">{{ telemetry.activeRollersCount || 0 }} / 80</span>
+      </div>
+
+      <div class="metric-cell">
+        <span class="m-lbl">Roll RPM</span>
+        <span class="m-val text-cyan">{{ telemetry.activeStandRpm || 0 }} RPM</span>
+      </div>
+
+      <div class="metric-cell full-width">
+        <span class="m-lbl">Finished Coil Weight</span>
+        <span class="m-val text-gold">{{ telemetry.coilWeightTonnes }} Tonnes (HRC)</span>
+      </div>
+    </div>
+
+    <!-- Cycle Progress bar inside HUD -->
+    <div class="hud-cycle-footer">
+      <span class="cycle-lbl">Process Progress:</span>
+      <span class="cycle-val">{{ telemetry.progressPercent }}%</span>
+    </div>
+  </aside>
+
+  <!-- Educational Process Guide Modal -->
+  <div class="modal-backdrop" *ngIf="showHelpModal" (click)="showHelpModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="badge-pill">AIST & Purdue CIVS Steel Manufacturing</div>
+        <h2>Hot Rolled Strip Steel Manufacturing Process</h2>
+        <button type="button" class="close-btn" (click)="showHelpModal = false">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 1</div>
+          <div class="step-content">
+            <h3>Slab Reheating (1250°C)</h3>
+            <p>
+              Cast steel slabs (280mm thick, ~25 tonnes) enter a natural-gas fired walking beam furnace. Slabs are uniformly heated to 1250°C to achieve full austenite homogenization and optimal plasticity for rolling.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 2</div>
+          <div class="step-content">
+            <h3>Primary High-Pressure Descaling</h3>
+            <p>
+              As the glowing slab discharges, high-pressure water jets (300–350 bar) blast both top and bottom surfaces, peeling off iron oxide mill scale to guarantee clean roll bite without surface defects.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 3</div>
+          <div class="step-content">
+            <h3>Roughing Mill & Edging (4-High Reversing)</h3>
+            <p>
+              Massive 4-high work rolls and vertical edgers break down the cast dendritic structure, reducing slab thickness from 280mm down to a 35–45mm transfer bar while elongating its length.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 4</div>
+          <div class="step-content">
+            <h3>Tandem Finishing Mill Train (F1 to F6)</h3>
+            <p>
+              Six synchronized 4-high stands roll the continuous strip at accelerating speeds up to 15 m/s, precisely reducing thickness down to final customer gauge (1.5mm to 6.0mm).
+            </p>
+          </div>
+        </div>
+
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 5</div>
+          <div class="step-content">
+            <h3>Laminar Flow Quenching Run-Out Table</h3>
+            <p>
+              Overhead U-tube laminar cooling headers pour curtains of water to rapidly quench the strip from 900°C to 550°C, locking in targeted ferrite-pearlite grain size and mechanical tensile strength.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-guide-card">
+          <div class="step-badge">STAGE 6</div>
+          <div class="step-content">
+            <h3>Downcoiler, Strapping & Coil Discharge</h3>
+            <p>
+              High-speed pinch rolls feed the strip into the underground downcoiler. Expanding mandrel and hydraulic wrapper rolls wind the ribbon into a tight Hot Rolled Coil (HRC), strapped with steel bands and discharged via coil car.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" (click)="showHelpModal = false">
+          Resume Simulation
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

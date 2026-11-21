@@ -176,6 +176,16 @@ export const routes: Routes = [
     loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),
   },
   {
+    path: 'threejs/steelfactory',
+    title: 'Hot Rolled Strip Steel Manufacturing | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/steelfactory/steelfactory').then((m) => m.SteelFactory),
+  },
+  {
+    path: 'steelfactory',
+    title: 'Hot Rolled Strip Steel Manufacturing | Three.js | Mayur Saitwal',
+    loadComponent: () => import('./mechanical/steelfactory/steelfactory').then((m) => m.SteelFactory),
+  },
+  {
     path: 'roboticarm',
     title: '6-Axis Industrial Robotic Arm | Pick & Place | Mayur Saitwal',
     loadComponent: () => import('./roboticarm/roboticarm').then((m) => m.Roboticarm),

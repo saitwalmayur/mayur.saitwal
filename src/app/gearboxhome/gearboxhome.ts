@@ -523,7 +523,7 @@ export class Gearboxhome implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || !this.heroCanvasRef) return;
     this.initHeroThree();
     this.loadModelPreview(this.activePreview);
   }

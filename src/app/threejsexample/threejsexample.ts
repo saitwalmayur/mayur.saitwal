@@ -253,6 +253,28 @@ export class Threejsexample {
       categoryLabel: 'Mechanical & Engineering',
     },
     {
+      id: 'steelfactory',
+      route: '/threejs/steelfactory',
+      title: 'Hot Rolled Strip Steel Manufacturing Mill',
+      tagline: 'Continuous hot strip mill digital twin: slab reheat, descaling, roughing, finishing, laminar quench & coiler',
+      description:
+        'Complete digital twin of an industrial hot rolled strip steel mill based on AIST and Purdue University CIVS process simulations. Features 6-stage continuous flow: walking beam slab reheating furnace (1250°C), 320-bar water descaling blast, 4-high reversing roughing mill, 6-stand tandem finishing mill (F1–F6), laminar run-out quenching table with boiling steam plumes, and subterranean downcoiler mandrel winding hot rolled steel coils (HRC). Includes real-time thermal PBR shaders, particle physics, and live metallurgical telemetry.',
+      tags: ['AIST & Purdue CIVS', 'Steel Mill', 'Hot Rolling', 'Laminar Quenching', 'PBR Shaders', 'Steam & Water FX', 'Three.js'],
+      icon: '🏭',
+      features: [
+        'Walking Beam Reheat Furnace (1250°C)',
+        '320-Bar High-Pressure Descaler Blaster',
+        '4-High Reversing Rougher & Width Edgers',
+        '6-Stand Tandem Finishing Mill (F1 to F6)',
+        'Laminar Flow Quenching Water Curtains & Steam',
+        'Expanding Mandrel Downcoiler & Coil Car',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(245, 158, 11, 0.25))',
+      category: 'mechanical',
+      categories: ['mechanical', 'fluids'],
+      categoryLabel: 'Mechanical & Engineering',
+    },
+    {
       id: 'gearbox',
       route: '/gearboxhome',
       title: '3D Gearbox Engineering Hub',
