@@ -146,6 +146,50 @@
   }
 }
 
+/* Category Filter Tabs */
+.category-tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+
+  .cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+
+    .chip-count {
+      font-size: 0.72rem;
+      opacity: 0.7;
+    }
+
+    &:hover {
+      color: #ffffff;
+      background: rgba(30, 41, 59, 0.9);
+      border-color: rgba(0, 242, 254, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.15));
+      border-color: #00f2fe;
+      color: #00f2fe;
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.25);
+    }
+  }
+}
+
 /* Category Sections: Title then Cards */
 .category-sections {
   display: flex;

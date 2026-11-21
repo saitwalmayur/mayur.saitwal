@@ -890,4 +890,40 @@ export const routes: Routes = [
         (m) => m.Thirdpersoncharacter
       ),
   },
+  {
+    path: 'threejsfurniturehome',
+    title: '3D Furniture Home | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejsfurniturehome/threejsfurniturehome').then((m) => m.Threejsfurniturehome),
+  },
+  {
+    path: 'furniturehome',
+    title: '3D Furniture Home | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejsfurniturehome/threejsfurniturehome').then((m) => m.Threejsfurniturehome),
+  },
+  {
+    path: 'threejs/furniturehome',
+    title: '3D Furniture Home | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejsfurniturehome/threejsfurniturehome').then((m) => m.Threejsfurniturehome),
+  },
+  {
+    path: 'match3game',
+    title: '3D Match-3 Quest (100 Levels) | Mayur Saitwal',
+    loadComponent: () =>
+      import('./match3game/match3game').then((m) => m.Match3game),
+  },
+  {
+    path: 'threejs/match3game',
+    title: '3D Match-3 Quest (100 Levels) | Mayur Saitwal',
+    loadComponent: () =>
+      import('./match3game/match3game').then((m) => m.Match3game),
+  },
+  {
+    path: 'threejsmatch3',
+    title: '3D Match-3 Quest (100 Levels) | Mayur Saitwal',
+    loadComponent: () =>
+      import('./match3game/match3game').then((m) => m.Match3game),
+  },
 ];
