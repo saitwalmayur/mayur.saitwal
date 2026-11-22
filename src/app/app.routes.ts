@@ -926,4 +926,28 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./match3game/match3game').then((m) => m.Match3game),
   },
+  {
+    path: 'threejspoolgame',
+    title: '3D Grand Billiards & 8-Ball Master | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejspoolgame/threejspoolgame').then((m) => m.Threejspoolgame),
+  },
+  {
+    path: 'poolgame',
+    title: '3D Grand Billiards & 8-Ball Master | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejspoolgame/threejspoolgame').then((m) => m.Threejspoolgame),
+  },
+  {
+    path: 'threejs/poolgame',
+    title: '3D Grand Billiards & 8-Ball Master | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejspoolgame/threejspoolgame').then((m) => m.Threejspoolgame),
+  },
+  {
+    path: 'threejs/threejspoolgame',
+    title: '3D Grand Billiards & 8-Ball Master | Mayur Saitwal',
+    loadComponent: () =>
+      import('./threejspoolgame/threejspoolgame').then((m) => m.Threejspoolgame),
+  },
 ];

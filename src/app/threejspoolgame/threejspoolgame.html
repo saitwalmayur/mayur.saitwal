@@ -1,0 +1,382 @@
+<div class="pool-game-viewport">
+  <!-- Top HUD Bar -->
+  <header class="hud-top">
+    <div class="hud-left">
+      <a routerLink="/threejs" class="btn-back" title="Back to Three.js Projects">
+        <span class="arrow">←</span>
+        <span>Showcase</span>
+      </a>
+      <div class="brand-divider">/</div>
+      <div class="brand-group">
+        <span class="brand-icon">🎱</span>
+        <div class="brand-text">
+          <h1>3D Grand Billiards</h1>
+          <span class="sub-tag">Pro 8-Ball Physics</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match Status & Turn Center -->
+    <div class="hud-center">
+      <div class="turn-card" [class.is-player]="turnPlayer === 'player'" [class.is-ai]="turnPlayer === 'computer'">
+        <div class="turn-indicator-dot"></div>
+        <div class="turn-info">
+          <span class="turn-label">
+            {{ turnPlayer === 'player' ? 'YOUR TURN' : 'AI OPPONENT' }}
+          </span>
+          <span class="turn-sub">
+            {{
+              gameState === 'ai_thinking'
+                ? 'Calculating bank angle...'
+                : gameState === 'rolling'
+                ? 'Balls in motion...'
+                : turnPlayer === 'player'
+                ? 'Aim & strike cue ball'
+                : 'Computer executing shot'
+            }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Suit Badges -->
+      <div class="suit-badge-container">
+        <div class="suit-pill player-suit" [class.active]="playerSuit !== null">
+          <span class="suit-lbl">YOU:</span>
+          <span class="suit-val">{{ playerSuit ? (playerSuit | uppercase) : 'OPEN' }}</span>
+        </div>
+        <div class="suit-pill ai-suit" [class.active]="aiSuit !== null">
+          <span class="suit-lbl">AI:</span>
+          <span class="suit-val">{{ aiSuit ? (aiSuit | uppercase) : 'OPEN' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right HUD: Coins, Shop & Settings -->
+    <div class="hud-right">
+      <!-- Coin Wallet Badge -->
+      <div class="coins-wallet" (click)="openShop()" title="Click to open Cue Upgrade Shop">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount">{{ playerData.coins | number }}</span>
+        <span class="coin-plus">+</span>
+      </div>
+
+      <!-- Cue Shop Button -->
+      <button type="button" class="btn-hud btn-shop" (click)="openShop()" title="Open Cue Shop">
+        <span>🏪 Cues</span>
+      </button>
+
+      <!-- AI Difficulty Dropdown Button -->
+      <div class="difficulty-selector">
+        <span class="diff-label">AI:</span>
+        <button
+          type="button"
+          class="diff-btn"
+          [class.active]="aiDifficulty === 'easy'"
+          (click)="setDifficulty('easy')"
+          title="Easy Computer"
+        >
+          EASY
+        </button>
+        <button
+          type="button"
+          class="diff-btn"
+          [class.active]="aiDifficulty === 'medium'"
+          (click)="setDifficulty('medium')"
+          title="Medium Computer"
+        >
+          MED
+        </button>
+        <button
+          type="button"
+          class="diff-btn"
+          [class.active]="aiDifficulty === 'hard'"
+          (click)="setDifficulty('hard')"
+          title="Hard Expert Computer"
+        >
+          HARD
+        </button>
+      </div>
+
+      <!-- Camera Mode Switcher -->
+      <div class="camera-switch">
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="cameraMode === 'aim'"
+          (click)="setCameraMode('aim')"
+          title="Aiming View Behind Ball"
+        >
+          🎯 Aim
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="cameraMode === 'top'"
+          (click)="setCameraMode('top')"
+          title="2D Top-Down View"
+        >
+          📐 Top
+        </button>
+        <button
+          type="button"
+          class="cam-btn"
+          [class.active]="cameraMode === 'orbit'"
+          (click)="setCameraMode('orbit')"
+          title="Free 3D Orbit"
+        >
+          🌐 3D
+        </button>
+      </div>
+
+      <!-- Audio Mute Button -->
+      <button
+        type="button"
+        class="btn-hud btn-icon"
+        (click)="audio.toggleMute()"
+        [title]="audio.isMuted ? 'Unmute Audio' : 'Mute Audio'"
+      >
+        <span>{{ audio.isMuted ? '🔇' : '🔊' }}</span>
+      </button>
+
+      <!-- Re-rack / Restart Match -->
+      <button
+        type="button"
+        class="btn-hud btn-rerack"
+        (click)="rackBalls()"
+        title="Re-Rack Table & Restart"
+      >
+        <span>🔄 Re-Rack</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Notification Banner Floating on Viewport -->
+  <div class="status-banner" *ngIf="statusNotification">
+    <div class="banner-pill">
+      <span>{{ statusNotification }}</span>
+    </div>
+  </div>
+
+  <!-- Primary Three.js WebGL Canvas -->
+  <canvas
+    #poolCanvas
+    class="pool-webgl-canvas"
+    (pointerdown)="onCanvasPointerDown($event)"
+  ></canvas>
+
+  <!-- Potted Balls Tray (Bottom Center-Left) -->
+  <div class="potted-tray">
+    <span class="tray-title">POTTED ({{ pottedBalls.length }} / 15)</span>
+    <div class="tray-balls">
+      <div
+        *ngFor="let b of pottedBalls"
+        class="mini-ball"
+        [class.solid]="b.type === 'solid'"
+        [class.stripe]="b.type === 'stripe'"
+        [class.eight]="b.type === 'eight'"
+        [style.background-color]="b.type === 'stripe' ? '#ffffff' : '#' + b.colorHex.toString(16).padStart(6, '0')"
+        [style.border-color]="b.type === 'stripe' ? '#' + (b.stripeColorHex || b.colorHex).toString(16).padStart(6, '0') : '#000000'"
+      >
+        <span>{{ b.number }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Player Aiming & Power HUD Controls -->
+  <footer class="hud-bottom" *ngIf="gameState === 'aiming' && turnPlayer === 'player'">
+    <!-- Left: Fine Aim Buttons -->
+    <div class="aim-controls">
+      <span class="ctrl-label">FINE AIM:</span>
+      <div class="aim-btn-group">
+        <button type="button" class="btn-aim" (click)="adjustAim(-5)">« -5°</button>
+        <button type="button" class="btn-aim" (click)="adjustAim(-1)">‹ -1°</button>
+        <button type="button" class="btn-aim" (click)="adjustAim(-0.2)">-0.2°</button>
+        <button type="button" class="btn-aim" (click)="adjustAim(0.2)">+0.2°</button>
+        <button type="button" class="btn-aim" (click)="adjustAim(1)">+1° ›</button>
+        <button type="button" class="btn-aim" (click)="adjustAim(5)">+5° »</button>
+      </div>
+    </div>
+
+    <!-- Center: Power Meter & Pull-back Slider -->
+    <div class="power-meter-wrapper">
+      <div class="power-label-row">
+        <span class="power-title">SHOT POWER</span>
+        <span class="power-val">{{ shotPower }}%</span>
+      </div>
+
+      <div class="power-slider-container">
+        <input
+          type="range"
+          min="10"
+          max="100"
+          [(ngModel)]="shotPower"
+          class="power-range-input"
+          title="Drag power slider or click Shoot"
+        />
+        <div class="power-track-glow" [style.width.%]="shotPower"></div>
+      </div>
+    </div>
+
+    <!-- Right: English / Cue Ball Spin Control Pad & Strike Button -->
+    <div class="strike-group">
+      <!-- Mini Cue Ball Spin Pad -->
+      <div class="spin-pad-wrapper" title="Cue Ball English / Spin Control">
+        <div class="spin-ball-circle">
+          <div
+            class="spin-dot"
+            [style.left.%]="50 + cueEnglish.x * 38"
+            [style.top.%]="50 + cueEnglish.y * 38"
+          ></div>
+        </div>
+        <div class="spin-label-column">
+          <span class="spin-lbl">SPIN</span>
+          <button
+            type="button"
+            class="btn-spin-reset"
+            (click)="cueEnglish = { x: 0, y: 0 }"
+            title="Reset to center"
+          >
+            Center
+          </button>
+        </div>
+      </div>
+
+      <!-- Shoot Button -->
+      <button type="button" class="btn-strike" (click)="shoot()" title="Strike Cue Ball">
+        <span class="strike-glow"></span>
+        <span class="strike-icon">⚡</span>
+        <span class="strike-text">STRIKE</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- CUES UPGRADE STORE MODAL -->
+  <div class="modal-backdrop" *ngIf="isShopOpen" (click)="closeShop()">
+    <div class="shop-modal" (click)="$event.stopPropagation()">
+      <div class="shop-header">
+        <div class="shop-header-title">
+          <h2>PRO CUE PRO-SHOP</h2>
+          <p>Upgrade your cue stick to boost shot power, extend aim guides, and master english spin.</p>
+        </div>
+        <div class="wallet-badge">
+          <span class="coin-icon">🪙</span>
+          <span class="coin-val">{{ playerData.coins | number }} Coins</span>
+        </div>
+        <button type="button" class="btn-close" (click)="closeShop()">✕</button>
+      </div>
+
+      <!-- Cue Cards Grid -->
+      <div class="cues-grid">
+        <div
+          *ngFor="let cue of cuesCatalog"
+          class="cue-card"
+          [class.equipped]="equippedCue.id === cue.id"
+          [class.unlocked]="cue.unlocked"
+        >
+          <div class="cue-card-top">
+            <span class="cue-tier-badge {{ cue.tier | lowercase }}">{{ cue.tier }}</span>
+            <span class="equipped-badge" *ngIf="equippedCue.id === cue.id">✓ EQUIPPED</span>
+          </div>
+
+          <!-- Cue 3D Visual Preview Bar -->
+          <div class="cue-swatch-bar">
+            <div class="cue-tip-preview"></div>
+            <div class="cue-shaft-preview" [style.background-color]="cue.shaftWoodColor"></div>
+            <div class="cue-joint-preview" [style.background-color]="cue.accentColor"></div>
+            <div class="cue-wrap-preview" [style.background-color]="cue.wrapColor"></div>
+            <div class="cue-butt-preview" [style.background-color]="cue.buttWoodColor"></div>
+          </div>
+
+          <div class="cue-card-info">
+            <h3>{{ cue.name }}</h3>
+            <p class="cue-desc">{{ cue.description }}</p>
+
+            <!-- Stat Bars -->
+            <div class="stat-bars">
+              <div class="stat-row">
+                <span class="stat-name">Power:</span>
+                <div class="stat-bar-track">
+                  <div class="stat-bar-fill power" [style.width.%]="cue.power * 100"></div>
+                </div>
+                <span class="stat-val">{{ (cue.power * 100) | number : '1.0-0' }}%</span>
+              </div>
+
+              <div class="stat-row">
+                <span class="stat-name">Aim Guide:</span>
+                <div class="stat-bar-track">
+                  <div class="stat-bar-fill guide" [style.width.%]="(cue.aimGuide / 2.6) * 100"></div>
+                </div>
+                <span class="stat-val">{{ cue.aimGuide }}x</span>
+              </div>
+
+              <div class="stat-row">
+                <span class="stat-name">Spin Control:</span>
+                <div class="stat-bar-track">
+                  <div class="stat-bar-fill spin" [style.width.%]="cue.spinControl * 100"></div>
+                </div>
+                <span class="stat-val">{{ (cue.spinControl * 100) | number : '1.0-0' }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button: Buy or Equip -->
+          <div class="cue-card-action">
+            <button
+              *ngIf="!cue.unlocked"
+              type="button"
+              class="btn-buy"
+              (click)="buyCue(cue)"
+              [disabled]="playerData.coins < cue.price"
+            >
+              <span>🪙 Buy for {{ cue.price }}</span>
+            </button>
+
+            <button
+              *ngIf="cue.unlocked && equippedCue.id !== cue.id"
+              type="button"
+              class="btn-equip"
+              (click)="equipCue(cue)"
+            >
+              <span>Equip Cue</span>
+            </button>
+
+            <button
+              *ngIf="cue.unlocked && equippedCue.id === cue.id"
+              type="button"
+              class="btn-equipped"
+              disabled
+            >
+              <span>Active Cue</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER / VICTORY MODAL -->
+  <div class="modal-backdrop" *ngIf="isGameOverOpen">
+    <div class="game-over-modal" [class.victory]="isVictory" [class.defeat]="!isVictory">
+      <div class="modal-icon">{{ isVictory ? '🏆' : '💀' }}</div>
+      <h2>{{ gameOverTitle }}</h2>
+      <p class="game-over-desc">{{ gameOverMessage }}</p>
+
+      <div class="reward-box" *ngIf="gameOverCoinsEarned > 0">
+        <span class="reward-lbl">MATCH REWARD:</span>
+        <div class="reward-amount">
+          <span class="coin-icon">🪙</span>
+          <span class="reward-val">+{{ gameOverCoinsEarned }} COINS</span>
+        </div>
+      </div>
+
+      <div class="game-over-actions">
+        <button type="button" class="btn-modal-primary" (click)="restartMatch()">
+          <span>🔄 Play Again (Re-Rack)</span>
+        </button>
+        <button type="button" class="btn-modal-secondary" (click)="openShop(); isGameOverOpen = false">
+          <span>🏪 Visit Cue Shop</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

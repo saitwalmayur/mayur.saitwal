@@ -426,6 +426,28 @@ export class Threejsexample {
       categoryLabel: 'Games',
     },
     {
+      id: 'threejspoolgame',
+      route: '/threejspoolgame',
+      title: '3D Grand Billiards & 8-Ball Master',
+      tagline: 'Realistic 3D pool game featuring true physics, computer AI matches (Easy/Med/Hard), coin-upgradable cues & luxury room environment',
+      description:
+        'Step up to the tournament green felt in a luxury 3D billiard room. Features authentic 8-ball physics with ball-to-ball collisions, cushion restitution, pocket drop mechanics, spin/english cue ball control, dynamic aim trajectory guidelines, AI computer opponent with Easy/Medium/Hard difficulty, and a collectible Cue Upgrade Pro-Shop where earned coins unlock legendary cues.',
+      tags: ['Three.js', 'Pool Game', '8-Ball', 'Billiards', 'AI Opponent', 'Cue Upgrades', 'Physics', 'Web Audio API'],
+      icon: '🎱',
+      features: [
+        'Realistic 8-Ball Physics with Substep Collision Solver',
+        'PBR Billiard Room with Overhead Brass 3-Shade Lamp',
+        'Interactive Cue Aim Trajectory & Ghost Ball Deflection',
+        'Computer AI Opponent with Easy, Medium & Hard Levels',
+        'Cue Upgrade Pro-Shop: Unlock 6 Legendary Cues with Coins',
+        'Web Audio Synthesizer: Ball Clicks, Pocket Drops & Cue Strikes',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(6, 78, 59, 0.22))',
+      category: 'games',
+      categories: ['games', 'simulation'],
+      categoryLabel: 'Games',
+    },
+{
       id: 'match3game',
       route: '/match3game',
       title: '3D Match-3 Quest (100 Levels)',
