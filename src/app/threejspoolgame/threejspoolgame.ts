@@ -708,30 +708,58 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     this.tableGroup.add(this.proceduralTableGroup);
     this.buildProceduralTable();
 
-    // 2. Load the realistic 3D GLB Pool Table Model
+    // 2. Load user's high-fidelity 3D GLB Pool Table Model (pool-table.glb)
     const loader = new GLTFLoader();
     loader.load(
-      '/3dModels/PoolTable/pool_table.glb',
+      '/3dModels/PoolTable/pool-table.glb',
       (gltf) => {
         const model = gltf.scene;
+
+        // Apply realistic PBR shadow casting and receiving
         model.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            const mat = (child as THREE.Mesh).material;
+            if (mat && (mat as any).isMeshStandardMaterial) {
+              (mat as any).roughness = Math.min((mat as any).roughness || 0.8, 0.75);
+              (mat as any).envMapIntensity = 1.1;
+            }
           }
         });
-        model.position.set(0, 0, 0);
 
-        // Hide procedural fallback, display realistic GLB model
+        // Precise Scale & Rotation to align with tournament dimensions (2.54m x 1.27m at y=0.85m)
+        const scaleFactor = 0.2856;
+        model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        model.rotation.y = Math.PI / 2;
+
+        // Center felt playing surface exactly on (0, 0) in world space
+        model.position.set(-0.0085, 0, 0.005);
+
+        // Hide procedural fallback and display realistic GLB model
         this.proceduralTableGroup.visible = false;
         this.tableGroup.add(model);
         this.isGlbLoaded = true;
-        this.showNotification('✨ Realistic 3D GLB Pool Table Loaded!');
+        this.showNotification('✨ New Realistic 3D GLB Pool Table Loaded!');
         this.cdr.detectChanges();
       },
       undefined,
       (err) => {
-        console.warn('Could not load pool_table.glb, active fallback in use:', err);
+        console.warn('Could not load pool-table.glb, trying pool_table.glb fallback:', err);
+        // Fallback to previous pool_table.glb if needed
+        loader.load('/3dModels/PoolTable/pool_table.glb', (fallbackGltf) => {
+          const fallbackModel = fallbackGltf.scene;
+          fallbackModel.traverse((c) => {
+            if ((c as THREE.Mesh).isMesh) {
+              c.castShadow = true;
+              c.receiveShadow = true;
+            }
+          });
+          this.proceduralTableGroup.visible = false;
+          this.tableGroup.add(fallbackModel);
+          this.isGlbLoaded = true;
+          this.cdr.detectChanges();
+        });
       }
     );
   }
