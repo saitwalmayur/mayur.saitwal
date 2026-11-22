@@ -1777,4 +1777,9 @@ export class Match3game implements AfterViewInit, OnDestroy {
     const start = this.levelSelectPage * 25;
     return this.levels.slice(start, start + 25);
   }
+
+  openChapterFromHome(chapterIndex: number) {
+    this.levelSelectPage = Math.min(3, Math.floor((chapterIndex * 20) / 25));
+    this.setScreen('map');
+  }
 }

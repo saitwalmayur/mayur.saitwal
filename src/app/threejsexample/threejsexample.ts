@@ -85,6 +85,12 @@ export class Threejsexample {
       description: 'Custom GPU GLSL pipelines, UV displacement shaders & 3D model inspection studio',
     },
     {
+      id: 'pixijs',
+      label: 'PixiJS 2D Engine',
+      icon: '⚡',
+      description: 'Ultra-fast 2D WebGL & WebGPU hardware-accelerated rendering, particle galaxies, and physics simulations',
+    },
+    {
       id: 'worlds',
       label: 'Worlds & Environments',
       icon: '🌍',
@@ -443,8 +449,8 @@ export class Threejsexample {
         'Live 60 FPS & Multi-Entity Performance Monitoring',
       ],
       gradient: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(249, 115, 22, 0.22))',
-      category: 'games',
-      categories: ['games', 'particles', 'tools'],
+      category: 'pixijs',
+      categories: ['pixijs', 'games', 'particles', 'tools'],
       categoryLabel: '2D WebGL & PixiJS',
     },
 {
