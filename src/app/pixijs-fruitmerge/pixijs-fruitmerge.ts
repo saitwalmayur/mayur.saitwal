@@ -86,12 +86,16 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   readonly svgScaleRatio = 256 / 244; // SVG body has r=122 in 256 box; this scales sprite to exact pixel match
 
   // Game State
+  currentScreen: 'home' | 'game' = 'home';
+  showRulesModal = false;
+  readonly fruitTiersList = FRUIT_TIERS;
+
   score = 0;
   bestScore = 0;
   comboCount = 0;
   comboTimer = 0;
   isGameOver = false;
-  isPaused = false;
+  isPaused = true; // Paused while on home screen
   canDrop = true;
   dropCooldown = 0;
   dangerWarning = false;
@@ -862,6 +866,17 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   // ---------------------------------------------------------------------------
   // USER ACTIONS & RESTART
   // ---------------------------------------------------------------------------
+  startGame(): void {
+    this.currentScreen = 'game';
+    this.isPaused = false;
+    this.restartGame();
+  }
+
+  goGameHome(): void {
+    this.currentScreen = 'home';
+    this.isPaused = true;
+  }
+
   restartGame(): void {
     // Clear all fruits
     for (const f of this.fruits) {
