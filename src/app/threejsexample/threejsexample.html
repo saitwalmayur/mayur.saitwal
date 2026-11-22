@@ -29,6 +29,21 @@
           </button>
         </div>
       </div>
+
+      <!-- Quick Category Filter Pills -->
+      <div class="category-tabs-row">
+        <button
+          *ngFor="let cat of categories"
+          type="button"
+          class="cat-chip"
+          [class.active]="selectedCategory === cat.id"
+          (click)="selectCategory(cat.id)"
+        >
+          <span class="chip-icon">{{ cat.icon }}</span>
+          <span class="chip-label">{{ cat.label }}</span>
+          <span class="chip-count">({{ getCategoryCount(cat.id) }})</span>
+        </button>
+      </div>
     </div>
 
     <!-- Category Sections: Title then Cards -->

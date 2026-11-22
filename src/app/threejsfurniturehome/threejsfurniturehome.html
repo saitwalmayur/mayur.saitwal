@@ -1,0 +1,224 @@
+<div class="furniture-home-page">
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <a routerLink="/threejs" class="back-link" title="Return to Three.js Showcase">
+        <span class="back-arrow">←</span>
+        <span>Three.js Showcase</span>
+      </a>
+      <div class="divider">/</div>
+      <div class="brand">
+        <span class="brand-icon">🛋️</span>
+        <span class="brand-title">3D Furniture Studio</span>
+      </div>
+    </div>
+
+    <!-- Room Layout / Model Switcher in Top Bar -->
+    <div class="nav-center">
+      <div class="room-selector-pill">
+        <button
+          type="button"
+          class="room-btn"
+          [class.active]="activeRoom === 'furniture_set'"
+          (click)="loadRoomModel('furniture_set')"
+          title="3D Table & 4 Chairs Suite from 3dModels/Infrastructure/Furniture"
+        >
+          <span>✨ Infrastructure Furniture (Suite)</span>
+        </button>
+        <button
+          type="button"
+          class="room-btn"
+          [class.active]="activeRoom === 'room1'"
+          (click)="loadRoomModel('room1')"
+          title="Classic Lounge Room Diorama"
+        >
+          <span>🛋️ Room Layout 1</span>
+        </button>
+        <button
+          type="button"
+          class="room-btn"
+          [class.active]="activeRoom === 'room2'"
+          (click)="loadRoomModel('room2')"
+          title="Modern Living Suite"
+        >
+          <span>🛋️ Room Layout 2</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a routerLink="/showcase" class="showcase-pill" title="Showcase Hub">
+        <span>Showcase</span>
+        <span class="icon">↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 3D Canvas Area -->
+  <div class="viewport-container">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner-ring"></div>
+      <span class="load-text">Loading 3D Model... {{ loadingProgress }}%</span>
+    </div>
+
+    <canvas #canvasRef class="webgl-canvas"></canvas>
+
+    <div class="orbit-tip">Drag to orbit • Right-click / scroll to zoom • Click controls to customize materials</div>
+  </div>
+
+  <!-- Floating Glass Configurator Panel (Right) -->
+  <aside class="config-panel">
+    <div class="panel-header">
+      <span class="badge">INTERACTIVE CONFIGURATOR</span>
+      <h3>{{ getActiveModelTitle() }}</h3>
+    </div>
+
+    <!-- Camera Angles -->
+    <div class="config-group">
+      <label class="group-label">CAMERA PERSPECTIVE</label>
+      <div class="btn-grid">
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeCameraPreset === 'overview'"
+          (click)="setCameraPreset('overview')"
+        >
+          <span>🛰️ Full Suite</span>
+        </button>
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeCameraPreset === 'armchair'"
+          (click)="setCameraPreset('armchair')"
+        >
+          <span>{{ getPerspectiveLabel1() }}</span>
+        </button>
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeCameraPreset === 'loveseat'"
+          (click)="setCameraPreset('loveseat')"
+        >
+          <span>{{ getPerspectiveLabel2() }}</span>
+        </button>
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeCameraPreset === 'topdown'"
+          (click)="setCameraPreset('topdown')"
+        >
+          <span>📐 Top View</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Lighting Mood -->
+    <div class="config-group">
+      <label class="group-label">STUDIO LIGHTING MOOD</label>
+      <div class="btn-grid cols-3">
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeMood === 'daylight'"
+          (click)="setLightingMood('daylight')"
+        >
+          <span>☀️ Day</span>
+        </button>
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeMood === 'sunset'"
+          (click)="setLightingMood('sunset')"
+        >
+          <span>🌅 Sunset</span>
+        </button>
+        <button
+          type="button"
+          class="opt-btn"
+          [class.active]="activeMood === 'noir'"
+          (click)="setLightingMood('noir')"
+        >
+          <span>🌙 Noir</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Upholstery Fabric / Leather Swatches -->
+    <div class="config-group">
+      <div class="label-row">
+        <label class="group-label">UPHOLSTERY MATERIAL</label>
+        <span class="active-val">{{ selectedSwatch.name }}</span>
+      </div>
+      <div class="swatches-grid">
+        <button
+          *ngFor="let swatch of upholsterySwatches"
+          type="button"
+          class="swatch-btn"
+          [class.active]="selectedSwatch.name === swatch.name"
+          [style.background]="swatch.hex"
+          (click)="applyUpholsteryColor(swatch)"
+          [title]="swatch.name"
+        >
+          <span *ngIf="selectedSwatch.name === swatch.name" class="check">✓</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Wood / Base Finish -->
+    <div class="config-group">
+      <div class="label-row">
+        <label class="group-label">FRAME & FINISH</label>
+        <span class="active-val">{{ selectedWood.name }}</span>
+      </div>
+      <div class="btn-grid">
+        <button
+          *ngFor="let finish of woodFinishes"
+          type="button"
+          class="opt-btn finish-btn"
+          [class.active]="selectedWood.name === finish.name"
+          (click)="applyWoodFinish(finish)"
+        >
+          <span class="dot-color" [style.background]="finish.hex"></span>
+          <span>{{ finish.name }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Viewport Utilities -->
+    <div class="config-group actions-row">
+      <button
+        type="button"
+        class="util-btn"
+        [class.active]="isAutoRotating"
+        (click)="toggleAutoRotate()"
+      >
+        <span>{{ isAutoRotating ? '⏸ Pause Orbit' : '▶ Auto-Orbit' }}</span>
+      </button>
+      <button type="button" class="util-btn" (click)="resetView()">
+        <span>⟲ Reset</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Bottom Floating Specs Drawer -->
+  <div class="bottom-specs-card">
+    <div class="spec-col">
+      <span class="lbl">ACTIVE 3D MODEL</span>
+      <span class="val">{{ getActiveModelTitle() }}</span>
+    </div>
+    <div class="spec-col">
+      <span class="lbl">ASSET SOURCE</span>
+      <span class="val text-cyan">
+        {{ activeRoom === 'furniture_set' ? 'public/3dModels/Infrastructure/Furniture' : 'public/room/' + activeRoom + '.glb' }}
+      </span>
+    </div>
+    <div class="spec-col">
+      <span class="lbl">UPHOLSTERY</span>
+      <span class="val text-amber">{{ selectedSwatch.name }}</span>
+    </div>
+    <div class="spec-col">
+      <span class="lbl">FRAME & FINISH</span>
+      <span class="val text-cyan">{{ selectedWood.name }}</span>
+    </div>
+  </div>
+</div>

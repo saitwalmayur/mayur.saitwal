@@ -1,0 +1,699 @@
+<div class="match3-master-container">
+  <!-- ========================================================================= -->
+  <!-- TOP UNIVERSAL APP BAR (LIVES, COINS, STARS, SETTINGS)                    -->
+  <!-- ========================================================================= -->
+  <header class="universal-top-bar">
+    <div class="bar-left">
+      <a routerLink="/threejs" class="back-link" title="Return to Three.js Showcase">
+        <span class="arrow">←</span>
+        <span>Showcase</span>
+      </a>
+
+      <!-- Home / Map Switcher Pills when inside Game -->
+      <div *ngIf="currentScreen !== 'home'" class="screen-nav-pills">
+        <button
+          type="button"
+          class="nav-pill-btn"
+          (click)="setScreen('home')"
+          title="Return to Main Menu"
+        >
+          <span>🏠 Home</span>
+        </button>
+        <button
+          type="button"
+          class="nav-pill-btn"
+          [class.active]="currentScreen === 'map'"
+          (click)="setScreen('map')"
+          title="Open 100-Level Map"
+        >
+          <span>🗺️ Map</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Economy & Status Widgets -->
+    <div class="bar-right">
+      <!-- Limited Lives Widget -->
+      <button
+        type="button"
+        class="status-widget lives-widget"
+        (click)="showOutOfLivesModal = true"
+        title="Limited Lives System — Click to view refill options"
+      >
+        <span class="widget-icon heart-pulse">❤️</span>
+        <div class="widget-info">
+          <span class="widget-val">{{ lives }} / {{ MAX_LIVES }}</span>
+          <span class="widget-timer" *ngIf="lives < MAX_LIVES">⏱️ {{ timeUntilNextLife }}</span>
+          <span class="widget-timer text-green" *ngIf="lives >= MAX_LIVES">FULL</span>
+        </div>
+        <span class="plus-add">+</span>
+      </button>
+
+      <!-- Coins Widget -->
+      <div class="status-widget coins-widget">
+        <span class="widget-icon">🪙</span>
+        <span class="widget-val">{{ coins | number }}</span>
+      </div>
+
+      <!-- Total Stars Widget -->
+      <div class="status-widget stars-widget">
+        <span class="widget-icon">⭐</span>
+        <span class="widget-val">{{ totalStarsEarned }}</span>
+      </div>
+
+      <!-- Settings Button -->
+      <button
+        type="button"
+        class="icon-ctrl-btn"
+        (click)="showSettingsModal = true"
+        title="Game Settings"
+      >
+        ⚙️
+      </button>
+
+      <!-- How to play -->
+      <button
+        type="button"
+        class="icon-ctrl-btn"
+        (click)="showHelpModal = true"
+        title="How to Play"
+      >
+        ❓
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 1: HOME UI / MAIN MENU                                            -->
+  <!-- ========================================================================= -->
+  <main *ngIf="currentScreen === 'home'" class="screen-view home-screen">
+    <div class="home-hero-card">
+      <div class="hero-crest">
+        <div class="crest-glow"></div>
+        <div class="crest-gems">
+          <span class="gem-badge g-ruby">💎</span>
+          <span class="gem-badge g-sapphire">🔷</span>
+          <span class="gem-badge g-emerald">🟩</span>
+          <span class="gem-badge g-topaz">🔶</span>
+          <span class="gem-badge g-amethyst">🔮</span>
+        </div>
+      </div>
+
+      <div class="hero-title-group">
+        <span class="pre-badge">CYBERPUNK 3D PUZZLE QUEST</span>
+        <h1 class="main-title">3D MATCH-3 QUEST</h1>
+        <p class="tagline">100 Procedural Levels • PBR Gem Shaders • Explosive Chain Combos</p>
+      </div>
+
+      <!-- Home Action Buttons -->
+      <div class="home-actions">
+        <button
+          type="button"
+          class="btn-play-level"
+          (click)="playCurrentLevel()"
+          title="Play Current Active Level"
+        >
+          <div class="btn-play-content">
+            <span class="play-arrow">▶</span>
+            <div class="play-text">
+              <span class="action-name">PLAY LEVEL {{ currentLevel.level }}</span>
+              <span class="sub-chapter">{{ currentLevel.name }} • Chapter {{ currentLevel.chapter }}</span>
+            </div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="btn-open-map"
+          (click)="setScreen('map')"
+          title="Open Full 100-Level Saga Map"
+        >
+          <span class="btn-icon">🗺️</span>
+          <span>100-Level Saga Map</span>
+        </button>
+      </div>
+
+      <!-- Daily Bonus Chest -->
+      <div class="daily-reward-card" [class.claimed]="dailyRewardClaimed">
+        <div class="reward-icon">🎁</div>
+        <div class="reward-body">
+          <h4>Daily Supply Chest</h4>
+          <p *ngIf="!dailyRewardClaimed">Claim +150 Free Coins and instant Full 5 Lives!</p>
+          <p *ngIf="dailyRewardClaimed">Claimed for today! Next supply drops tomorrow.</p>
+        </div>
+        <button
+          type="button"
+          class="claim-btn"
+          [disabled]="dailyRewardClaimed"
+          (click)="claimDailyReward()"
+        >
+          {{ dailyRewardClaimed ? 'Claimed ✓' : 'Claim Free' }}
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 2: 100-LEVEL SAGA MAP                                             -->
+  <!-- ========================================================================= -->
+  <main *ngIf="currentScreen === 'map'" class="screen-view map-screen">
+    <div class="map-container">
+      <div class="map-header">
+        <div>
+          <h2>100-Level Saga Map</h2>
+          <p>Conquer all 100 levels to unlock the Prismatic Citadel Grand Master Trial!</p>
+        </div>
+        <button type="button" class="btn-back-home" (click)="setScreen('home')">
+          <span>← Back to Menu</span>
+        </button>
+      </div>
+
+      <!-- Chapter Tabs -->
+      <div class="map-chapter-tabs">
+        <button
+          type="button"
+          class="map-tab-btn"
+          [class.active]="levelSelectPage === 0"
+          (click)="levelSelectPage = 0"
+        >
+          <span>CH 1: Emerald Meadow (1-25)</span>
+        </button>
+        <button
+          type="button"
+          class="map-tab-btn"
+          [class.active]="levelSelectPage === 1"
+          (click)="levelSelectPage = 1"
+        >
+          <span>CH 2: Sapphire Cavern (26-50)</span>
+        </button>
+        <button
+          type="button"
+          class="map-tab-btn"
+          [class.active]="levelSelectPage === 2"
+          (click)="levelSelectPage = 2"
+        >
+          <span>CH 3: Amber Fortress (51-75)</span>
+        </button>
+        <button
+          type="button"
+          class="map-tab-btn"
+          [class.active]="levelSelectPage === 3"
+          (click)="levelSelectPage = 3"
+        >
+          <span>CH 4 & 5: Prismatic Peak (76-100)</span>
+        </button>
+      </div>
+
+      <!-- 25 Levels Grid for Current Page -->
+      <div class="map-grid">
+        <div
+          *ngFor="let lvl of getLevelPageLevels()"
+          class="map-node-card"
+          [class.unlocked]="isLevelUnlocked(lvl.level)"
+          [class.locked]="!isLevelUnlocked(lvl.level)"
+          [class.current]="lvl.level === currentLevel.level"
+          (click)="selectLevelFromMap(lvl.level)"
+        >
+          <div class="node-badge">
+            <span *ngIf="isLevelUnlocked(lvl.level)">{{ lvl.level }}</span>
+            <span *ngIf="!isLevelUnlocked(lvl.level)">🔒</span>
+          </div>
+
+          <div class="node-info">
+            <span class="lvl-title">{{ lvl.name }}</span>
+            <div class="lvl-stars-strip" *ngIf="isLevelUnlocked(lvl.level)">
+              <span [class.active]="getLevelStars(lvl.level) >= 1">★</span>
+              <span [class.active]="getLevelStars(lvl.level) >= 2">★</span>
+              <span [class.active]="getLevelStars(lvl.level) >= 3">★</span>
+            </div>
+            <span class="locked-text" *ngIf="!isLevelUnlocked(lvl.level)">Locked</span>
+          </div>
+
+          <button
+            *ngIf="isLevelUnlocked(lvl.level)"
+            type="button"
+            class="play-node-btn"
+            title="Launch Level"
+          >
+            ▶
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 3: ACTIVE 3D GAME ARENA                                           -->
+  <!-- ========================================================================= -->
+  <main *ngIf="currentScreen === 'game'" class="screen-view game-screen">
+    <!-- In-Game Secondary Header (Level Name, Moves, Score & Objectives) -->
+    <div class="game-hud-bar">
+      <div class="hud-left">
+        <button
+          type="button"
+          class="btn-pause"
+          (click)="showPauseModal = true"
+          title="Pause Game"
+        >
+          ⏸️
+        </button>
+        <div class="game-level-info">
+          <span class="sub-ch">CH {{ currentLevel.chapter }} • LEVEL {{ currentLevel.level }}</span>
+          <h3 class="name">{{ currentLevel.name }}</h3>
+        </div>
+      </div>
+
+      <!-- Center Objectives & Moves -->
+      <div class="hud-center">
+        <!-- Moves Pill -->
+        <div class="moves-badge" [class.urgent]="movesLeft <= 5">
+          <span class="lbl">MOVES</span>
+          <span class="val">{{ movesLeft }}</span>
+        </div>
+
+        <!-- Score Meter -->
+        <div class="score-card">
+          <div class="score-row">
+            <span>Score: <strong>{{ score | number }}</strong></span>
+            <span>Target: {{ currentLevel.targetScore | number }}</span>
+          </div>
+          <div class="star-track">
+            <div class="star-fill" [style.width.%]="getStarWidth()"></div>
+            <div class="star-node s1" [class.active]="score >= currentLevel.starThresholds[0]">⭐</div>
+            <div class="star-node s2" [class.active]="score >= currentLevel.starThresholds[1]">⭐</div>
+            <div class="star-node s3" [class.active]="score >= currentLevel.starThresholds[2]">⭐</div>
+          </div>
+        </div>
+
+        <!-- Objectives Chips -->
+        <div class="objectives-row">
+          <div
+            *ngFor="let obj of currentLevel.objectives; let idx = index"
+            class="obj-pill"
+            [class.done]="(obj.type === 'score' ? score : getObjectiveProgress(idx)) >= obj.target"
+          >
+            <span class="obj-ico">
+              <ng-container [ngSwitch]="obj.type">
+                <span *ngSwitchCase="'score'">🎯</span>
+                <span *ngSwitchCase="'ice'">🧊</span>
+                <span *ngSwitchCase="'crates'">📦</span>
+                <span *ngSwitchCase="'jelly'">🍇</span>
+                <span *ngSwitchCase="'collect'">💎</span>
+              </ng-container>
+            </span>
+            <span class="obj-txt">
+              {{ (obj.type === 'score' ? score : getObjectiveProgress(idx)) | number }} / {{ obj.target | number }}
+            </span>
+            <span
+              *ngIf="(obj.type === 'score' ? score : getObjectiveProgress(idx)) >= obj.target"
+              class="check"
+            >✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D Canvas Viewport -->
+    <div class="canvas-arena">
+      <canvas
+        #gameCanvas
+        class="three-canvas"
+        (mousedown)="onPointerDown($event)"
+        (mousemove)="onPointerMove($event)"
+        (mouseup)="onPointerUp()"
+        (touchstart)="onPointerDown($event)"
+        (touchmove)="onPointerMove($event)"
+        (touchend)="onPointerUp()"
+      ></canvas>
+
+      <!-- Shuffling Toast Alert -->
+      <div *ngIf="shuffleAlert" class="shuffle-banner">
+        <span>⚡ NO MATCHES AVAILABLE — RESHUFFLING BOARD!</span>
+      </div>
+
+      <!-- Active Booster Prompt Banner -->
+      <div *ngIf="activeBooster" class="booster-prompt-banner">
+        <span *ngIf="activeBooster === 'hammer'">🔨 Click any gem or obstacle to smash it!</span>
+        <span *ngIf="activeBooster === 'rowZap'">⚡ Click any row to vaporize it!</span>
+        <span *ngIf="activeBooster === 'rainbowBomb'">🌈 Click any gem to forge a Rainbow Prism!</span>
+        <button type="button" class="cancel-btn" (click)="activeBooster = null">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Bottom Boosters Dock -->
+    <footer class="boosters-dock">
+      <div class="dock-title">BOOSTERS</div>
+
+      <button
+        type="button"
+        class="booster-btn"
+        [class.active]="activeBooster === 'hammer'"
+        [disabled]="hammerCount <= 0"
+        (click)="toggleBooster('hammer')"
+        title="Magic Hammer: Smash Any Tile"
+      >
+        <span class="icon">🔨</span>
+        <span class="name">Hammer</span>
+        <span class="badge">{{ hammerCount }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="booster-btn"
+        [class.active]="activeBooster === 'rowZap'"
+        [disabled]="rowZapCount <= 0"
+        (click)="toggleBooster('rowZap')"
+        title="Row Zap: Clear Entire Row"
+      >
+        <span class="icon">⚡</span>
+        <span class="name">Row Zap</span>
+        <span class="badge">{{ rowZapCount }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="booster-btn"
+        [class.active]="activeBooster === 'rainbowBomb'"
+        [disabled]="rainbowBombCount <= 0"
+        (click)="toggleBooster('rainbowBomb')"
+        title="Rainbow Prism: Turn Gem into Rainbow Prism"
+      >
+        <span class="icon">🌈</span>
+        <span class="name">Prism</span>
+        <span class="badge">{{ rainbowBombCount }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="booster-btn"
+        (click)="shuffleBoard()"
+        title="Reshuffle Board"
+      >
+        <span class="icon">🔄</span>
+        <span class="name">Shuffle</span>
+      </button>
+    </footer>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SETTINGS SCREEN                                                    -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showSettingsModal" class="modal-backdrop">
+    <div class="modal-card settings-dialog">
+      <div class="dialog-header">
+        <div class="header-title">
+          <span class="icon">⚙️</span>
+          <h2>Game Settings</h2>
+        </div>
+        <button type="button" class="close-x" (click)="showSettingsModal = false">✕</button>
+      </div>
+
+      <div class="settings-list">
+        <!-- SFX Toggle -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Sound Effects (SFX)</span>
+            <span class="setting-desc">Ascending match chimes, whooshes, bomb blasts</span>
+          </div>
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.on]="settings.sfx"
+            (click)="toggleSetting('sfx')"
+          >
+            <span class="thumb"></span>
+          </button>
+        </div>
+
+        <!-- Ambient Music Toggle -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Ambient Background Music</span>
+            <span class="setting-desc">Synthesized lofi harmonic arpeggios</span>
+          </div>
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.on]="settings.music"
+            (click)="toggleSetting('music')"
+          >
+            <span class="thumb"></span>
+          </button>
+        </div>
+
+        <!-- Screen Shake Toggle -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Haptic Impact Shake</span>
+            <span class="setting-desc">Camera shockwave on bomb detonations</span>
+          </div>
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.on]="settings.shake"
+            (click)="toggleSetting('shake')"
+          >
+            <span class="thumb"></span>
+          </button>
+        </div>
+
+        <!-- Particles Toggle -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">3D Particle Explosions</span>
+            <span class="setting-desc">Crystal shard bursts & rainbow halos</span>
+          </div>
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.on]="settings.particles"
+            (click)="toggleSetting('particles')"
+          >
+            <span class="thumb"></span>
+          </button>
+        </div>
+
+        <!-- Refill Lives Free Button -->
+        <div class="setting-row highlight-row">
+          <div class="setting-info">
+            <span class="setting-name">Limited Lives Status</span>
+            <span class="setting-desc">{{ lives }} / {{ MAX_LIVES }} lives (Timer: {{ timeUntilNextLife }})</span>
+          </div>
+          <button type="button" class="action-pill-btn" (click)="refillLivesFree()">
+            Instant Refill (+5 ❤️)
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-danger-zone">
+        <button type="button" class="btn-danger" (click)="resetAllProgress()">
+          Reset All Progress (100 Levels)
+        </button>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn-primary" (click)="showSettingsModal = false">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LIMITED LIVES / OUT OF LIVES                                      -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showOutOfLivesModal" class="modal-backdrop">
+    <div class="modal-card lives-dialog">
+      <div class="heart-broken-icon">💔</div>
+      <h2>{{ lives === 0 ? 'Out of Lives!' : 'Limited Lives System' }}</h2>
+      <p class="sub">
+        You have <strong>{{ lives }} of {{ MAX_LIVES }}</strong> lives remaining.
+        <span *ngIf="lives < MAX_LIVES"><br />Next life in: <strong class="text-amber">{{ timeUntilNextLife }}</strong></span>
+      </p>
+
+      <div class="lives-options-list">
+        <div class="life-option-card">
+          <div class="opt-body">
+            <h4>Free Daily Refill</h4>
+            <p>Instantly restore all 5 hearts to max!</p>
+          </div>
+          <button type="button" class="btn-primary" (click)="refillLivesFree()">
+            Refill Free (+5 ❤️)
+          </button>
+        </div>
+
+        <div class="life-option-card">
+          <div class="opt-body">
+            <h4>Buy with Coins</h4>
+            <p>Exchange 100 gold coins for full lives.</p>
+          </div>
+          <button
+            type="button"
+            class="btn-secondary"
+            [disabled]="coins < 100"
+            (click)="buyLivesWithCoins()"
+          >
+            <span>🪙 100 Coins</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-ghost" (click)="showOutOfLivesModal = false">Close</button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PAUSE MENU                                                         -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showPauseModal" class="modal-backdrop">
+    <div class="modal-card pause-dialog">
+      <h2>Game Paused</h2>
+      <p class="sub">Level {{ currentLevel.level }}: {{ currentLevel.name }}</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" (click)="showPauseModal = false">
+          <span>▶ Resume Game</span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="restartLevel()">
+          <span>⟲ Restart Level</span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="quitToMap()">
+          <span>🗺️ 100-Level Map</span>
+        </button>
+        <button type="button" class="btn-ghost" (click)="quitToHome()">
+          <span>🏠 Main Menu</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LEVEL COMPLETE / WIN                                               -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showWinModal" class="modal-backdrop">
+    <div class="modal-card win-card">
+      <div class="win-crown">👑</div>
+      <h2>LEVEL {{ currentLevel.level }} COMPLETED!</h2>
+      <p class="sub">{{ currentLevel.name }} • Chapter {{ currentLevel.chapter }}</p>
+
+      <div class="stars-celebration">
+        <span class="star" [class.earned]="score >= currentLevel.starThresholds[0]">⭐</span>
+        <span class="star" [class.earned]="score >= currentLevel.starThresholds[1]">⭐</span>
+        <span class="star" [class.earned]="score >= currentLevel.starThresholds[2]">⭐</span>
+      </div>
+
+      <div class="score-summary">
+        <div class="summary-row">
+          <span>Score</span>
+          <strong class="text-amber">{{ score | number }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Coins Earned</span>
+          <strong class="text-green">+{{ (score >= currentLevel.starThresholds[2] ? 120 : (score >= currentLevel.starThresholds[1] ? 80 : 50)) }} 🪙</strong>
+        </div>
+        <div class="summary-row">
+          <span>High Score</span>
+          <strong>{{ playerProgress[currentLevel.level]?.highScore || score | number }}</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" (click)="nextLevel()">
+          <span>Next Level ➔</span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="restartLevel()">
+          <span>Replay</span>
+        </button>
+        <button type="button" class="btn-ghost" (click)="quitToMap()">
+          <span>100-Level Map</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: OUT OF MOVES / DEFEAT (LIFE DEDUCTED)                              -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showLoseModal" class="modal-backdrop">
+    <div class="modal-card lose-card">
+      <div class="lose-icon">💔</div>
+      <h2>OUT OF MOVES!</h2>
+      <p class="sub">1 Life lost! Remaining: <strong>{{ lives }} / {{ MAX_LIVES }} ❤️</strong></p>
+
+      <div class="score-summary">
+        <div class="summary-row">
+          <span>Score</span>
+          <strong>{{ score | number }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Target Needed</span>
+          <strong>{{ currentLevel.targetScore | number }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Next Life in</span>
+          <strong class="text-amber">{{ timeUntilNextLife }}</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="lives <= 0"
+          (click)="restartLevel()"
+        >
+          <span>Try Again (-1 ❤️)</span>
+        </button>
+        <button *ngIf="lives <= 0" type="button" class="btn-primary" (click)="refillLivesFree()">
+          <span>Get Free Lives (+5 ❤️)</span>
+        </button>
+        <button type="button" class="btn-ghost" (click)="quitToHome()">
+          <span>Main Menu</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: HOW TO PLAY                                                        -->
+  <!-- ========================================================================= -->
+  <div *ngIf="showHelpModal" class="modal-backdrop">
+    <div class="modal-card help-dialog">
+      <div class="dialog-header">
+        <h2>How to Play 3D Match-3 Quest</h2>
+        <button type="button" class="close-x" (click)="showHelpModal = false">✕</button>
+      </div>
+
+      <div class="help-content">
+        <div class="help-section">
+          <h3>🎮 Basic Controls & Limited Lives</h3>
+          <p>
+            Click or drag adjacent gems to swap. You start with <strong>5 Lives ❤️</strong>.
+            Losing a level consumes 1 life, which regenerates automatically every 15 minutes!
+          </p>
+        </div>
+
+        <div class="help-section">
+          <h3>✨ Special Combinations</h3>
+          <ul>
+            <li><strong>Match 4:</strong> Creates a <strong>Rocket Gem</strong> that clears an entire row or column!</li>
+            <li><strong>Match 5:</strong> Creates a <strong>Rainbow Prism</strong>! Swap it with any gem to clear all gems of that color!</li>
+            <li><strong>T or L Shape:</strong> Creates a <strong>Bomb Star</strong> with a 3×3 blast radius!</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3>🧊 Obstacles</h3>
+          <ul>
+            <li><strong>Ice Blocks:</strong> Match adjacent gems to shatter the ice!</li>
+            <li><strong>Wooden Crates:</strong> Reinforced boxes that take 2 hits to destroy.</li>
+            <li><strong>Jelly Tiles:</strong> Match gems on top of purple jelly to cleanse it.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn-primary" (click)="showHelpModal = false">Got It!</button>
+      </div>
+    </div>
+  </div>
+</div>

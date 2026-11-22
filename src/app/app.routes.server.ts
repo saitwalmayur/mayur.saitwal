@@ -347,6 +347,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'threejspoolgame',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'poolgame',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'indstry/**',
     renderMode: RenderMode.Client,
   },
