@@ -355,6 +355,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'pixijshome',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'pixijs',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'indstry/**',
     renderMode: RenderMode.Client,
   },

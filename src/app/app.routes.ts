@@ -950,4 +950,16 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./threejspoolgame/threejspoolgame').then((m) => m.Threejspoolgame),
   },
+  {
+    path: 'pixijshome',
+    title: 'PixiJS 2D WebGL Showcase & Creative Hub | Mayur Saitwal',
+    loadComponent: () =>
+      import('./pixijshome/pixijshome').then((m) => m.Pixijshome),
+  },
+  {
+    path: 'pixijs',
+    title: 'PixiJS 2D WebGL Showcase & Creative Hub | Mayur Saitwal',
+    loadComponent: () =>
+      import('./pixijshome/pixijshome').then((m) => m.Pixijshome),
+  },
 ];

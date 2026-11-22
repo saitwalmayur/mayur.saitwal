@@ -425,7 +425,29 @@ export class Threejsexample {
       categories: ['games'],
       categoryLabel: 'Games',
     },
-    {
+        {
+      id: 'pixijshome',
+      route: '/pixijshome',
+      title: 'PixiJS 2D WebGL Creative Hub & Interactive Demos',
+      tagline: 'High-performance 2D WebGL & WebGPU hardware-accelerated rendering engine with interactive particle galaxies & physics',
+      description:
+        'Explore the PixiJS creative hub powered by PixiJS v8. Features ultra-fast 2D WebGL 2 batch rendering, interactive 2,500+ particle nebula whirlpools with gravity attractors, bouncing squishy jelly physics critters, cyber constellation neural webs, and touch-responsive fireworks bursts with live 60 FPS performance monitoring.',
+      tags: ['PixiJS', 'PixiJS v8', '2D WebGL', 'Particle Physics', 'Hardware Acceleration', 'Creative Coding', 'Interactive Canvas'],
+      icon: '⚡',
+      features: [
+        'Ultra-Fast PixiJS v8 2D WebGL Hardware Renderer',
+        'Interactive 2,500+ Particle Nebula Whirlpool with Gravity',
+        'Squishy Bouncing Jelly Critters with Physics Impulses',
+        'Cyber Neural Constellation Web Proximity Lines',
+        'Real-time Pointer Attract & Super-Gravity Warp Controls',
+        'Live 60 FPS & Multi-Entity Performance Monitoring',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(249, 115, 22, 0.22))',
+      category: 'games',
+      categories: ['games', 'particles', 'tools'],
+      categoryLabel: '2D WebGL & PixiJS',
+    },
+{
       id: 'threejspoolgame',
       route: '/threejspoolgame',
       title: '3D Grand Billiards & 8-Ball Master',

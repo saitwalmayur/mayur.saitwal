@@ -1,0 +1,168 @@
+<div class="pixijs-viewport">
+  <!-- Top Navigation & HUD Bar -->
+  <header class="hud-top">
+    <div class="hud-left">
+      <a routerLink="/threejs" class="btn-back" title="Return to Three.js Showcase">
+        <span class="arrow">←</span>
+        <span>Showcase</span>
+      </a>
+      <div class="brand-divider">/</div>
+      <div class="brand-group">
+        <span class="brand-icon">⚡</span>
+        <div class="brand-text">
+          <h1>PixiJS Creative Hub</h1>
+          <span class="sub-tag">PixiJS v8 WebGL 2 Engine</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Demo Selector Tabs -->
+    <div class="hud-center">
+      <div class="demo-tabs">
+        <button
+          type="button"
+          class="demo-tab-btn"
+          [class.active]="activeDemo === 'galaxy'"
+          (click)="switchDemo('galaxy')"
+        >
+          <span>🌌 Nebula Whirlpool</span>
+        </button>
+        <button
+          type="button"
+          class="demo-tab-btn"
+          [class.active]="activeDemo === 'jelly'"
+          (click)="switchDemo('jelly')"
+        >
+          <span>👾 Jelly Physics</span>
+        </button>
+        <button
+          type="button"
+          class="demo-tab-btn"
+          [class.active]="activeDemo === 'constellation'"
+          (click)="switchDemo('constellation')"
+        >
+          <span>🕸️ Constellation Web</span>
+        </button>
+        <button
+          type="button"
+          class="demo-tab-btn"
+          [class.active]="activeDemo === 'fireworks'"
+          (click)="switchDemo('fireworks')"
+        >
+          <span>🎆 Fireworks Burst</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Real-Time Performance Stats -->
+    <div class="hud-right">
+      <div class="stat-pill fps-pill">
+        <span class="stat-lbl">FPS</span>
+        <span class="stat-val" [class.high]="fps >= 55" [class.med]="fps < 55 && fps >= 30" [class.low]="fps < 30">
+          {{ fps }}
+        </span>
+      </div>
+
+      <div class="stat-pill count-pill">
+        <span class="stat-lbl">ENTITIES</span>
+        <span class="stat-val">{{ spriteCount | number }}</span>
+      </div>
+
+      <div class="stat-pill renderer-pill">
+        <span class="dot"></span>
+        <span>{{ rendererName }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive PixiJS Canvas Container -->
+  <div #pixiContainer class="pixi-canvas-container"></div>
+
+  <!-- Floating Bottom Controls HUD -->
+  <footer class="hud-bottom">
+    <div class="controls-left">
+      <span class="ctrl-title">COLOR PALETTE:</span>
+      <div class="palette-group">
+        <button
+          type="button"
+          class="pal-btn cyberpunk"
+          [class.active]="activeColorPalette === 'cyberpunk'"
+          (click)="setPalette('cyberpunk')"
+          title="Cyberpunk Neon"
+        >
+          <span>Neon</span>
+        </button>
+        <button
+          type="button"
+          class="pal-btn fire"
+          [class.active]="activeColorPalette === 'fire'"
+          (click)="setPalette('fire')"
+          title="Inferno Fire"
+        >
+          <span>Fire</span>
+        </button>
+        <button
+          type="button"
+          class="pal-btn emerald"
+          [class.active]="activeColorPalette === 'emerald'"
+          (click)="setPalette('emerald')"
+          title="Emerald Jade"
+        >
+          <span>Emerald</span>
+        </button>
+        <button
+          type="button"
+          class="pal-btn rainbow"
+          [class.active]="activeColorPalette === 'rainbow'"
+          (click)="setPalette('rainbow')"
+          title="Prismatic Rainbow"
+        >
+          <span>Rainbow</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="controls-center">
+      <div class="force-slider-wrapper">
+        <div class="slider-header">
+          <span class="slider-lbl">FORCE / GRAVITY SPEED:</span>
+          <span class="slider-val">{{ forceStrength }}%</span>
+        </div>
+        <input
+          type="range"
+          min="10"
+          max="100"
+          [(ngModel)]="forceStrength"
+          class="force-slider"
+          title="Adjust physics swirl speed"
+        />
+      </div>
+    </div>
+
+    <div class="controls-right">
+      <span class="hint-text">
+        <span class="hint-icon">💡</span>
+        <span>
+          {{
+            activeDemo === 'galaxy'
+              ? 'Move pointer to pull swirl • Hold click for super-gravity!'
+              : activeDemo === 'jelly'
+              ? 'Move near critters to push • Click to attract all jellies!'
+              : activeDemo === 'constellation'
+              ? 'Move cursor to connect neural web lines!'
+              : 'Click anywhere to launch fireworks explosions!'
+          }}
+        </span>
+      </span>
+
+      <button
+        *ngIf="activeDemo === 'fireworks'"
+        type="button"
+        class="btn-action-burst"
+        (click)="spawnFirework(app?.screen?.width ? app!.screen.width / 2 : 400, app?.screen?.height ? app!.screen.height / 2 : 300)"
+      >
+        <span>💥 Launch Burst</span>
+      </button>
+    </div>
+  </footer>
+</div>
