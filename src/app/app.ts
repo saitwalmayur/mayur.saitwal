@@ -35,6 +35,9 @@ export class App {
   private checkRoute(url: string) {
     const isThree =
       url.includes('/threejs') ||
+      url.includes('/pixijs') ||
+      url.includes('/pixijshome') ||
+      url.includes('/pixijs-fruitmerge') ||
       url.includes('/threejsexample') ||
       url.includes('/threejsshader') ||
       url.includes('/threedmodelviewer') ||

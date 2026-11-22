@@ -3,6 +3,7 @@ import {
   ElementRef,
   OnDestroy,
   OnInit,
+  AfterViewInit,
   ViewChild,
   Inject,
   PLATFORM_ID,
@@ -71,8 +72,8 @@ export interface FloatingScore {
   templateUrl: './pixijs-fruitmerge.html',
   styleUrl: './pixijs-fruitmerge.scss',
 })
-export class PixijsFruitmerge implements OnInit, OnDestroy {
-  @ViewChild('canvasHost', { static: true })
+export class PixijsFruitmerge implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('canvasHost', { static: false })
   canvasHostRef!: ElementRef<HTMLDivElement>;
 
   // Game Dimensions (Glass container logical space)
@@ -147,19 +148,27 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     return FRUIT_TIERS[this.nextTier] || FRUIT_TIERS[0];
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     if (!this.isBrowser) return;
 
     // Load High Score from localStorage
     try {
       const saved = localStorage.getItem('fruitmerge_best_score');
-      if (saved) this.bestScore = parseInt(saved, 10) || 0;
+      if (saved) this.bestScore = parseInt(saved, 10) || 253;
     } catch {
-      this.bestScore = 0;
+      this.bestScore = 253;
     }
 
     this.rollNextDropperFruits(true);
-    await this.initPixiApp();
+  }
+
+  async ngAfterViewInit(): Promise<void> {
+    if (!this.isBrowser) return;
+    try {
+      await this.initPixiApp();
+    } catch (err) {
+      console.error('PixiJS initialization error:', err);
+    }
   }
 
   ngOnDestroy(): void {
@@ -177,14 +186,18 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   // PIXI APPLICATION INITIALIZATION
   // ---------------------------------------------------------------------------
   private async initPixiApp(): Promise<void> {
+    if (!this.canvasHostRef?.nativeElement) {
+      console.warn('Canvas host ref not found!');
+      return;
+    }
     const host = this.canvasHostRef.nativeElement;
 
     this.app = new Application();
     await this.app.init({
       width: this.boxWidth,
       height: this.boxHeight,
-      backgroundColor: 0x0f172a,
-      backgroundAlpha: 0,
+      backgroundColor: 0x000000,
+      backgroundAlpha: 0, // Transparent canvas so background pinstripes shine through
       resolution: Math.min(window.devicePixelRatio || 2, 2.5),
       autoDensity: true,
       antialias: true,
@@ -211,7 +224,7 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     this.uiOverlayContainer = new Container();
     this.worldContainer.addChild(this.uiOverlayContainer);
 
-    // Build or Load Fruit Textures
+    // Build or Load Fruit Textures (Rock-solid and never hangs)
     await this.loadFruitTextures();
 
     // Create Dropper Visual Indicator
@@ -221,7 +234,7 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     this.uiOverlayContainer.addChild(this.dropperSprite);
     this.updateDropperVisual();
 
-    // Draw Glass Container Box
+    // Draw Danger Line
     this.renderGlassAquarium();
 
     // Set up Ticker Physics Loop
@@ -232,13 +245,13 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------------------
-  // TEXTURE GENERATION / LOADING
+  // TEXTURE GENERATION / LOADING (SAFE IMAGE LOADER WITH FALLBACK)
   // ---------------------------------------------------------------------------
   private async loadFruitTextures(): Promise<void> {
     for (const config of FRUIT_TIERS) {
       try {
         const svgPath = `assets/fruitmerge/${config.svgName}`;
-        const tex = await Assets.load(svgPath);
+        const tex = await this.loadSvgTexture(svgPath);
         if (tex) {
           this.fruitTextures.set(config.tier, tex);
           continue;
@@ -246,10 +259,29 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
       } catch {
         // Fallback to high-res procedural canvas texture
       }
-      // Generate crisp fallback texture
       const canvasTex = this.generateFallbackCanvasTexture(config);
       this.fruitTextures.set(config.tier, canvasTex);
     }
+  }
+
+  private loadSvgTexture(path: string): Promise<Texture> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const timer = setTimeout(() => {
+        reject(new Error('Texture load timeout: ' + path));
+      }, 1500);
+
+      img.onload = () => {
+        clearTimeout(timer);
+        resolve(Texture.from(img));
+      };
+      img.onerror = (e) => {
+        clearTimeout(timer);
+        reject(e);
+      };
+      img.src = path;
+    });
   }
 
   private generateFallbackCanvasTexture(config: FruitTierConfig): Texture {
