@@ -7,22 +7,22 @@
     </radialGradient>
   </defs>
   <!-- Fruit Body -->
-  <circle cx="128" cy="138" r="98" fill="url(#cocoGrad)"/>
+  <circle cx="128" cy="128" r="122" fill="url(#cocoGrad)"/>
   <!-- 3 Coconut Germination Pores / Eyes -->
-  <circle cx="112" cy="76" r="6" fill="#451a03"/>
-  <circle cx="132" cy="72" r="6" fill="#451a03"/>
-  <circle cx="122" cy="88" r="6" fill="#451a03"/>
+  <circle cx="108" cy="62" r="7" fill="#451a03"/>
+  <circle cx="132" cy="56" r="7" fill="#451a03"/>
+  <circle cx="120" cy="76" r="7" fill="#451a03"/>
   <!-- Large Glossy White Highlight Specular Spot -->
-  <ellipse cx="78" cy="95" rx="22" ry="14" fill="#ffffff" opacity="0.85" transform="rotate(-35 78 95)"/>
-  <circle cx="102" cy="80" r="5" fill="#ffffff" opacity="0.9"/>
+  <ellipse cx="68" cy="80" rx="26" ry="16" fill="#ffffff" opacity="0.88" transform="rotate(-35 68 80)"/>
+  <circle cx="98" cy="64" r="6" fill="#ffffff" opacity="0.95"/>
   <!-- Bright Orange-Tan Blush Cheeks -->
-  <circle cx="78" cy="162" r="18" fill="#ea580c" opacity="0.6"/>
-  <circle cx="178" cy="162" r="18" fill="#ea580c" opacity="0.6"/>
+  <circle cx="68" cy="154" r="20" fill="#ea580c" opacity="0.65"/>
+  <circle cx="188" cy="154" r="20" fill="#ea580c" opacity="0.65"/>
   <!-- Angry (> <) Eyes -->
-  <path d="M82,126 L108,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M82,148 L108,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M174,126 L148,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M174,148 L148,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M70,114 L102,128" stroke="#1c1917" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M70,140 L102,128" stroke="#1c1917" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M186,114 L154,128" stroke="#1c1917" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M186,140 L154,128" stroke="#1c1917" stroke-width="6.5" stroke-linecap="round"/>
   <!-- Grumpy Curved Frown -->
-  <path d="M112,172 Q128,154 144,172" fill="none" stroke="#1c1917" stroke-width="6" stroke-linecap="round"/>
+  <path d="M108,165 Q128,144 148,165" fill="none" stroke="#1c1917" stroke-width="7" stroke-linecap="round"/>
 </svg>

@@ -78,11 +78,12 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   // Game Dimensions (Glass container logical space)
   readonly boxWidth = 420;
   readonly boxHeight = 620;
-  readonly wallLeft = 14;
-  readonly wallRight = 406;
-  readonly floorY = 598;
+  readonly wallLeft = 18;
+  readonly wallRight = 402;
+  readonly floorY = 596;
   readonly dangerLineY = 115;
   readonly dropY = 48;
+  readonly svgScaleRatio = 256 / 244; // SVG body has r=122 in 256 box; this scales sprite to exact pixel match
 
   // Game State
   score = 0;
@@ -255,7 +256,7 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
 
     const cx = size / 2;
     const cy = size / 2;
-    const r = size * 0.44;
+    const r = 122;
 
     // Outer Glow / Shadow
     ctx.save();
@@ -422,8 +423,8 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
       }
     }
 
-    // Sub-Stepped Physics Simulation for extreme stability
-    const subSteps = 6;
+    // Sub-Stepped Physics Simulation for extreme stability & tight contact
+    const subSteps = 8;
     const subDt = (step * 0.016) / subSteps;
     for (let s = 0; s < subSteps; s++) {
       this.stepPhysics(subDt);
@@ -497,7 +498,7 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   }
 
   private resolveCollisionsAndMerges(): void {
-    const restitution = 0.28;
+    const restitution = 0.18;
     const count = this.fruits.length;
 
     for (let i = 0; i < count; i++) {
@@ -633,8 +634,8 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
 
     const sprite = new Sprite(this.fruitTextures.get(tier) || Texture.WHITE);
     sprite.anchor.set(0.5);
-    sprite.width = config.radius * 2;
-    sprite.height = config.radius * 2;
+    sprite.width = config.radius * 2 * this.svgScaleRatio;
+    sprite.height = config.radius * 2 * this.svgScaleRatio;
     container.addChild(sprite);
 
     this.fruitsContainer.addChild(container);
@@ -732,8 +733,8 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     const tex = this.fruitTextures.get(this.dropperTier) || Texture.WHITE;
     this.dropperSprite.texture = tex;
     const r = this.currentFruitConfig.radius;
-    this.dropperSprite.width = r * 2;
-    this.dropperSprite.height = r * 2;
+    this.dropperSprite.width = r * 2 * this.svgScaleRatio;
+    this.dropperSprite.height = r * 2 * this.svgScaleRatio;
     this.dropperSprite.x = this.dropperX;
     this.dropperSprite.y = this.dropY;
   }

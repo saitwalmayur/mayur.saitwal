@@ -7,28 +7,28 @@
     </radialGradient>
   </defs>
   <!-- Body -->
-  <circle cx="128" cy="138" r="98" fill="url(#wmHalfGrad)"/>
+  <circle cx="128" cy="128" r="122" fill="url(#wmHalfGrad)"/>
   <!-- Dark Green Watermelon Stripes -->
-  <g fill="none" stroke="#166534" stroke-width="12" stroke-linecap="round">
-    <path d="M50,90 Q75,138 52,190"/>
-    <path d="M85,60 Q110,138 88,215"/>
-    <path d="M128,45 Q138,138 128,230"/>
-    <path d="M170,60 Q150,138 168,215"/>
-    <path d="M205,90 Q185,138 202,190"/>
+  <g fill="none" stroke="#166534" stroke-width="14" stroke-linecap="round">
+    <path d="M35,75 Q65,128 38,185"/>
+    <path d="M78,40 Q106,128 82,216"/>
+    <path d="M128,18 Q140,128 128,238"/>
+    <path d="M178,40 Q152,128 174,216"/>
+    <path d="M221,75 Q192,128 218,185"/>
   </g>
   <!-- Highlight -->
-  <ellipse cx="80" cy="85" rx="24" ry="12" fill="#ffffff" opacity="0.6" transform="rotate(-30 80 85)"/>
+  <ellipse cx="72" cy="72" rx="30" ry="15" fill="#ffffff" opacity="0.65" transform="rotate(-30 72 72)"/>
   <!-- Cheeks -->
-  <circle cx="78" cy="160" r="16" fill="#86efac" opacity="0.6"/>
-  <circle cx="178" cy="160" r="16" fill="#86efac" opacity="0.6"/>
+  <circle cx="68" cy="154" r="18" fill="#86efac" opacity="0.65"/>
+  <circle cx="188" cy="154" r="18" fill="#86efac" opacity="0.65"/>
   <!-- Eyes Looking Sideways -->
-  <circle cx="98" cy="136" r="10" fill="#052e16"/>
-  <circle cx="94" cy="134" r="3" fill="#ffffff"/>
-  <circle cx="158" cy="136" r="10" fill="#052e16"/>
-  <circle cx="154" cy="134" r="3" fill="#ffffff"/>
+  <circle cx="92" cy="126" r="12" fill="#052e16"/>
+  <circle cx="87" cy="123" r="4" fill="#ffffff"/>
+  <circle cx="164" cy="126" r="12" fill="#052e16"/>
+  <circle cx="159" cy="123" r="4" fill="#ffffff"/>
   <!-- Eyebrows -->
-  <path d="M86,122 L110,128" stroke="#052e16" stroke-width="4.5" stroke-linecap="round"/>
-  <path d="M170,122 L146,128" stroke="#052e16" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M78,108 L106,116" stroke="#052e16" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M178,108 L150,116" stroke="#052e16" stroke-width="5.5" stroke-linecap="round"/>
   <!-- Frown -->
-  <path d="M115,165 Q128,152 141,165" fill="none" stroke="#052e16" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M112,158 Q128,142 144,158" fill="none" stroke="#052e16" stroke-width="6.5" stroke-linecap="round"/>
 </svg>
