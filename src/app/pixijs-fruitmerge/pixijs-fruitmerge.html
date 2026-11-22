@@ -3,123 +3,95 @@
   <div class="mobile-cabinet-frame">
 
     <!-- ========================================================================= -->
-    <!-- SCREEN 1: HOME PAGE / MAIN MENU                                           -->
+    <!-- TOP BAR (EXACT REFERENCE SCREENSHOT LAYOUT)                              -->
     <!-- ========================================================================= -->
-    <div *ngIf="currentScreen === 'home'" class="fruitmerge-home-screen">
-      <!-- Home Top Bar -->
-      <header class="home-top-bar">
-        <a routerLink="/pixijshome" class="btn-home-back" title="Return to PixiJS Creative Hub">
-          <span class="arr">←</span>
-          <span>PixiJS Hub</span>
-        </a>
-
-        <div class="top-brand">
-          <span class="brand-icon">🍉</span>
-          <span class="brand-text">Suika 2D</span>
-        </div>
-
+    <header class="cabinet-top-bar">
+      <!-- Top Left: Wooden Settings Button & Boosters -->
+      <div class="top-left-controls">
         <button
           type="button"
-          class="btn-home-sound"
-          (click)="toggleSound()"
-          [title]="audio.isSoundEnabled() ? 'Mute Sound' : 'Enable Sound'"
+          class="wood-btn btn-settings"
+          (click)="toggleSettingsModal()"
+          title="Settings & Options"
         >
-          {{ audio.isSoundEnabled() ? '🔊' : '🔇' }}
+          <span class="gear-icon">⚙️</span>
         </button>
-      </header>
 
-      <!-- Home Hero Content -->
-      <main class="home-main-content">
-        <!-- Animated Fruit Mascot Cluster -->
-        <div class="mascot-hero-card">
-          <div class="mascot-glow"></div>
-          <div class="mascot-fruits-cluster">
-            <img src="assets/fruitmerge/fruit_11_giant_watermelon.svg" alt="Giant Watermelon" class="m-fruit m-wm" />
-            <img src="assets/fruitmerge/fruit_9_coconut.svg" alt="Coconut" class="m-fruit m-coco" />
-            <img src="assets/fruitmerge/fruit_6_apple.svg" alt="Apple" class="m-fruit m-apple" />
-            <img src="assets/fruitmerge/fruit_4_lemon.svg" alt="Lemon" class="m-fruit m-lemon" />
-            <img src="assets/fruitmerge/fruit_1_cherry.svg" alt="Cherry" class="m-fruit m-cherry" />
-          </div>
-        </div>
-
-        <!-- Title & Subtitle -->
-        <div class="hero-title-group">
-          <span class="badge-pill">PIXIJS v8 2D PHYSICS</span>
-          <h1 class="main-title">FRUIT MERGE</h1>
-          <p class="tagline">Combine matching fruits to grow the Giant Watermelon!</p>
-        </div>
-
-        <!-- High Score Badge -->
-        <div class="best-score-badge">
-          <span class="crown-icon">👑</span>
-          <div class="score-meta">
-            <span class="score-lbl">BEST RECORD</span>
-            <span class="score-num">{{ bestScore | number }}</span>
-          </div>
-        </div>
-
-        <!-- Primary Actions -->
-        <div class="home-actions">
-          <button type="button" class="btn-play-game" (click)="startGame()">
-            <div class="play-btn-content">
-              <span class="play-icon">▶</span>
-              <span class="play-text">PLAY NOW</span>
+        <!-- Power-Up Booster Tools -->
+        <div class="boosters-row left-boosters">
+          <!-- Hammer Booster -->
+          <button
+            type="button"
+            class="booster-slot"
+            [class.active]="activeBooster === 'hammer'"
+            (click)="useBooster('hammer')"
+            title="Hammer Booster: Smash any fruit"
+          >
+            <div class="booster-icon-box">
+              <span class="b-icon">🔨</span>
             </div>
+            <span class="plus-badge">+</span>
           </button>
 
-          <button type="button" class="btn-how-to-play" (click)="showRulesModal = true">
-            <span class="icon">📖</span>
-            <span>How to Play</span>
-          </button>
-        </div>
-
-        <!-- Fruit Merge Evolution Strip -->
-        <div class="evolution-showcase-card">
-          <span class="evo-title">FRUIT EVOLUTION LADDER</span>
-          <div class="evo-scroll-row">
-            <div *ngFor="let f of fruitTiersList; let last = last" class="evo-step">
-              <div class="evo-item" [title]="f.name + ' (+' + f.score + ' pts)'">
-                <img [src]="'assets/fruitmerge/' + f.svgName" [alt]="f.name" class="evo-img" />
-                <span class="evo-score">+{{ f.score }}</span>
-              </div>
-              <span *ngIf="!last" class="evo-arrow">→</span>
+          <!-- Magic Wand Booster -->
+          <button
+            type="button"
+            class="booster-slot"
+            [class.active]="activeBooster === 'wand'"
+            (click)="useBooster('wand')"
+            title="Magic Wand: Upgrade smallest fruit"
+          >
+            <div class="booster-icon-box">
+              <span class="b-icon">🪄</span>
             </div>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- SCREEN 2: ACTIVE GAMEPLAY (GLASS AQUARIUM & PIXI CANVAS)                 -->
-    <!-- ========================================================================= -->
-    <div [style.display]="currentScreen === 'game' ? 'flex' : 'none'" class="fruitmerge-play-screen">
-      <!-- Gameplay Top Bar -->
-      <header class="game-top-bar">
-        <div class="top-bar-left">
-          <button type="button" class="btn-menu-pill" (click)="goGameHome()" title="Return to Menu">
-            <span class="arrow">←</span>
-            <span>Menu</span>
+            <span class="plus-badge">+</span>
           </button>
         </div>
+      </div>
 
-        <!-- Center/Right Stats Widgets -->
-        <div class="top-bar-right">
-          <!-- Current Score -->
-          <div class="score-card">
-            <span class="score-lbl">SCORE</span>
-            <span class="score-val">{{ score | number }}</span>
+      <!-- Top Center: Puffy White Cloud High Score & Current Score Widget -->
+      <div class="cloud-score-container">
+        <div class="cloud-svg-shape">
+          <!-- Top Cloud Ridge: High Score with Trophy -->
+          <div class="cloud-top-row">
+            <span class="trophy-icon">🏆</span>
+            <span class="cloud-best-val">{{ bestScore }}</span>
           </div>
 
-          <!-- Best Score -->
-          <div class="score-card best-card">
-            <span class="score-lbl">BEST</span>
-            <span class="score-val">{{ bestScore | number }}</span>
+          <!-- Cloud Main Center: Current Score in bold brown digits -->
+          <div class="cloud-score-main">
+            {{ score }}
           </div>
+        </div>
+      </div>
 
-          <!-- Next Fruit Preview Bubble -->
-          <div class="next-fruit-bubble" title="Next Fruit to Drop">
-            <span class="next-lbl">NEXT</span>
-            <div class="next-icon-box">
+      <!-- Top Right: Wooden Coin Bar, Disco Bomb & Circular Wooden Next Fruit Frame -->
+      <div class="top-right-controls">
+        <!-- Wooden Coin Bar -->
+        <div class="wood-coins-bar" title="Current Coins">
+          <span class="coin-icon">🪙</span>
+          <span class="coin-val">{{ coins }}</span>
+        </div>
+
+        <div class="boosters-row right-boosters">
+          <!-- Disco Bomb Booster -->
+          <button
+            type="button"
+            class="booster-slot"
+            [class.active]="activeBooster === 'bomb'"
+            (click)="useBooster('bomb')"
+            title="Bomb Booster: Blast nearby cluster of fruits"
+          >
+            <div class="booster-icon-box">
+              <span class="b-icon">💣</span>
+            </div>
+            <span class="plus-badge">+</span>
+          </button>
+
+          <!-- Next Fruit Circular Wooden Frame Preview -->
+          <div class="next-preview-cluster">
+            <span class="next-label">NEXT</span>
+            <div class="wood-circle-preview" [title]="'Next Fruit: ' + nextFruitConfig.name">
               <img
                 [src]="'assets/fruitmerge/' + nextFruitConfig.svgName"
                 [alt]="nextFruitConfig.name"
@@ -127,215 +99,163 @@
               />
             </div>
           </div>
-
-          <!-- Sound Toggle Button -->
-          <button
-            type="button"
-            class="btn-icon-sound"
-            (click)="toggleSound()"
-            [title]="audio.isSoundEnabled() ? 'Mute Sound' : 'Enable Sound'"
-          >
-            {{ audio.isSoundEnabled() ? '🔊' : '🔇' }}
-          </button>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- Main Game Stage & Glass Aquarium Area -->
-      <main class="game-viewport">
-        <div
-          class="glass-aquarium-stage"
-          (pointermove)="setDropperPosition($event.clientX)"
-          (pointerdown)="setDropperPosition($event.clientX)"
-          (pointerup)="dropCurrentFruit()"
-          (touchmove)="setDropperPosition($event.touches[0].clientX)"
-          (touchend)="dropCurrentFruit()"
-        >
-          <!-- PixiJS Canvas Mounting Node -->
-          <div #canvasHost class="pixi-canvas-host"></div>
+    <!-- ========================================================================= -->
+    <!-- PLAYFIELD VIEWPORT & PIXIJS STAGE                                         -->
+    <!-- ========================================================================= -->
+    <main class="cabinet-playfield-viewport">
+      <div
+        class="playfield-stage"
+        (pointermove)="setDropperPosition($event.clientX)"
+        (pointerdown)="setDropperPosition($event.clientX)"
+        (pointerup)="handleStageClick($event.clientX, $event.clientY)"
+        (touchmove)="setDropperPosition($event.touches[0].clientX)"
+        (touchend)="handleStageClick(dropperX, 0)"
+      >
+        <!-- PixiJS Canvas Host -->
+        <div #canvasHost class="pixi-canvas-host"></div>
 
-          <!-- HTML Floating Score Labels (Rising Text FX) -->
-          <div class="floating-labels-layer">
-            <div
-              *ngFor="let s of floatingScores"
-              class="floating-score-pill"
-              [style.left.px]="s.x"
-              [style.top.px]="s.y"
-              [style.color]="s.color"
-              [style.opacity]="s.alpha"
+        <!-- Floating Score Labels -->
+        <div class="floating-labels-layer">
+          <div
+            *ngFor="let s of floatingScores"
+            class="floating-score-pill"
+            [style.left.px]="s.x"
+            [style.top.px]="s.y"
+            [style.color]="s.color"
+            [style.opacity]="s.alpha"
+          >
+            {{ s.text }}
+          </div>
+        </div>
+
+        <!-- Active Booster Instructions Tooltip Banner -->
+        <div *ngIf="activeBooster === 'hammer'" class="booster-toast-banner">
+          <span>🔨 Tap any fruit on the board to smash it!</span>
+        </div>
+        <div *ngIf="activeBooster === 'bomb'" class="booster-toast-banner bomb">
+          <span>💣 Tap anywhere on the pile to blast fruits!</span>
+        </div>
+
+        <!-- Combo Streak Banner -->
+        <div *ngIf="comboCount > 1" class="combo-streak-pill">
+          <span>🔥 COMBO x{{ comboCount }}!</span>
+        </div>
+
+        <!-- Danger Warning Banner -->
+        <div *ngIf="dangerWarning && !isGameOver" class="danger-warning-banner">
+          <span>⚠️ DANGER! OVERFLOWING</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- BOTTOM EVOLUTION ARROW BAR (ALL 12 FRUITS)                                -->
+    <!-- ========================================================================= -->
+    <section class="cabinet-bottom-section">
+      <!-- Wooden Evolution Arrow Plaque -->
+      <div class="wood-evolution-arrow" title="Fruit Evolution Chain (Merge 2 to advance)">
+        <div class="arrow-content-strip">
+          <div
+            *ngFor="let f of fruitTiersList; let last = last"
+            class="evo-fruit-node"
+            [title]="f.name + ' (+' + f.score + ' pts)'"
+          >
+            <img [src]="'assets/fruitmerge/' + f.svgName" [alt]="f.name" class="evo-fruit-icon" />
+          </div>
+        </div>
+        <div class="arrow-tip-head">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="arrow-svg">
+            <path d="M5 3l14 9-14 9V3z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Bottom Banner: Bright Green Pill Button with Smiling Mascot Peeking -->
+      <div class="play-banner-wrapper">
+        <div class="peeking-fruit-mascot">
+          <img src="assets/fruitmerge/fruit_8_melon.svg" alt="Smiling Mascot" />
+        </div>
+        <button type="button" class="btn-play-for-fun" (click)="restartGame()">
+          PLAY FOR FUN
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SETTINGS MODAL DIALOG                                                     -->
+    <!-- ========================================================================= -->
+    <div *ngIf="showSettingsModal" class="modal-backdrop" (click)="closeSettingsModal()">
+      <div class="wood-modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-wood-header">
+          <h3>⚙️ SETTINGS</h3>
+          <button type="button" class="btn-modal-close" (click)="closeSettingsModal()">✕</button>
+        </div>
+
+        <div class="modal-wood-body">
+          <!-- Audio Toggle -->
+          <div class="setting-item-row">
+            <div class="setting-label">
+              <span class="icon">{{ audio.isSoundEnabled() ? '🔊' : '🔇' }}</span>
+              <span>Sound Effects</span>
+            </div>
+            <button
+              type="button"
+              class="wood-toggle-btn"
+              [class.active]="audio.isSoundEnabled()"
+              (click)="toggleSound()"
             >
-              {{ s.text }}
-            </div>
+              {{ audio.isSoundEnabled() ? 'ON' : 'OFF' }}
+            </button>
           </div>
 
-          <!-- Combo Streak Pill Notification -->
-          <div *ngIf="comboCount > 1" class="combo-streak-pill">
-            <span>🔥 COMBO x{{ comboCount }}!</span>
-          </div>
-
-          <!-- Danger Warning Banner Pulse -->
-          <div *ngIf="dangerWarning && !isGameOver" class="danger-warning-banner">
-            <span>⚠️ DANGER! CONTAINER OVERFLOWING</span>
-          </div>
-        </div>
-
-        <!-- Bottom Controls (Matching Reference Screenshot) -->
-        <div class="game-bottom-bar">
-          <!-- Blue Home Button with White House Icon -->
+          <!-- Restart Game -->
           <button
             type="button"
-            class="ref-btn ref-btn-home"
-            (click)="goGameHome()"
-            title="Return to Menu"
+            class="modal-action-btn restart"
+            (click)="restartGame(); closeSettingsModal()"
           >
-            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
+            <span>🔄 Restart Game</span>
           </button>
 
-          <!-- Yellow Restart Button with Reload Icon -->
-          <button
-            type="button"
-            class="ref-btn ref-btn-restart"
-            (click)="restartGame()"
-            title="Restart Game"
-          >
-            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-            </svg>
+          <!-- Back to PixiJS Creative Hub -->
+          <button type="button" class="modal-action-btn hub" (click)="goHome()">
+            <span>← Exit to PixiJS Hub</span>
           </button>
-        </div>
-      </main>
-
-      <!-- ========================================================================= -->
-      <!-- GAME OVER OVERLAY MODAL (MATCHING REFERENCE SCREENSHOT)                   -->
-      <!-- ========================================================================= -->
-      <div *ngIf="isGameOver" class="game-over-overlay">
-        <div class="game-over-card">
-          <!-- Game Over Banner Pill Header (Exact style from screenshot) -->
-          <div class="ref-game-over-banner">
-            <span>GAME OVER</span>
-          </div>
-
-          <div class="game-over-body">
-            <div class="result-stats">
-              <div class="result-box">
-                <span class="box-lbl">FINAL SCORE</span>
-                <span class="box-val highlight">{{ score | number }}</span>
-              </div>
-
-              <div class="result-box">
-                <span class="box-lbl">BEST SCORE</span>
-                <span class="box-val">{{ bestScore | number }}</span>
-              </div>
-            </div>
-
-            <p class="congrats-text" *ngIf="score >= bestScore && score > 0">
-              🎉 NEW RECORD HIGH SCORE!
-            </p>
-
-            <!-- Fruit Tier Evolution Reference Bar -->
-            <div class="tier-evolution-guide">
-              <span class="guide-title">MERGE EVOLUTION</span>
-              <div class="guide-fruits-row">
-                <span title="Cherry (2 pts)">🍒</span>
-                <span class="arr">→</span>
-                <span title="Strawberry (4 pts)">🍓</span>
-                <span class="arr">→</span>
-                <span title="Grape (8 pts)">🍇</span>
-                <span class="arr">→</span>
-                <span title="Lemon (16 pts)">🍋</span>
-                <span class="arr">→</span>
-                <span title="Orange (32 pts)">🍊</span>
-                <span class="arr">→</span>
-                <span title="Apple (64 pts)">🍎</span>
-                <span class="arr">→</span>
-                <span title="Peach (128 pts)">🍑</span>
-                <span class="arr">→</span>
-                <span title="Melon (256 pts)">🍈</span>
-                <span class="arr">→</span>
-                <span title="Coconut (512 pts)">🥥</span>
-                <span class="arr">→</span>
-                <span title="Watermelon (1024 pts)">🍉</span>
-              </div>
-            </div>
-
-            <!-- Action Buttons in Modal -->
-            <div class="modal-actions-row">
-              <button
-                type="button"
-                class="ref-btn ref-btn-home modal-btn"
-                (click)="goGameHome()"
-                title="Return to Menu"
-              >
-                <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-                <span>Menu</span>
-              </button>
-
-              <button
-                type="button"
-                class="ref-btn ref-btn-restart modal-btn"
-                (click)="restartGame()"
-                title="Play Again"
-              >
-                <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                </svg>
-                <span>Play Again</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- HOW TO PLAY RULES MODAL                                                   -->
+    <!-- GAME OVER MODAL DIALOG                                                    -->
     <!-- ========================================================================= -->
-    <div *ngIf="showRulesModal" class="rules-modal-backdrop" (click)="showRulesModal = false">
-      <div class="rules-modal-dialog" (click)="$event.stopPropagation()">
-        <div class="rules-modal-header">
-          <h3>🍉 How to Play</h3>
-          <button type="button" class="btn-close" (click)="showRulesModal = false">✕</button>
+    <div *ngIf="isGameOver" class="modal-backdrop">
+      <div class="game-over-wood-card">
+        <div class="wood-game-over-banner">
+          <span>GAME OVER</span>
         </div>
 
-        <div class="rules-modal-body">
-          <div class="rule-card">
-            <span class="rule-icon">👆</span>
-            <div class="rule-text">
-              <h4>1. Aim & Drop</h4>
-              <p>Move your finger or mouse horizontally to aim, then tap, release, or press Space to drop the fruit.</p>
-            </div>
+        <div class="game-over-stats-block">
+          <div class="stat-pill">
+            <span class="stat-lbl">SCORE</span>
+            <span class="stat-num highlight">{{ score | number }}</span>
           </div>
 
-          <div class="rule-card">
-            <span class="rule-icon">💥</span>
-            <div class="rule-text">
-              <h4>2. Collide to Merge</h4>
-              <p>When two identical fruits touch, they pop and merge into the next bigger fruit in the evolution chain!</p>
-            </div>
-          </div>
-
-          <div class="rule-card">
-            <span class="rule-icon">🍉</span>
-            <div class="rule-text">
-              <h4>3. Create the Giant Watermelon</h4>
-              <p>Merge all 11 tiers from tiny Cherries up to the Giant Watermelon for huge bonus points!</p>
-            </div>
-          </div>
-
-          <div class="rule-card danger">
-            <span class="rule-icon">⚠️</span>
-            <div class="rule-text">
-              <h4>4. Watch the Danger Line</h4>
-              <p>Don't let resting fruits overflow above the red dashed line at the top, or it's Game Over!</p>
-            </div>
+          <div class="stat-pill">
+            <span class="stat-lbl">HIGH SCORE</span>
+            <span class="stat-num">{{ bestScore | number }}</span>
           </div>
         </div>
 
-        <button type="button" class="btn-got-it" (click)="showRulesModal = false">
-          Got It, Let's Play!
+        <button type="button" class="btn-play-again-wood" (click)="restartGame()">
+          ▶ PLAY AGAIN
+        </button>
+
+        <button type="button" class="btn-hub-return" (click)="goHome()">
+          ← Return to Creative Hub
         </button>
       </div>
     </div>

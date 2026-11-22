@@ -1,36 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
-    <radialGradient id="giantWmGrad" cx="40%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#4ade80"/>
-      <stop offset="50%" stop-color="#22c55e"/>
-      <stop offset="100%" stop-color="#14532d"/>
+    <radialGradient id="pumpGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="55%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
     </radialGradient>
   </defs>
-  <!-- Outer Sphere Body (r=122, diameter=244) -->
-  <circle cx="128" cy="128" r="122" fill="url(#giantWmGrad)"/>
-  <!-- Wavy Jagged Watermelon Dark Green Stripes (Identical to reference screenshot) -->
-  <g fill="none" stroke="#14532d" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M26,80 Q44,105 34,128 Q44,152 28,180"/>
-    <path d="M62,40 Q85,82 70,128 Q88,172 68,212"/>
-    <path d="M104,14 Q126,70 108,128 Q126,182 108,238"/>
-    <path d="M152,14 Q132,70 148,128 Q132,182 148,238"/>
-    <path d="M194,40 Q172,82 186,128 Q168,172 190,212"/>
-    <path d="M230,80 Q212,105 222,128 Q212,152 228,180"/>
+  <!-- Pumpkin Outer Body -->
+  <circle cx="128" cy="128" r="122" fill="url(#pumpGrad)" stroke="#431407" stroke-width="6"/>
+  <!-- Pumpkin Vertical Rib Creases (Identical to screenshot) -->
+  <g fill="none" stroke="#7c2d12" stroke-width="7" stroke-linecap="round">
+    <path d="M50,75 Q85,128 55,185"/>
+    <path d="M88,38 Q115,128 92,220"/>
+    <path d="M128,16 Q138,128 128,240"/>
+    <path d="M168,38 Q141,128 164,220"/>
+    <path d="M206,75 Q171,128 201,185"/>
   </g>
-  <!-- Highlight Reflection -->
-  <ellipse cx="70" cy="62" rx="32" ry="16" fill="#ffffff" opacity="0.7" transform="rotate(-30 70 62)"/>
-  <circle cx="102" cy="46" r="6" fill="#ffffff" opacity="0.75"/>
+  <!-- Brown Stem on Top -->
+  <path d="M128,22 C126,8 132,4 138,4" stroke="#78350f" stroke-width="9" stroke-linecap="round"/>
+  <!-- Highlight -->
+  <ellipse cx="78" cy="72" rx="30" ry="14" fill="#ffffff" opacity="0.65" transform="rotate(-30 78 72)"/>
   <!-- Cheeks -->
-  <circle cx="65" cy="154" r="20" fill="#86efac" opacity="0.65"/>
-  <circle cx="191" cy="154" r="20" fill="#86efac" opacity="0.65"/>
-  <!-- Furrowed Grumpy Eyebrows -->
-  <path d="M74,102 L114,118" stroke="#052e16" stroke-width="8" stroke-linecap="round"/>
-  <path d="M182,102 L142,118" stroke="#052e16" stroke-width="8" stroke-linecap="round"/>
-  <!-- Squinting Sideways Eyes (Matching reference) -->
-  <circle cx="100" cy="128" r="14" fill="#052e16"/>
-  <circle cx="94" cy="125" r="5" fill="#ffffff"/>
-  <circle cx="156" cy="128" r="14" fill="#052e16"/>
-  <circle cx="150" cy="125" r="5" fill="#ffffff"/>
-  <!-- Deep Grumpy Frown -->
-  <path d="M106,164 Q128,138 150,164" fill="none" stroke="#052e16" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="68" cy="154" r="18" fill="#c2410c" opacity="0.65"/>
+  <circle cx="188" cy="154" r="18" fill="#c2410c" opacity="0.65"/>
+  <!-- Eyes -->
+  <circle cx="92" cy="125" r="13" fill="#270901"/>
+  <circle cx="87" cy="120" r="5" fill="#ffffff"/>
+  <circle cx="97" cy="129" r="2.5" fill="#ffffff"/>
+  <circle cx="164" cy="125" r="13" fill="#270901"/>
+  <circle cx="159" cy="120" r="5" fill="#ffffff"/>
+  <circle cx="169" cy="129" r="2.5" fill="#ffffff"/>
+  <!-- Cat-mouth '3' / Cute Smile -->
+  <path d="M110,146 Q119,158 128,148 Q137,158 146,146" fill="none" stroke="#270901" stroke-width="6" stroke-linecap="round"/>
 </svg>

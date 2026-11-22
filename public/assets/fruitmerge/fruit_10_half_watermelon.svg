@@ -1,34 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
-    <radialGradient id="wmHalfGrad" cx="40%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#4ade80"/>
-      <stop offset="65%" stop-color="#22c55e"/>
-      <stop offset="100%" stop-color="#15803d"/>
+    <radialGradient id="bOrangeGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="55%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
     </radialGradient>
   </defs>
-  <!-- Body -->
-  <circle cx="128" cy="128" r="122" fill="url(#wmHalfGrad)"/>
-  <!-- Dark Green Watermelon Stripes -->
-  <g fill="none" stroke="#166534" stroke-width="14" stroke-linecap="round">
-    <path d="M35,75 Q65,128 38,185"/>
-    <path d="M78,40 Q106,128 82,216"/>
-    <path d="M128,18 Q140,128 128,238"/>
-    <path d="M178,40 Q152,128 174,216"/>
-    <path d="M221,75 Q192,128 218,185"/>
-  </g>
+  <circle cx="128" cy="128" r="122" fill="url(#bOrangeGrad)" stroke="#431407" stroke-width="6"/>
+  <!-- Leaf -->
+  <ellipse cx="152" cy="10" rx="18" ry="9" fill="#22c55e" stroke="#15803d" stroke-width="2.5" transform="rotate(-15 152 10)"/>
   <!-- Highlight -->
-  <ellipse cx="72" cy="72" rx="30" ry="15" fill="#ffffff" opacity="0.65" transform="rotate(-30 72 72)"/>
+  <ellipse cx="78" cy="72" rx="30" ry="15" fill="#ffffff" opacity="0.75" transform="rotate(-30 78 72)"/>
   <!-- Cheeks -->
-  <circle cx="68" cy="154" r="18" fill="#86efac" opacity="0.65"/>
-  <circle cx="188" cy="154" r="18" fill="#86efac" opacity="0.65"/>
-  <!-- Eyes Looking Sideways -->
-  <circle cx="92" cy="126" r="12" fill="#052e16"/>
-  <circle cx="87" cy="123" r="4" fill="#ffffff"/>
-  <circle cx="164" cy="126" r="12" fill="#052e16"/>
-  <circle cx="159" cy="123" r="4" fill="#ffffff"/>
-  <!-- Eyebrows -->
-  <path d="M78,108 L106,116" stroke="#052e16" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M178,108 L150,116" stroke="#052e16" stroke-width="5.5" stroke-linecap="round"/>
-  <!-- Frown -->
-  <path d="M112,158 Q128,142 144,158" fill="none" stroke="#052e16" stroke-width="6.5" stroke-linecap="round"/>
+  <circle cx="68" cy="154" r="18" fill="#c2410c" opacity="0.6"/>
+  <circle cx="188" cy="154" r="18" fill="#c2410c" opacity="0.6"/>
+  <!-- Anime Eyes -->
+  <circle cx="92" cy="125" r="13" fill="#270901"/>
+  <circle cx="87" cy="120" r="5" fill="#ffffff"/>
+  <circle cx="97" cy="129" r="2.5" fill="#ffffff"/>
+  <circle cx="164" cy="125" r="13" fill="#270901"/>
+  <circle cx="159" cy="120" r="5" fill="#ffffff"/>
+  <circle cx="169" cy="129" r="2.5" fill="#ffffff"/>
+  <!-- Smile -->
+  <path d="M112,148 Q128,168 144,148" fill="#f43f5e" stroke="#270901" stroke-width="5.5" stroke-linecap="round"/>
 </svg>

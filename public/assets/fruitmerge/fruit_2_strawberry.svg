@@ -1,40 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
-    <radialGradient id="strawGrad" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#ff4d6d"/>
-      <stop offset="65%" stop-color="#e11d48"/>
+    <radialGradient id="tomGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff6b8b"/>
+      <stop offset="55%" stop-color="#e11d48"/>
       <stop offset="100%" stop-color="#881337"/>
     </radialGradient>
   </defs>
-  <!-- Berry Body (Centered circle filling r=122) -->
-  <circle cx="128" cy="128" r="122" fill="url(#strawGrad)"/>
-  <!-- Seeds -->
-  <g fill="#fef08a" opacity="0.85">
-    <ellipse cx="70" cy="80" rx="4" ry="7" transform="rotate(-15 70 80)"/>
-    <ellipse cx="186" cy="80" rx="4" ry="7" transform="rotate(15 186 80)"/>
-    <ellipse cx="50" cy="135" rx="4" ry="7" transform="rotate(-25 50 135)"/>
-    <ellipse cx="206" cy="135" rx="4" ry="7" transform="rotate(25 206 135)"/>
-    <ellipse cx="78" cy="195" rx="4" ry="7" transform="rotate(-10 78 195)"/>
-    <ellipse cx="178" cy="195" rx="4" ry="7" transform="rotate(10 178 195)"/>
-    <ellipse cx="128" cy="218" rx="4" ry="7"/>
-    <ellipse cx="128" cy="75" rx="4" ry="7"/>
-  </g>
-  <!-- Highlights -->
-  <ellipse cx="75" cy="65" rx="28" ry="12" fill="#ffffff" opacity="0.55" transform="rotate(-25 75 65)"/>
-  <!-- Green Calyx Leaves Crown -->
-  <path d="M128,25 L106,6 C100,20 82,18 70,22 C90,32 102,40 115,38 L128,25 Z" fill="#22c55e"/>
-  <path d="M128,25 L150,6 C156,20 174,18 186,22 C166,32 154,40 141,38 L128,25 Z" fill="#16a34a"/>
-  <ellipse cx="128" cy="24" rx="28" ry="9" fill="#15803d"/>
+  <!-- Body -->
+  <circle cx="128" cy="128" r="122" fill="url(#tomGrad)" stroke="#4c0519" stroke-width="6"/>
+  <!-- Stem & Leaves -->
+  <path d="M128,14 C128,4 135,2 142,2" stroke="#15803d" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="106" cy="18" rx="18" ry="7" fill="#22c55e" stroke="#15803d" stroke-width="2" transform="rotate(-25 106 18)"/>
+  <ellipse cx="150" cy="18" rx="18" ry="7" fill="#22c55e" stroke="#15803d" stroke-width="2" transform="rotate(25 150 18)"/>
+  <!-- Highlight -->
+  <ellipse cx="78" cy="72" rx="32" ry="16" fill="#ffffff" opacity="0.75" transform="rotate(-30 78 72)"/>
+  <circle cx="106" cy="56" r="6" fill="#ffffff" opacity="0.8"/>
   <!-- Cheeks -->
-  <circle cx="72" cy="152" r="18" fill="#fb7185" opacity="0.65"/>
-  <circle cx="184" cy="152" r="18" fill="#fb7185" opacity="0.65"/>
-  <!-- Angry / Cute Eyes -->
-  <path d="M72,114 L102,128" stroke="#1e293b" stroke-width="5.5" stroke-linecap="round"/>
-  <circle cx="90" cy="130" r="10" fill="#1e293b"/>
-  <circle cx="86" cy="127" r="3.5" fill="#ffffff"/>
-  <path d="M184,114 L154,128" stroke="#1e293b" stroke-width="5.5" stroke-linecap="round"/>
-  <circle cx="166" cy="130" r="10" fill="#1e293b"/>
-  <circle cx="162" cy="127" r="3.5" fill="#ffffff"/>
-  <!-- Frown Mouth -->
-  <path d="M115,160 Q128,148 141,160" fill="none" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="70" cy="154" r="18" fill="#fb7185" opacity="0.7"/>
+  <circle cx="186" cy="154" r="18" fill="#fb7185" opacity="0.7"/>
+  <!-- Kawaii Eyes -->
+  <circle cx="92" cy="126" r="13" fill="#1c1917"/>
+  <circle cx="88" cy="122" r="5" fill="#ffffff"/>
+  <circle cx="97" cy="130" r="2.5" fill="#ffffff"/>
+  <circle cx="164" cy="126" r="13" fill="#1c1917"/>
+  <circle cx="160" cy="122" r="5" fill="#ffffff"/>
+  <circle cx="169" cy="130" r="2.5" fill="#ffffff"/>
+  <!-- Smile -->
+  <path d="M114,152 Q128,168 142,152" fill="none" stroke="#1c1917" stroke-width="6" stroke-linecap="round"/>
 </svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="gPlumGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#9333ea"/>
+      <stop offset="100%" stop-color="#3b0764"/>
+    </radialGradient>
+  </defs>
+  <!-- Huge Outer Sphere Body (r=122) -->
+  <circle cx="128" cy="128" r="122" fill="url(#gPlumGrad)" stroke="#1e0538" stroke-width="7"/>
+  <!-- Stem & Leaf -->
+  <path d="M128,18 C128,6 136,2 144,2" stroke="#15803d" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="156" cy="10" rx="22" ry="11" fill="#4ade80" stroke="#15803d" stroke-width="2.5" transform="rotate(-20 156 10)"/>
+  <!-- Large Glossy Specular Reflection (Identical to screenshot) -->
+  <ellipse cx="68" cy="65" rx="36" ry="18" fill="#ffffff" opacity="0.85" transform="rotate(-30 68 65)"/>
+  <circle cx="106" cy="46" r="7" fill="#ffffff" opacity="0.95"/>
+  <circle cx="48" cy="108" r="7" fill="#ffffff" opacity="0.6"/>
+  <!-- Glowing Rosy Pink Blush Cheeks -->
+  <circle cx="65" cy="155" r="22" fill="#f472b6" opacity="0.85"/>
+  <circle cx="191" cy="155" r="22" fill="#f472b6" opacity="0.85"/>
+  <!-- Huge Anime Sparkling Eyes (Exact match to screenshot!) -->
+  <circle cx="94" cy="124" r="18" fill="#0f0728"/>
+  <circle cx="86" cy="116" r="7.5" fill="#ffffff"/>
+  <circle cx="102" cy="132" r="3.5" fill="#ffffff"/>
+  <circle cx="162" cy="124" r="18" fill="#0f0728"/>
+  <circle cx="154" cy="116" r="7.5" fill="#ffffff"/>
+  <circle cx="170" cy="132" r="3.5" fill="#ffffff"/>
+  <!-- Big Happy Open Mouth (^o^) with Pink Tongue -->
+  <path d="M108,144 Q128,178 148,144 Z" fill="#e11d48" stroke="#0f0728" stroke-width="6"/>
+  <path d="M116,152 Q128,170 140,152" fill="#fda4af"/>
+</svg>

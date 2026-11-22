@@ -1,32 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
-    <radialGradient id="melonGrad" cx="35%" cy="30%" r="70%">
+    <radialGradient id="gAppleGrad" cx="35%" cy="30%" r="70%">
       <stop offset="0%" stop-color="#bef264"/>
-      <stop offset="65%" stop-color="#84cc16"/>
-      <stop offset="100%" stop-color="#4d7c0f"/>
+      <stop offset="55%" stop-color="#84cc16"/>
+      <stop offset="100%" stop-color="#3f6212"/>
     </radialGradient>
   </defs>
-  <!-- Fruit Body -->
-  <circle cx="128" cy="128" r="122" fill="url(#melonGrad)"/>
-  <!-- Faint Reticulation Web Lines -->
-  <g fill="none" stroke="#ecfccb" stroke-width="3.5" opacity="0.45" stroke-linecap="round">
-    <path d="M30,100 Q80,85 140,105 T226,100"/>
-    <path d="M35,155 Q100,172 160,150 T220,160"/>
-    <path d="M75,45 Q128,68 185,50"/>
-    <path d="M80,215 Q128,195 180,215"/>
-    <path d="M95,60 Q78,128 100,198"/>
-    <path d="M160,60 Q178,128 155,198"/>
-  </g>
+  <!-- Body -->
+  <circle cx="128" cy="128" r="122" fill="url(#gAppleGrad)" stroke="#1a2e05" stroke-width="6"/>
+  <!-- Leaf on Top -->
+  <path d="M128,18 C128,8 136,4 144,4" stroke="#15803d" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="154" cy="12" rx="20" ry="10" fill="#4ade80" stroke="#15803d" stroke-width="2.5" transform="rotate(-20 154 12)"/>
   <!-- Highlight -->
-  <ellipse cx="78" cy="72" rx="32" ry="16" fill="#ffffff" opacity="0.65" transform="rotate(-30 78 72)"/>
+  <ellipse cx="78" cy="72" rx="32" ry="16" fill="#ffffff" opacity="0.75" transform="rotate(-30 78 72)"/>
+  <circle cx="106" cy="56" r="6" fill="#ffffff" opacity="0.8"/>
   <!-- Cheeks -->
   <circle cx="68" cy="154" r="18" fill="#a3e635" opacity="0.75"/>
   <circle cx="188" cy="154" r="18" fill="#a3e635" opacity="0.75"/>
-  <!-- Squinting Grumpy Eyes -->
-  <path d="M72,118 L100,130" stroke="#1a2e05" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M72,136 L100,130" stroke="#1a2e05" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M184,118 L156,130" stroke="#1a2e05" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M184,136 L156,130" stroke="#1a2e05" stroke-width="5.5" stroke-linecap="round"/>
-  <!-- Wavy Grumpy Mouth -->
-  <path d="M110,162 Q120,152 128,158 T146,156" fill="none" stroke="#1a2e05" stroke-width="6" stroke-linecap="round"/>
+  <!-- Kawaii Sparkling Eyes -->
+  <circle cx="92" cy="124" r="14" fill="#0f172a"/>
+  <circle cx="86" cy="118" r="6" fill="#ffffff"/>
+  <circle cx="98" cy="129" r="3" fill="#ffffff"/>
+  <circle cx="164" cy="124" r="14" fill="#0f172a"/>
+  <circle cx="158" cy="118" r="6" fill="#ffffff"/>
+  <circle cx="170" cy="129" r="3" fill="#ffffff"/>
+  <!-- Big Happy Open Mouth (^o^) -->
+  <path d="M110,146 Q128,174 146,146 Z" fill="#e11d48" stroke="#0f172a" stroke-width="5"/>
+  <path d="M118,154 Q128,168 138,154" fill="#fda4af"/>
 </svg>

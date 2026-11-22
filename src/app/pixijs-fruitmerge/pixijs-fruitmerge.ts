@@ -77,25 +77,26 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
 
   // Game Dimensions (Glass container logical space)
   readonly boxWidth = 420;
-  readonly boxHeight = 620;
-  readonly wallLeft = 18;
-  readonly wallRight = 402;
-  readonly floorY = 596;
-  readonly dangerLineY = 115;
-  readonly dropY = 48;
+  readonly boxHeight = 640;
+  readonly wallLeft = 14;
+  readonly wallRight = 406;
+  readonly floorY = 624;
+  readonly dangerLineY = 126;
+  readonly dropY = 60;
   readonly svgScaleRatio = 256 / 244; // SVG body has r=122 in 256 box; this scales sprite to exact pixel match
 
   // Game State
-  currentScreen: 'home' | 'game' = 'home';
-  showRulesModal = false;
+  coins = 198;
+  showSettingsModal = false;
+  activeBooster: 'none' | 'hammer' | 'bomb' | 'wand' = 'none';
   readonly fruitTiersList = FRUIT_TIERS;
 
   score = 0;
-  bestScore = 0;
+  bestScore = 253;
   comboCount = 0;
   comboTimer = 0;
   isGameOver = false;
-  isPaused = true; // Paused while on home screen
+  isPaused = false; // Directly active and playable on page entry
   canDrop = true;
   dropCooldown = 0;
   dangerWarning = false;
@@ -336,70 +337,38 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------------------
-  // GLASS AQUARIUM RENDERING
+  // GLASS AQUARIUM RENDERING & DANGER LINE (MATCHING REFERENCE SCREENSHOT)
   // ---------------------------------------------------------------------------
   private renderGlassAquarium(): void {
     const g = this.glassBoxGfx;
     g.clear();
 
-    const w = this.boxWidth;
-    const h = this.boxHeight;
     const wl = this.wallLeft;
     const wr = this.wallRight;
-    const fy = this.floorY;
+    const y = this.dangerLineY;
 
-    // Inner Glass Refraction / Tint
-    g.roundRect(wl, 70, wr - wl, fy - 70, 16);
-    g.fill({ color: 0x38bdf8, alpha: 0.06 });
-
-    // Glass Side Walls
-    g.moveTo(wl, 60);
-    g.lineTo(wl, fy);
-    g.stroke({ width: 7, color: 0xbae6fd, alpha: 0.75 });
-
-    g.moveTo(wr, 60);
-    g.lineTo(wr, fy);
-    g.stroke({ width: 7, color: 0xbae6fd, alpha: 0.75 });
-
-    // Inner Specular Bevel Line (Left)
-    g.moveTo(wl + 5, 80);
-    g.lineTo(wl + 5, fy - 10);
-    g.stroke({ width: 2, color: 0xffffff, alpha: 0.5 });
-
-    // Bottom Base Platform Shelf
-    g.roundRect(wl - 10, fy, (wr - wl) + 20, 18, 6);
-    g.fill({ color: 0x64748b, alpha: 0.9 });
-    g.stroke({ width: 2, color: 0x94a3b8, alpha: 0.95 });
-
-    // Wooden / Metallic Trim
-    g.roundRect(wl - 14, fy + 16, (wr - wl) + 28, 6, 2);
-    g.fill({ color: 0x475569 });
-
-    // Top Opening Acrylic Caps
-    g.roundRect(wl - 6, 52, 12, 12, 4);
-    g.fill({ color: 0xe0f2fe, alpha: 0.9 });
-    g.roundRect(wr - 6, 52, 12, 12, 4);
-    g.fill({ color: 0xe0f2fe, alpha: 0.9 });
+    // Solid Crisp White Danger Line across playfield
+    g.moveTo(wl, y);
+    g.lineTo(wr, y);
+    g.stroke({ width: 3, color: 0xffffff, alpha: 0.95 });
   }
 
   private drawDangerLine(): void {
+    // Redraw crisp white danger line (with red pulse on warning)
     const g = this.glassBoxGfx;
-    // Redraw danger line
-    const color = this.dangerWarning ? 0xef4444 : 0xf87171;
-    const alpha = this.dangerWarning ? 0.9 : 0.45;
+    g.clear();
 
-    // Draw dashed danger line
-    const startX = this.wallLeft + 4;
-    const endX = this.wallRight - 4;
+    const wl = this.wallLeft;
+    const wr = this.wallRight;
     const y = this.dangerLineY;
 
-    g.moveTo(startX, y);
-    g.lineTo(endX, y);
-    g.stroke({
-      width: this.dangerWarning ? 3.5 : 2,
-      color,
-      alpha,
-    });
+    const color = this.dangerWarning ? 0xef4444 : 0xffffff;
+    const alpha = this.dangerWarning ? 0.95 : 0.9;
+    const width = this.dangerWarning ? 3.5 : 3;
+
+    g.moveTo(wl, y);
+    g.lineTo(wr, y);
+    g.stroke({ width, color, alpha });
   }
 
   // ---------------------------------------------------------------------------
@@ -590,6 +559,7 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     const points = config.score + comboBonus;
 
     this.score += points;
+    this.coins += 1; // Merges award coins!
     if (this.score > this.bestScore) {
       this.bestScore = this.score;
       try {
@@ -747,23 +717,18 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
     const g = this.guideLineGfx;
     g.clear();
 
-    if (!this.canDrop || this.isGameOver) return;
+    if (!this.canDrop || this.isGameOver || this.activeBooster !== 'none') return;
 
     const x = this.dropperX;
-    const startY = this.dropY + this.currentFruitConfig.radius + 6;
+    const startY = this.dropY + this.currentFruitConfig.radius + 10;
     const endY = this.floorY;
 
-    // Dashed trajectory guideline
-    const dash = 7;
-    const gap = 5;
-    let currY = startY;
-
-    while (currY < endY) {
-      const nextY = Math.min(currY + dash, endY);
-      g.moveTo(x, currY);
-      g.lineTo(x, nextY);
-      g.stroke({ width: 2, color: 0xffffff, alpha: 0.35 });
-      currY += dash + gap;
+    // Solid Bright Green Dotted Circles Guideline (Matching reference screenshot)
+    const dotRadius = 4.5;
+    const gap = 16;
+    for (let y = startY; y < endY; y += gap) {
+      g.circle(x, y, dotRadius);
+      g.fill({ color: 0x84cc16, alpha: 0.95 });
     }
   }
 
@@ -867,14 +832,12 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   // USER ACTIONS & RESTART
   // ---------------------------------------------------------------------------
   startGame(): void {
-    this.currentScreen = 'game';
     this.isPaused = false;
     this.restartGame();
   }
 
   goGameHome(): void {
-    this.currentScreen = 'home';
-    this.isPaused = true;
+    this.goHome();
   }
 
   restartGame(): void {
@@ -897,6 +860,116 @@ export class PixijsFruitmerge implements OnInit, OnDestroy {
   toggleSound(): void {
     this.soundEnabled = !this.soundEnabled;
     this.audio.setSoundEnabled(this.soundEnabled);
+  }
+
+  toggleSettingsModal(): void {
+    this.showSettingsModal = !this.showSettingsModal;
+  }
+
+  closeSettingsModal(): void {
+    this.showSettingsModal = false;
+  }
+
+  useBooster(type: 'hammer' | 'bomb' | 'wand'): void {
+    if (this.isGameOver) return;
+    if (this.activeBooster === type) {
+      this.activeBooster = 'none';
+      return;
+    }
+    this.activeBooster = type;
+
+    if (type === 'wand') {
+      this.applyMagicWand();
+      this.activeBooster = 'none';
+    }
+  }
+
+  private applyMagicWand(): void {
+    if (this.fruits.length === 0) return;
+    let lowest = this.fruits[0];
+    for (const f of this.fruits) {
+      if (f.tier < lowest.tier) lowest = f;
+    }
+    if (lowest.tier < FRUIT_TIERS.length - 1) {
+      const nextTier = lowest.tier + 1;
+      const x = lowest.x;
+      const y = lowest.y;
+      this.fruitsContainer.removeChild(lowest.container);
+      this.fruits = this.fruits.filter((f) => f !== lowest);
+      this.spawnJuiceBurst(x, y, FRUIT_TIERS[nextTier].color, 24);
+      this.audio.playMerge(nextTier);
+      const upgraded = this.createFruitEntity(nextTier, x, y);
+      upgraded.vy = -140;
+      this.fruits.push(upgraded);
+    }
+  }
+
+  handleStageClick(clientX: number, clientY: number): void {
+    if (this.activeBooster === 'hammer') {
+      this.applyHammer(clientX, clientY);
+      this.activeBooster = 'none';
+      return;
+    } else if (this.activeBooster === 'bomb') {
+      this.applyBomb(clientX, clientY);
+      this.activeBooster = 'none';
+      return;
+    }
+    this.dropCurrentFruit();
+  }
+
+  private applyHammer(clientX: number, clientY: number): void {
+    if (!this.canvasHostRef) return;
+    const rect = this.canvasHostRef.nativeElement.getBoundingClientRect();
+    const scaleX = this.boxWidth / rect.width;
+    const scaleY = this.boxHeight / rect.height;
+    const localX = (clientX - rect.left) * scaleX;
+    const localY = (clientY - rect.top) * scaleY;
+
+    let target: FruitBody | null = null;
+    for (const f of this.fruits) {
+      const dx = f.x - localX;
+      const dy = f.y - localY;
+      if (dx * dx + dy * dy <= (f.radius + 10) * (f.radius + 10)) {
+        target = f;
+        break;
+      }
+    }
+
+    if (target) {
+      this.fruitsContainer.removeChild(target.container);
+      this.fruits = this.fruits.filter((f) => f !== target);
+      this.spawnJuiceBurst(target.x, target.y, FRUIT_TIERS[target.tier].color, 32);
+      this.audio.playMerge(target.tier);
+      this.score += FRUIT_TIERS[target.tier].score;
+    }
+  }
+
+  private applyBomb(clientX: number, clientY: number): void {
+    if (!this.canvasHostRef) return;
+    const rect = this.canvasHostRef.nativeElement.getBoundingClientRect();
+    const scaleX = this.boxWidth / rect.width;
+    const scaleY = this.boxHeight / rect.height;
+    const localX = (clientX - rect.left) * scaleX;
+    const localY = (clientY - rect.top) * scaleY;
+
+    const blastRadius = 90;
+    const removed: FruitBody[] = [];
+
+    for (const f of this.fruits) {
+      const dx = f.x - localX;
+      const dy = f.y - localY;
+      if (dx * dx + dy * dy <= blastRadius * blastRadius) {
+        removed.push(f);
+      }
+    }
+
+    for (const target of removed) {
+      this.fruitsContainer.removeChild(target.container);
+      this.spawnJuiceBurst(target.x, target.y, FRUIT_TIERS[target.tier].color, 16);
+      this.score += FRUIT_TIERS[target.tier].score;
+    }
+    this.fruits = this.fruits.filter((f) => !removed.includes(f));
+    this.audio.playGameOver();
   }
 
   goHome(): void {
