@@ -224,64 +224,73 @@ export class PixijsFruitmerge implements OnInit, AfterViewInit, OnDestroy {
     this.uiOverlayContainer = new Container();
     this.worldContainer.addChild(this.uiOverlayContainer);
 
-    // Build or Load Fruit Textures (Rock-solid and never hangs)
-    await this.loadFruitTextures();
+    // 1. Immediately generate all 12 fruit textures synchronously! (Zero wait time)
+    this.initSynchronousCanvasTextures();
 
-    // Create Dropper Visual Indicator
+    // 2. Create Dropper Visual Indicator immediately
     this.dropperSprite = new Sprite();
     this.dropperSprite.anchor.set(0.5);
     this.dropperSprite.y = this.dropY;
     this.uiOverlayContainer.addChild(this.dropperSprite);
     this.updateDropperVisual();
 
-    // Draw Danger Line
+    // 3. Draw Danger Line
     this.renderGlassAquarium();
 
-    // Set up Ticker Physics Loop
+    // 4. Spawn initial starter fruits resting on the board!
+    this.spawnInitialBoardFruits();
+
+    // 5. Set up Ticker Physics Loop
     this.tickerFn = (ticker: { deltaTime: number }) => {
       this.updateGameLoop(ticker.deltaTime);
     };
     this.app.ticker.add(this.tickerFn);
+
+    // 6. Asynchronously attempt to load and upgrade SVG textures in the background
+    this.loadFruitTexturesInBackground();
   }
 
   // ---------------------------------------------------------------------------
-  // TEXTURE GENERATION / LOADING (SAFE IMAGE LOADER WITH FALLBACK)
+  // SYNCHRONOUS CANVAS TEXTURE GENERATOR (ROCK-SOLID & INSTANT)
   // ---------------------------------------------------------------------------
-  private async loadFruitTextures(): Promise<void> {
+  private initSynchronousCanvasTextures(): void {
     for (const config of FRUIT_TIERS) {
-      try {
-        const svgPath = `assets/fruitmerge/${config.svgName}`;
-        const tex = await this.loadSvgTexture(svgPath);
-        if (tex) {
-          this.fruitTextures.set(config.tier, tex);
-          continue;
-        }
-      } catch {
-        // Fallback to high-res procedural canvas texture
-      }
       const canvasTex = this.generateFallbackCanvasTexture(config);
       this.fruitTextures.set(config.tier, canvasTex);
     }
   }
 
-  private loadSvgTexture(path: string): Promise<Texture> {
-    return new Promise((resolve, reject) => {
+  // Non-blocking background SVG loader with offscreen canvas rasterization
+  private loadFruitTexturesInBackground(): void {
+    for (const config of FRUIT_TIERS) {
+      const svgPath = `/assets/fruitmerge/${config.svgName}`;
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      const timer = setTimeout(() => {
-        reject(new Error('Texture load timeout: ' + path));
-      }, 1500);
-
       img.onload = () => {
-        clearTimeout(timer);
-        resolve(Texture.from(img));
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 256;
+          canvas.height = 256;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+          ctx.drawImage(img, 0, 0, 256, 256);
+          const svgTex = Texture.from(canvas);
+          this.fruitTextures.set(config.tier, svgTex);
+
+          // Refresh dropper if showing this tier
+          if (this.dropperTier === config.tier && this.dropperSprite) {
+            this.dropperSprite.texture = svgTex;
+          }
+          // Refresh active fruits on board
+          for (const f of this.fruits) {
+            if (f.tier === config.tier && f.sprite) {
+              f.sprite.texture = svgTex;
+            }
+          }
+        } catch {}
       };
-      img.onerror = (e) => {
-        clearTimeout(timer);
-        reject(e);
-      };
-      img.src = path;
-    });
+      img.src = svgPath;
+    }
   }
 
   private generateFallbackCanvasTexture(config: FruitTierConfig): Texture {
@@ -298,14 +307,14 @@ export class PixijsFruitmerge implements OnInit, AfterViewInit, OnDestroy {
     // Outer Glow / Shadow
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,0.25)';
-    ctx.shadowBlur = 12;
-    ctx.shadowOffsetY = 6;
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 5;
 
     // Body Gradient
-    const grad = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.35, r * 0.1, cx, cy, r);
+    const grad = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.35, r * 0.1, cx, cy, r);
     grad.addColorStop(0, '#ffffff');
     grad.addColorStop(0.35, config.cssColor);
-    grad.addColorStop(1, '#000000');
+    grad.addColorStop(1, '#0f172a');
 
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -313,59 +322,135 @@ export class PixijsFruitmerge implements OnInit, AfterViewInit, OnDestroy {
     ctx.fill();
     ctx.restore();
 
-    // Watermelon Stripes for Tier 9 & 10
-    if (config.tier >= 9) {
-      ctx.strokeStyle = '#064e3b';
-      ctx.lineWidth = 14;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      for (let i = -2; i <= 2; i++) {
-        const sx = cx + i * (r * 0.35);
+    // Body border
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.stroke();
+
+    // Specific Fruit Custom Artwork
+    if (config.tier === 0) { // Blackberry
+      ctx.fillStyle = '#6b21a8';
+      for (const pt of [
+        [-45, -35], [45, -35], [-55, 15], [55, 15], [-25, 55], [25, 55]
+      ]) {
         ctx.beginPath();
-        ctx.moveTo(sx - 10, cy - r + 15);
-        ctx.quadraticCurveTo(sx + 20, cy, sx - 15, cy + r - 15);
-        ctx.stroke();
+        ctx.arc(cx + pt[0], cy + pt[1], 18, 0, Math.PI * 2);
+        ctx.fill();
       }
+    } else if (config.tier === 3) { // Watermelon Slice
+      ctx.strokeStyle = '#15803d';
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 7, 0, Math.PI * 2);
+      ctx.stroke();
+      // Black seeds
+      ctx.fillStyle = '#0f172a';
+      for (const a of [0.6, 1.4, 2.3, 3.8, 4.6, 5.4]) {
+        const sx = cx + Math.cos(a) * (r * 0.62);
+        const sy = cy + Math.sin(a) * (r * 0.62);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (config.tier === 5) { // Strawberry
+      ctx.fillStyle = '#fef08a';
+      for (let row = -2; row <= 2; row++) {
+        for (let col = -2; col <= 2; col++) {
+          const sx = cx + col * 32 + (row % 2) * 16;
+          const sy = cy + row * 32;
+          if ((sx - cx) * (sx - cx) + (sy - cy) * (sy - cy) < (r - 28) * (r - 28)) {
+            ctx.beginPath();
+            ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    } else if (config.tier === 8) { // Red Apple with Yellow Center Face
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(cx, cy + 6, r * 0.62, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (config.tier === 10) { // Pumpkin
+      ctx.strokeStyle = '#c2410c';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, r * 0.45, r - 6, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Stem / Leaf for fruits
+    if ([1, 4, 6, 7, 8, 9, 10, 11].includes(config.tier)) {
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.ellipse(cx + 25, cy - r + 14, 22, 10, Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     // Specular Highlight
     ctx.beginPath();
-    ctx.ellipse(cx - r * 0.35, cy - r * 0.35, r * 0.3, r * 0.15, -Math.PI / 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.ellipse(cx - r * 0.35, cy - r * 0.35, r * 0.28, r * 0.14, -Math.PI / 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     ctx.fill();
 
-    // Cute Cheeks
-    ctx.fillStyle = 'rgba(251, 113, 133, 0.6)';
+    // Rosy Cheeks
+    ctx.fillStyle = 'rgba(251, 113, 133, 0.65)';
     ctx.beginPath();
-    ctx.arc(cx - r * 0.48, cy + r * 0.15, r * 0.18, 0, Math.PI * 2);
-    ctx.arc(cx + r * 0.48, cy + r * 0.15, r * 0.18, 0, Math.PI * 2);
+    ctx.arc(cx - r * 0.46, cy + r * 0.18, r * 0.18, 0, Math.PI * 2);
+    ctx.arc(cx + r * 0.46, cy + r * 0.18, r * 0.18, 0, Math.PI * 2);
     ctx.fill();
 
-    // Cute / Grumpy Face
+    // Anime Eyes (Sparkling Big Eyes with white highlight glints)
+    const eyeY = cy - r * 0.05;
+    const eyeSpacing = r * 0.28;
+    const eyeRadius = Math.max(7, r * 0.1);
+
     ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = Math.max(3, r * 0.06);
-    ctx.lineCap = 'round';
-
-    // Eyes
     ctx.beginPath();
-    ctx.arc(cx - r * 0.28, cy - r * 0.05, r * 0.09, 0, Math.PI * 2);
-    ctx.arc(cx + r * 0.28, cy - r * 0.05, r * 0.09, 0, Math.PI * 2);
+    ctx.arc(cx - eyeSpacing, eyeY, eyeRadius, 0, Math.PI * 2);
+    ctx.arc(cx + eyeSpacing, eyeY, eyeRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Eye Glints
+    // Eye Glints (White Sparkle)
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(cx - r * 0.31, cy - r * 0.08, r * 0.03, 0, Math.PI * 2);
-    ctx.arc(cx + r * 0.25, cy - r * 0.08, r * 0.03, 0, Math.PI * 2);
+    ctx.arc(cx - eyeSpacing - eyeRadius * 0.3, eyeY - eyeRadius * 0.3, eyeRadius * 0.38, 0, Math.PI * 2);
+    ctx.arc(cx + eyeSpacing - eyeRadius * 0.3, eyeY - eyeRadius * 0.3, eyeRadius * 0.38, 0, Math.PI * 2);
+    ctx.arc(cx - eyeSpacing + eyeRadius * 0.3, eyeY + eyeRadius * 0.3, eyeRadius * 0.18, 0, Math.PI * 2);
+    ctx.arc(cx + eyeSpacing + eyeRadius * 0.3, eyeY + eyeRadius * 0.3, eyeRadius * 0.18, 0, Math.PI * 2);
     ctx.fill();
 
-    // Mouth (Frown / Cute Pout)
+    // Happy Mouth
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = Math.max(3.5, r * 0.06);
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.arc(cx, cy + r * 0.3, r * 0.18, Math.PI * 1.15, Math.PI * 1.85, false);
+    ctx.arc(cx, cy + r * 0.2, r * 0.16, 0.15 * Math.PI, 0.85 * Math.PI, false);
     ctx.stroke();
 
     return Texture.from(canvas);
+  }
+
+  // ---------------------------------------------------------------------------
+  // STARTER BOARD FRUITS (MATCHING REFERENCE SCREENSHOT)
+  // ---------------------------------------------------------------------------
+  private spawnInitialBoardFruits(): void {
+    if (this.fruits.length > 0) return;
+    const starters = [
+      { tier: 7, x: 130, y: 530 }, // Green Apple
+      { tier: 6, x: 75, y: 550 },  // Peach
+      { tier: 5, x: 230, y: 545 }, // Strawberry
+      { tier: 3, x: 330, y: 565 }, // Watermelon slice
+      { tier: 2, x: 380, y: 575 }, // Apricot
+      { tier: 1, x: 290, y: 585 }, // Cherry
+      { tier: 0, x: 190, y: 590 }, // Blackberry
+    ];
+
+    for (const item of starters) {
+      const f = this.createFruitEntity(item.tier, item.x, item.y);
+      f.vx = 0;
+      f.vy = 0;
+      this.fruits.push(f);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -887,6 +972,7 @@ export class PixijsFruitmerge implements OnInit, AfterViewInit, OnDestroy {
     this.canDrop = true;
     this.rollNextDropperFruits(true);
     this.updateDropperVisual();
+    this.spawnInitialBoardFruits();
   }
 
   toggleSound(): void {

@@ -93,7 +93,7 @@
             <span class="next-label">NEXT</span>
             <div class="wood-circle-preview" [title]="'Next Fruit: ' + nextFruitConfig.name">
               <img
-                [src]="'assets/fruitmerge/' + nextFruitConfig.svgName"
+                [src]="'/assets/fruitmerge/' + nextFruitConfig.svgName"
                 [alt]="nextFruitConfig.name"
                 class="next-fruit-img"
               />
@@ -164,7 +164,7 @@
             class="evo-fruit-node"
             [title]="f.name + ' (+' + f.score + ' pts)'"
           >
-            <img [src]="'assets/fruitmerge/' + f.svgName" [alt]="f.name" class="evo-fruit-icon" />
+            <img [src]="'/assets/fruitmerge/' + f.svgName" [alt]="f.name" class="evo-fruit-icon" />
           </div>
         </div>
         <div class="arrow-tip-head">
@@ -177,7 +177,7 @@
       <!-- Bottom Banner: Bright Green Pill Button with Smiling Mascot Peeking -->
       <div class="play-banner-wrapper">
         <div class="peeking-fruit-mascot">
-          <img src="assets/fruitmerge/fruit_8_melon.svg" alt="Smiling Mascot" />
+          <img src="/assets/fruitmerge/fruit_8_melon.svg" alt="Smiling Mascot" />
         </div>
         <button type="button" class="btn-play-for-fun" (click)="restartGame()">
           PLAY FOR FUN
