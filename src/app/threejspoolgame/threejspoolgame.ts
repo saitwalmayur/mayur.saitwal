@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 import { PoolAudioService } from './pool-audio.service';
 import {
@@ -156,6 +157,8 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initThree();
     this.buildBilliardRoom();
+    this.setupHdrEnvironment();
+    this.setupLighting();
     this.buildPoolTable();
     this.buildCueStick();
     this.buildAimGuidelines();
@@ -235,7 +238,7 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.18;
+    this.renderer.toneMappingExposure = 1.24;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -504,19 +507,6 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
 
     // 4. Studio Lighting Rig: Classic 3-Cone Emerald Brass Billiard Pendant
     this.buildOverheadPendant();
-
-    // Ambient Warm Lounge Fill
-    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x1a202c, 0.45);
-    this.scene.add(hemiLight);
-
-    // Soft warm wall sconces
-    const sconce1 = new THREE.PointLight(0xf59e0b, 0.8, 8, 1.5);
-    sconce1.position.set(-4.5, 3.0, -5.8);
-    this.scene.add(sconce1);
-
-    const sconce2 = new THREE.PointLight(0xf59e0b, 0.8, 8, 1.5);
-    sconce2.position.set(4.5, 3.0, -5.8);
-    this.scene.add(sconce2);
   }
 
   private addWallPoster(x: number, y: number, z: number, w: number, h: number, title: string): void {
@@ -570,6 +560,66 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     this.roomGroup.add(frame);
   }
 
+  private setupHdrEnvironment(): void {
+    if (typeof window === 'undefined') return;
+    const loader = new RGBELoader();
+    loader.load(
+      '/ChessAssets/historic_cloister_passage_2k.hdr',
+      (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        this.scene.environment = texture;
+        if ('environmentIntensity' in this.scene) {
+          (this.scene as any).environmentIntensity = 0.85;
+        }
+      },
+      undefined,
+      (err) => {
+        console.warn('Could not load HDR environment, using fallback studio lighting:', err);
+      }
+    );
+  }
+
+  private setupLighting(): void {
+    // 1. Natural Dual-Gradient Hemisphere Light (mimics sky & floor room bounce)
+    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x1e293b, 0.75);
+    this.scene.add(hemiLight);
+
+    // 2. High-Precision Primary Overhead Table Key Softbox (Single clean shadow caster)
+    const tableKeySpot = new THREE.SpotLight(0xfff7ea, 3.6, 12.0, Math.PI / 3.1, 0.78, 1.2);
+    tableKeySpot.position.set(0, 3.3, 0);
+    tableKeySpot.target.position.set(0, this.tableSurfaceY, 0);
+    tableKeySpot.castShadow = true;
+    tableKeySpot.shadow.mapSize.width = 2048;
+    tableKeySpot.shadow.mapSize.height = 2048;
+    tableKeySpot.shadow.bias = -0.00015;
+    tableKeySpot.shadow.radius = 2.6;
+    this.scene.add(tableKeySpot);
+    this.scene.add(tableKeySpot.target);
+
+    // 3. Longitudinal Table Bed Fill Lights (Head & Foot ends for uniform tournament illumination)
+    [-0.85, 0.85].forEach((z) => {
+      const bedFill = new THREE.DirectionalLight(0xfffaf0, 0.95);
+      bedFill.position.set(0, 2.9, z);
+      bedFill.target.position.set(0, this.tableSurfaceY, z * 0.4);
+      this.scene.add(bedFill);
+      this.scene.add(bedFill.target);
+    });
+
+    // 4. Perimeter Edge Rim Light (Accentuates ball spheres, cue stick, and wood bevels)
+    const rimLight = new THREE.DirectionalLight(0xdbeafe, 0.9);
+    rimLight.position.set(-3.5, 3.8, -3.5);
+    this.scene.add(rimLight);
+
+    // 5. Soft Warm Wall Sconces
+    const sconce1 = new THREE.PointLight(0xf59e0b, 1.1, 9, 1.4);
+    sconce1.position.set(-4.5, 3.0, -5.8);
+    this.scene.add(sconce1);
+
+    const sconce2 = new THREE.PointLight(0xf59e0b, 1.1, 9, 1.4);
+    sconce2.position.set(4.5, 3.0, -5.8);
+    this.scene.add(sconce2);
+  }
+
   private buildOverheadPendant(): void {
     const pendantGroup = new THREE.Group();
     pendantGroup.position.set(0, 2.7, 0);
@@ -578,8 +628,8 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     const barGeo = new THREE.CylinderGeometry(0.02, 0.02, 2.2, 16);
     const brassMat = new THREE.MeshStandardMaterial({
       color: 0xd97706,
-      metalness: 0.85,
-      roughness: 0.25,
+      metalness: 0.92,
+      roughness: 0.2,
     });
     const bar = new THREE.Mesh(barGeo, brassMat);
     bar.rotation.z = Math.PI / 2;
@@ -596,14 +646,17 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     // 3 Vintage Emerald Enamel Conical Shades with Gold Lip
     const shadeGeo = new THREE.ConeGeometry(0.24, 0.28, 24, 1, true);
     const shadeMat = new THREE.MeshStandardMaterial({
-      color: 0x064e3b, // Emerald green exterior
+      color: 0x064e3b,
       roughness: 0.3,
       metalness: 0.2,
       side: THREE.DoubleSide,
     });
 
+    // Light bulb material
+    const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffedd5 });
+
     const shadePositions = [-0.75, 0, 0.75]; // Along Z table length
-    shadePositions.forEach((z, idx) => {
+    shadePositions.forEach((z) => {
       const shade = new THREE.Mesh(shadeGeo, shadeMat);
       shade.position.set(0, -0.12, z);
       shade.rotation.x = Math.PI; // Opening facing down
@@ -616,21 +669,29 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
       lip.rotation.x = Math.PI / 2;
       pendantGroup.add(lip);
 
-      // Focused Photorealistic Warm Spotlight
-      const spot = new THREE.SpotLight(0xfff5db, 3.2, 6.0, Math.PI / 3.4, 0.65, 1.3);
-      spot.position.set(0, 2.4, z);
-      spot.target.position.set(0, this.tableSurfaceY, z);
-      spot.castShadow = true;
-      spot.shadow.mapSize.width = 1024;
-      spot.shadow.mapSize.height = 1024;
-      spot.shadow.bias = -0.00015;
-      spot.shadow.radius = 2.4;
-      this.scene.add(spot);
-      this.scene.add(spot.target);
+      // Incandescent Glowing Bulb inside the shade
+      const bulbGeo = new THREE.SphereGeometry(0.045, 16, 16);
+      const bulbMesh = new THREE.Mesh(bulbGeo, bulbMat);
+      bulbMesh.position.set(0, -0.06, z);
+      pendantGroup.add(bulbMesh);
 
-      if (idx === 0) this.mainSpot1 = spot;
-      if (idx === 1) this.mainSpot2 = spot;
-      if (idx === 2) this.mainSpot3 = spot;
+      // Warm Local Filament Light (No shadow casting to prevent multi-shadow conflicts)
+      const bulbLight = new THREE.PointLight(0xfbbf24, 1.4, 3.2, 1.5);
+      bulbLight.position.set(0, -0.08, z);
+      pendantGroup.add(bulbLight);
+
+      // Subtle atmospheric volumetric light cone beam
+      const beamGeo = new THREE.ConeGeometry(0.48, 1.6, 24, 1, true);
+      const beamMat = new THREE.MeshBasicMaterial({
+        color: 0xfef3c7,
+        transparent: true,
+        opacity: 0.05,
+        side: THREE.BackSide,
+        depthWrite: false,
+      });
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.set(0, -1.05, z);
+      pendantGroup.add(beam);
     });
 
     this.scene.add(pendantGroup);
