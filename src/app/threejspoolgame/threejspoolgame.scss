@@ -96,6 +96,30 @@
           letter-spacing: -0.01em;
         }
 
+        
+        .glb-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          margin-left: 0.5rem;
+          font-size: 0.62rem;
+          font-weight: 800;
+          padding: 0.15rem 0.45rem;
+          border-radius: 9999px;
+          background: rgba(16, 185, 129, 0.15);
+          color: #34d399;
+          border: 1px solid rgba(16, 185, 129, 0.35);
+          letter-spacing: 0.05em;
+
+          .glb-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 6px #10b981;
+          }
+        }
+
         .sub-tag {
           font-size: 0.68rem;
           font-weight: 700;

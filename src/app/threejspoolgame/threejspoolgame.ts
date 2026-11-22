@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import { PoolAudioService } from './pool-audio.service';
 import {
@@ -638,8 +639,43 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
   // =========================================================================
   // 3D POOL TABLE (SLATE BED, CUSHIONS, POCKETS, LEGS)
   // =========================================================================
+  public isGlbLoaded: boolean = false;
+  private proceduralTableGroup: THREE.Group = new THREE.Group();
+
   private buildPoolTable(): void {
-    // 1. Table Playing Bed (Slate covered in fine green felt)
+    // 1. Build initial procedural table (instant zero-latency fallback)
+    this.tableGroup.add(this.proceduralTableGroup);
+    this.buildProceduralTable();
+
+    // 2. Load the realistic 3D GLB Pool Table Model
+    const loader = new GLTFLoader();
+    loader.load(
+      '/3dModels/PoolTable/pool_table.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        model.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        model.position.set(0, 0, 0);
+
+        // Hide procedural fallback, display realistic GLB model
+        this.proceduralTableGroup.visible = false;
+        this.tableGroup.add(model);
+        this.isGlbLoaded = true;
+        this.showNotification('✨ Realistic 3D GLB Pool Table Loaded!');
+        this.cdr.detectChanges();
+      },
+      undefined,
+      (err) => {
+        console.warn('Could not load pool_table.glb, active fallback in use:', err);
+      }
+    );
+  }
+
+  private buildProceduralTable(): void {
     const feltTexture = this.createFeltTexture();
     const bedGeo = new THREE.BoxGeometry(TABLE_WIDTH, 0.06, TABLE_LENGTH);
     const bedMat = new THREE.MeshStandardMaterial({
@@ -650,12 +686,10 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     const bed = new THREE.Mesh(bedGeo, bedMat);
     bed.position.set(0, this.tableSurfaceY - 0.03, 0);
     bed.receiveShadow = true;
-    this.tableGroup.add(bed);
+    this.proceduralTableGroup.add(bed);
 
-    // Headstring / Kitchen line & Foot Spot
     this.addTableMarkings();
 
-    // 2. Wooden Rails & Cushions (Dark Mahogany Grain)
     const woodTexture = this.createWoodTexture('#2e180d', '#422415');
     const railMat = new THREE.MeshStandardMaterial({
       map: woodTexture,
@@ -666,57 +700,46 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     const railThickness = 0.14;
     const railHeight = 0.08;
 
-    // Head Rail (-Z) & Foot Rail (+Z)
     [-HALF_LENGTH - railThickness / 2, HALF_LENGTH + railThickness / 2].forEach((z) => {
       const railGeo = new THREE.BoxGeometry(TABLE_WIDTH + railThickness * 2, railHeight, railThickness);
       const rail = new THREE.Mesh(railGeo, railMat);
       rail.position.set(0, this.tableSurfaceY + 0.01, z);
       rail.castShadow = true;
       rail.receiveShadow = true;
-      this.tableGroup.add(rail);
+      this.proceduralTableGroup.add(rail);
     });
 
-    // Left & Right Long Rails
     [-HALF_WIDTH - railThickness / 2, HALF_WIDTH + railThickness / 2].forEach((x) => {
       const railGeo = new THREE.BoxGeometry(railThickness, railHeight, TABLE_LENGTH);
       const rail = new THREE.Mesh(railGeo, railMat);
       rail.position.set(x, this.tableSurfaceY + 0.01, 0);
       rail.castShadow = true;
       rail.receiveShadow = true;
-      this.tableGroup.add(rail);
+      this.proceduralTableGroup.add(rail);
     });
 
-    // 3. Mother-of-Pearl Diamond Sights on Rails
     this.addDiamondSights(railThickness);
 
-    // 4. Brass Corner Castings & Pocket Drop Bezels
     const brassPocketMat = new THREE.MeshStandardMaterial({
       color: 0xd97706,
       metalness: 0.9,
       roughness: 0.2,
     });
 
-    // 6 Pocket Hole Cups (Visual depth)
     TABLE_POCKETS.forEach((pkt) => {
-      // Dark leather drop funnel hole
       const holeGeo = new THREE.CylinderGeometry(pkt.radius * 0.95, pkt.radius * 0.8, 0.12, 24);
-      const holeMat = new THREE.MeshStandardMaterial({
-        color: 0x09090b,
-        roughness: 0.9,
-      });
+      const holeMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.9 });
       const hole = new THREE.Mesh(holeGeo, holeMat);
       hole.position.set(pkt.pos.x, this.tableSurfaceY - 0.05, pkt.pos.y);
-      this.tableGroup.add(hole);
+      this.proceduralTableGroup.add(hole);
 
-      // Shiny Brass Bezel Collar
       const bezelGeo = new THREE.TorusGeometry(pkt.radius * 0.96, 0.015, 12, 24);
       const bezel = new THREE.Mesh(bezelGeo, brassPocketMat);
       bezel.rotation.x = Math.PI / 2;
       bezel.position.set(pkt.pos.x, this.tableSurfaceY + 0.005, pkt.pos.y);
-      this.tableGroup.add(bezel);
+      this.proceduralTableGroup.add(bezel);
     });
 
-    // 5. Four Heavy Turned Mahogany Pedestal Legs with Brass Levelers
     const legPositions = [
       [-HALF_WIDTH + 0.15, -HALF_LENGTH + 0.25],
       [HALF_WIDTH - 0.15, -HALF_LENGTH + 0.25],
@@ -730,15 +753,13 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
       leg.position.set(x, (this.tableSurfaceY - 0.04) / 2, z);
       leg.castShadow = true;
       leg.receiveShadow = true;
-      this.tableGroup.add(leg);
+      this.proceduralTableGroup.add(leg);
 
-      // Brass Leveler Foot
       const footGeo = new THREE.CylinderGeometry(0.08, 0.1, 0.04, 16);
       const foot = new THREE.Mesh(footGeo, brassPocketMat);
       foot.position.set(x, 0.02, z);
-      this.tableGroup.add(foot);
+      this.proceduralTableGroup.add(foot);
 
-      // Soft Contact Shadow Disc under each leg
       const shadowDiscGeo = new THREE.CircleGeometry(0.24, 24);
       const shadowDiscMat = new THREE.MeshBasicMaterial({
         color: 0x000000,
@@ -748,10 +769,9 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
       const shadowDisc = new THREE.Mesh(shadowDiscGeo, shadowDiscMat);
       shadowDisc.rotation.x = -Math.PI / 2;
       shadowDisc.position.set(x, 0.002, z);
-      this.tableGroup.add(shadowDisc);
+      this.proceduralTableGroup.add(shadowDisc);
     });
 
-    // Large Soft Shadow beneath entire table
     const bigShadowGeo = new THREE.PlaneGeometry(TABLE_WIDTH + 0.4, TABLE_LENGTH + 0.4);
     const bigShadowMat = new THREE.MeshBasicMaterial({
       color: 0x000000,
@@ -761,7 +781,7 @@ export class Threejspoolgame implements OnInit, AfterViewInit, OnDestroy {
     const bigShadow = new THREE.Mesh(bigShadowGeo, bigShadowMat);
     bigShadow.rotation.x = -Math.PI / 2;
     bigShadow.position.set(0, 0.001, 0);
-    this.tableGroup.add(bigShadow);
+    this.proceduralTableGroup.add(bigShadow);
   }
 
   private addTableMarkings(): void {

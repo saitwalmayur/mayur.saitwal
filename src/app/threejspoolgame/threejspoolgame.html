@@ -12,6 +12,10 @@
         <div class="brand-text">
           <h1>3D Grand Billiards</h1>
           <span class="sub-tag">Pro 8-Ball Physics</span>
+          <span class="glb-badge" [class.active]="isGlbLoaded" title="Realistic 3D GLB Pool Table Mesh Loaded">
+            <span class="glb-dot"></span>
+            <span>{{ isGlbLoaded ? '3D GLB TABLE' : 'PROCEDURAL' }}</span>
+          </span>
         </div>
       </div>
     </div>
