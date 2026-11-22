@@ -1,0 +1,204 @@
+<div class="fruitmerge-page-wrapper">
+  <!-- Top Universal Header -->
+  <header class="game-top-bar">
+    <div class="top-bar-left">
+      <a routerLink="/pixijshome" class="btn-back-hub" title="Return to PixiJS Creative Hub">
+        <span class="arrow">←</span>
+        <span>PixiJS Hub</span>
+      </a>
+      <div class="title-cluster">
+        <span class="hub-icon">🍉</span>
+        <div class="title-text">
+          <h1>Suika Fruit Merge</h1>
+          <span class="tag">PixiJS v8 2D Physics</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right Stats Widgets -->
+    <div class="top-bar-right">
+      <!-- Current Score -->
+      <div class="score-card">
+        <span class="score-lbl">SCORE</span>
+        <span class="score-val">{{ score | number }}</span>
+      </div>
+
+      <!-- Best Score -->
+      <div class="score-card best-card">
+        <span class="score-lbl">BEST</span>
+        <span class="score-val">{{ bestScore | number }}</span>
+      </div>
+
+      <!-- Next Fruit Preview Bubble -->
+      <div class="next-fruit-bubble" title="Next Fruit to Drop">
+        <span class="next-lbl">NEXT</span>
+        <div class="next-icon-box">
+          <img
+            [src]="'assets/fruitmerge/' + nextFruitConfig.svgName"
+            [alt]="nextFruitConfig.name"
+            class="next-fruit-img"
+          />
+        </div>
+      </div>
+
+      <!-- Sound Toggle Button -->
+      <button
+        type="button"
+        class="btn-icon-sound"
+        (click)="toggleSound()"
+        [title]="audio.isSoundEnabled() ? 'Mute Sound' : 'Enable Sound'"
+      >
+        {{ audio.isSoundEnabled() ? '🔊' : '🔇' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Stage & Glass Aquarium Area -->
+  <main class="game-viewport">
+    <div
+      class="glass-aquarium-stage"
+      (pointermove)="setDropperPosition($event.clientX)"
+      (pointerdown)="setDropperPosition($event.clientX)"
+      (pointerup)="dropCurrentFruit()"
+      (touchmove)="setDropperPosition($event.touches[0].clientX)"
+      (touchend)="dropCurrentFruit()"
+    >
+      <!-- PixiJS Canvas Mounting Node -->
+      <div #canvasHost class="pixi-canvas-host"></div>
+
+      <!-- HTML Floating Score Labels (Rising Text FX) -->
+      <div class="floating-labels-layer">
+        <div
+          *ngFor="let s of floatingScores"
+          class="floating-score-pill"
+          [style.left.px]="s.x"
+          [style.top.px]="s.y"
+          [style.color]="s.color"
+          [style.opacity]="s.alpha"
+        >
+          {{ s.text }}
+        </div>
+      </div>
+
+      <!-- Combo Streak Pill Notification -->
+      <div *ngIf="comboCount > 1" class="combo-streak-pill">
+        <span>🔥 COMBO x{{ comboCount }}!</span>
+      </div>
+
+      <!-- Danger Warning Banner Pulse -->
+      <div *ngIf="dangerWarning && !isGameOver" class="danger-warning-banner">
+        <span>⚠️ DANGER! CONTAINER OVERFLOWING</span>
+      </div>
+    </div>
+
+    <!-- Bottom Controls (Matching Reference Screenshot) -->
+    <div class="game-bottom-bar">
+      <!-- Blue Home Button with White House Icon -->
+      <button
+        type="button"
+        class="ref-btn ref-btn-home"
+        (click)="goHome()"
+        title="Return to PixiJS Creative Hub"
+      >
+        <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </button>
+
+      <!-- Yellow Restart Button with Reload Icon -->
+      <button
+        type="button"
+        class="ref-btn ref-btn-restart"
+        (click)="restartGame()"
+        title="Restart Game"
+      >
+        <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- GAME OVER OVERLAY MODAL (MATCHING REFERENCE SCREENSHOT)                   -->
+  <!-- ========================================================================= -->
+  <div *ngIf="isGameOver" class="game-over-overlay">
+    <div class="game-over-card">
+      <!-- Game Over Banner Pill Header (Exact style from screenshot) -->
+      <div class="ref-game-over-banner">
+        <span>GAME OVER</span>
+      </div>
+
+      <div class="game-over-body">
+        <div class="result-stats">
+          <div class="result-box">
+            <span class="box-lbl">FINAL SCORE</span>
+            <span class="box-val highlight">{{ score | number }}</span>
+          </div>
+
+          <div class="result-box">
+            <span class="box-lbl">BEST SCORE</span>
+            <span class="box-val">{{ bestScore | number }}</span>
+          </div>
+        </div>
+
+        <p class="congrats-text" *ngIf="score >= bestScore && score > 0">
+          🎉 NEW RECORD HIGH SCORE!
+        </p>
+
+        <!-- Fruit Tier Evolution Reference Bar -->
+        <div class="tier-evolution-guide">
+          <span class="guide-title">MERGE EVOLUTION</span>
+          <div class="guide-fruits-row">
+            <span title="Cherry (2 pts)">🍒</span>
+            <span class="arr">→</span>
+            <span title="Strawberry (4 pts)">🍓</span>
+            <span class="arr">→</span>
+            <span title="Grape (8 pts)">🍇</span>
+            <span class="arr">→</span>
+            <span title="Lemon (16 pts)">🍋</span>
+            <span class="arr">→</span>
+            <span title="Orange (32 pts)">🍊</span>
+            <span class="arr">→</span>
+            <span title="Apple (64 pts)">🍎</span>
+            <span class="arr">→</span>
+            <span title="Peach (128 pts)">🍑</span>
+            <span class="arr">→</span>
+            <span title="Melon (256 pts)">🍈</span>
+            <span class="arr">→</span>
+            <span title="Coconut (512 pts)">🥥</span>
+            <span class="arr">→</span>
+            <span title="Watermelon (1024 pts)">🍉</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons in Modal -->
+        <div class="modal-actions-row">
+          <button
+            type="button"
+            class="ref-btn ref-btn-home modal-btn"
+            (click)="goHome()"
+            title="Return to Hub"
+          >
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            <span>Home</span>
+          </button>
+
+          <button
+            type="button"
+            class="ref-btn ref-btn-restart modal-btn"
+            (click)="restartGame()"
+            title="Play Again"
+          >
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+            <span>Play Again</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

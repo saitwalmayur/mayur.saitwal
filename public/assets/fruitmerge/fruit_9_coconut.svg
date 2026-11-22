@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="cocoGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#a16207"/>
+      <stop offset="60%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#451a03"/>
+    </radialGradient>
+  </defs>
+  <!-- Fruit Body -->
+  <circle cx="128" cy="138" r="98" fill="url(#cocoGrad)"/>
+  <!-- 3 Coconut Germination Pores / Eyes -->
+  <circle cx="112" cy="76" r="6" fill="#451a03"/>
+  <circle cx="132" cy="72" r="6" fill="#451a03"/>
+  <circle cx="122" cy="88" r="6" fill="#451a03"/>
+  <!-- Large Glossy White Highlight Specular Spot -->
+  <ellipse cx="78" cy="95" rx="22" ry="14" fill="#ffffff" opacity="0.85" transform="rotate(-35 78 95)"/>
+  <circle cx="102" cy="80" r="5" fill="#ffffff" opacity="0.9"/>
+  <!-- Bright Orange-Tan Blush Cheeks -->
+  <circle cx="78" cy="162" r="18" fill="#ea580c" opacity="0.6"/>
+  <circle cx="178" cy="162" r="18" fill="#ea580c" opacity="0.6"/>
+  <!-- Angry (> <) Eyes -->
+  <path d="M82,126 L108,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M82,148 L108,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M174,126 L148,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M174,148 L148,138" stroke="#1c1917" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Grumpy Curved Frown -->
+  <path d="M112,172 Q128,154 144,172" fill="none" stroke="#1c1917" stroke-width="6" stroke-linecap="round"/>
+</svg>

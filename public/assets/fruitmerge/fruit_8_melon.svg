@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="melonGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#bef264"/>
+      <stop offset="65%" stop-color="#84cc16"/>
+      <stop offset="100%" stop-color="#4d7c0f"/>
+    </radialGradient>
+  </defs>
+  <!-- Fruit Body -->
+  <circle cx="128" cy="138" r="98" fill="url(#melonGrad)"/>
+  <!-- Faint Reticulation Web Lines -->
+  <g fill="none" stroke="#ecfccb" stroke-width="3" opacity="0.45" stroke-linecap="round">
+    <path d="M45,110 Q90,95 140,115 T215,110"/>
+    <path d="M50,160 Q105,175 160,155 T210,165"/>
+    <path d="M85,60 Q128,80 175,65"/>
+    <path d="M90,210 Q130,195 170,210"/>
+    <path d="M100,75 Q85,135 105,195"/>
+    <path d="M155,75 Q170,135 150,195"/>
+  </g>
+  <!-- Highlight -->
+  <ellipse cx="85" cy="85" rx="26" ry="14" fill="#ffffff" opacity="0.6" transform="rotate(-30 85 85)"/>
+  <!-- Cheeks -->
+  <circle cx="80" cy="160" r="16" fill="#a3e635" opacity="0.7"/>
+  <circle cx="176" cy="160" r="16" fill="#a3e635" opacity="0.7"/>
+  <!-- Squinting Grumpy Eyes -->
+  <path d="M84,132 L106,142" stroke="#1a2e05" stroke-width="5" stroke-linecap="round"/>
+  <path d="M84,148 L106,142" stroke="#1a2e05" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172,132 L150,142" stroke="#1a2e05" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172,148 L150,142" stroke="#1a2e05" stroke-width="5" stroke-linecap="round"/>
+  <!-- Wavy Grumpy Mouth -->
+  <path d="M112,170 Q120,162 128,168 T144,166" fill="none" stroke="#1a2e05" stroke-width="5" stroke-linecap="round"/>
+</svg>

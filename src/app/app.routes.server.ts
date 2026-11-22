@@ -363,6 +363,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'pixijs-fruitmerge',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'fruitmerge',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'indstry/**',
     renderMode: RenderMode.Client,
   },

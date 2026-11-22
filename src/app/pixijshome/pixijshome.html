@@ -72,11 +72,59 @@
         <span class="dot"></span>
         <span>{{ rendererName }}</span>
       </div>
+
+      <!-- Quick Play Game Launcher Button -->
+      <a routerLink="/pixijs-fruitmerge" class="game-launch-btn" title="Launch Watermelon Fruit Merge Game">
+        <span class="game-icon">🍉</span>
+        <span class="game-title">Fruit Merge</span>
+        <span class="game-badge">PLAY</span>
+      </a>
     </div>
   </header>
 
   <!-- Interactive PixiJS Canvas Container -->
   <div #pixiContainer class="pixi-canvas-container"></div>
+
+  <!-- Featured 2D Games Showcase Cards Overlay -->
+  <div class="featured-games-overlay">
+    <a routerLink="/pixijs-fruitmerge" class="fruitmerge-showcase-card" title="Play Watermelon Fruit Merge Game">
+      <div class="card-glow"></div>
+      <div class="card-badge-row">
+        <span class="pill-featured">🍉 NEW 2D GAME</span>
+        <span class="pill-engine">PIXI.JS v8 PHYSICS</span>
+      </div>
+
+      <div class="card-hero-row">
+        <div class="fruit-icon-cluster">
+          <span class="fruit-emoji f-wm">🍉</span>
+          <span class="fruit-emoji f-coco">🥥</span>
+          <span class="fruit-emoji f-apple">🍎</span>
+          <span class="fruit-emoji f-lemon">🍋</span>
+          <span class="fruit-emoji f-berry">🍒</span>
+        </div>
+        <div class="card-text">
+          <h3>Suika Fruit Merge</h3>
+          <p>Drop & combine fruits to grow the Giant Watermelon! Real-time 2D circle physics, juicy particle splashes & cute expressive faces.</p>
+        </div>
+      </div>
+
+      <div class="card-footer-row">
+        <div class="tier-preview">
+          <span>🍒</span>
+          <span>🍓</span>
+          <span>🍇</span>
+          <span>🍋</span>
+          <span>🍊</span>
+          <span>🍎</span>
+          <span>🍑</span>
+          <span>🍈</span>
+          <span>🥥</span>
+          <span class="giant">🍉</span>
+        </div>
+        <span class="btn-play-action">Play Game →</span>
+      </div>
+    </a>
+  </div>
 
   <!-- Floating Bottom Controls HUD -->
   <footer class="hud-bottom">

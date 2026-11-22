@@ -962,4 +962,16 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pixijshome/pixijshome').then((m) => m.Pixijshome),
   },
+  {
+    path: 'pixijs-fruitmerge',
+    title: 'Suika Fruit Merge 2D Game | PixiJS Physics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./pixijs-fruitmerge/pixijs-fruitmerge').then((m) => m.PixijsFruitmerge),
+  },
+  {
+    path: 'fruitmerge',
+    title: 'Suika Fruit Merge 2D Game | PixiJS Physics | Mayur Saitwal',
+    loadComponent: () =>
+      import('./pixijs-fruitmerge/pixijs-fruitmerge').then((m) => m.PixijsFruitmerge),
+  },
 ];

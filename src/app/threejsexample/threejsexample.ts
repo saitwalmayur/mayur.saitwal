@@ -453,6 +453,28 @@ export class Threejsexample {
       categories: ['pixijs', 'games', 'particles', 'tools'],
       categoryLabel: '2D WebGL & PixiJS',
     },
+    {
+      id: 'pixijs-fruitmerge',
+      route: '/pixijs-fruitmerge',
+      title: 'Suika Fruit Merge 2D Game',
+      tagline: 'Physics-driven watermelon merge puzzle with cute expressive fruits, juice burst particles & combo physics',
+      description:
+        'Drop, collide, and merge adorable fruits from tiny cherries up to the Giant Watermelon! Powered by PixiJS v8 2D hardware-accelerated batch rendering, custom sub-stepped circle collision physics, squash-and-stretch bounce animations, synthesized audio pops, and overflow danger line detection.',
+      tags: ['PixiJS', 'Suika Game', 'Watermelon Game', '2D Physics', 'Fruit Merge', 'Casual Game', 'WebGL 2'],
+      icon: '🍉',
+      features: [
+        '11 Expressive Fruit Tiers with Custom Vector Sprites',
+        'Sub-Stepped 2D Circle Physics & Elastic Bounce Solver',
+        'Juicy Splash Particles & Squash-and-Stretch Animations',
+        'Aim Guide Trajectory Line & Responsive Touch/Mouse Controls',
+        'Synthesized Dynamic Pitch Web Audio Sound Effects',
+        'Danger Line Overflow Detection & High Score Persistence',
+      ],
+      gradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(34, 197, 94, 0.25))',
+      category: 'games',
+      categories: ['games', 'pixijs', 'particles'],
+      categoryLabel: '2D WebGL & PixiJS',
+    },
 {
       id: 'threejspoolgame',
       route: '/threejspoolgame',

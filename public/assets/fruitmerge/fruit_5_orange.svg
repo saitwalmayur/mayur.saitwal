@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="orangeGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="55%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </radialGradient>
+  </defs>
+  <!-- Green Stem & Leaf -->
+  <path d="M128,48 C128,30 134,22 142,20" fill="none" stroke="#15803d" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="150" cy="24" rx="16" ry="8" fill="#22c55e" transform="rotate(-15 150 24)"/>
+  <!-- Body -->
+  <circle cx="128" cy="138" r="98" fill="url(#orangeGrad)"/>
+  <!-- Specular -->
+  <ellipse cx="85" cy="85" rx="26" ry="14" fill="#ffffff" opacity="0.6" transform="rotate(-30 85 85)"/>
+  <!-- Angry Cheeks -->
+  <circle cx="82" cy="158" r="16" fill="#ea580c" opacity="0.6"/>
+  <circle cx="174" cy="158" r="16" fill="#ea580c" opacity="0.6"/>
+  <!-- Angry Angled Eyes (> <) -->
+  <path d="M84,124 L108,138" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
+  <path d="M84,146 L108,138" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172,124 L148,138" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172,146 L148,138" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
+  <!-- Angry Frown -->
+  <path d="M115,166 Q128,152 141,166" fill="none" stroke="#431407" stroke-width="5.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="appleGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff758f"/>
+      <stop offset="60%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#9f1239"/>
+    </radialGradient>
+  </defs>
+  <!-- Stem & Leaf -->
+  <path d="M128,52 C126,25 138,15 145,12" fill="none" stroke="#78350f" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="152" cy="22" rx="16" ry="8" fill="#22c55e" transform="rotate(-25 152 22)"/>
+  <!-- Apple Double Lobed Body -->
+  <path d="M128,62 C158,45 220,55 224,120 C228,185 180,234 148,238 C135,240 131,236 128,236 C125,236 121,240 108,238 C76,234 28,185 32,120 C36,55 98,45 128,62 Z" fill="url(#appleGrad)"/>
+  <!-- Two Glossy Pill Highlights -->
+  <ellipse cx="78" cy="98" rx="18" ry="32" fill="#ffffff" opacity="0.65" transform="rotate(-20 78 98)"/>
+  <ellipse cx="195" cy="115" rx="12" ry="22" fill="#ffffff" opacity="0.45" transform="rotate(20 195 115)"/>
+  <!-- Cheeks -->
+  <circle cx="82" cy="165" r="16" fill="#fb7185" opacity="0.6"/>
+  <circle cx="174" cy="165" r="16" fill="#fb7185" opacity="0.6"/>
+  <!-- Grumpy Squinty Eyes -->
+  <path d="M85,134 Q98,124 110,138" stroke="#4c0519" stroke-width="5" stroke-linecap="round"/>
+  <path d="M171,134 Q158,124 146,138" stroke="#4c0519" stroke-width="5" stroke-linecap="round"/>
+  <!-- Deep Frown Mouth -->
+  <path d="M114,172 Q128,156 142,172" fill="none" stroke="#4c0519" stroke-width="5.5" stroke-linecap="round"/>
+</svg>

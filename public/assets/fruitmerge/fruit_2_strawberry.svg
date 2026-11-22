@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="strawGrad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="65%" stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </radialGradient>
+  </defs>
+  <!-- Berry Body -->
+  <path d="M128,38 C195,38 226,105 205,185 C185,232 145,248 128,248 C111,248 71,232 51,185 C30,105 61,38 128,38 Z" fill="url(#strawGrad)"/>
+  <!-- Seeds -->
+  <g fill="#fef08a" opacity="0.85">
+    <ellipse cx="80" cy="95" rx="3" ry="5" transform="rotate(-15 80 95)"/>
+    <ellipse cx="176" cy="95" rx="3" ry="5" transform="rotate(15 176 95)"/>
+    <ellipse cx="65" cy="145" rx="3" ry="5" transform="rotate(-25 65 145)"/>
+    <ellipse cx="191" cy="145" rx="3" ry="5" transform="rotate(25 191 145)"/>
+    <ellipse cx="90" cy="205" rx="3" ry="5" transform="rotate(-10 90 205)"/>
+    <ellipse cx="166" cy="205" rx="3" ry="5" transform="rotate(10 166 205)"/>
+    <ellipse cx="128" cy="225" rx="3" ry="5"/>
+  </g>
+  <!-- Highlights -->
+  <ellipse cx="88" cy="65" rx="20" ry="8" fill="#ffffff" opacity="0.45" transform="rotate(-20 88 65)"/>
+  <!-- Green Calyx Leaves Crown -->
+  <path d="M128,45 L110,12 C105,30 85,25 75,32 C95,45 105,52 118,52 L128,45 Z" fill="#22c55e"/>
+  <path d="M128,45 L146,12 C151,30 171,25 181,32 C161,45 151,52 138,52 L128,45 Z" fill="#16a34a"/>
+  <path d="M128,45 L128,8 C123,25 133,25 128,45 Z" fill="#15803d"/>
+  <ellipse cx="128" cy="46" rx="25" ry="8" fill="#22c55e"/>
+  <!-- Cheeks -->
+  <circle cx="85" cy="158" r="14" fill="#fb7185" opacity="0.6"/>
+  <circle cx="171" cy="158" r="14" fill="#fb7185" opacity="0.6"/>
+  <!-- Angry / Cute Eyes -->
+  <path d="M85,128 L108,138" stroke="#1e293b" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="98" cy="140" r="8" fill="#1e293b"/>
+  <circle cx="95" cy="138" r="2.5" fill="#ffffff"/>
+  <path d="M171,128 L148,138" stroke="#1e293b" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="158" cy="140" r="8" fill="#1e293b"/>
+  <circle cx="155" cy="138" r="2.5" fill="#ffffff"/>
+  <!-- Frown Mouth -->
+  <path d="M118,168 Q128,158 138,168" fill="none" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+</svg>
