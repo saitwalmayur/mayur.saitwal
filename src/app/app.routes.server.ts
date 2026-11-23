@@ -375,6 +375,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'babylonopenworld',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'room',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },
